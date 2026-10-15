@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b",
-    "encrypt": "node scripts/encrypt-stories.mjs"
+    "encrypt": "node scripts/encrypt-stories.mjs",
+    "videos": "node scripts/copy-videos.mjs"
   },
   "dependencies": {
     "react": "^19.1.0",

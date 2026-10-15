@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 
 BLANK = "___"
 MAX_HINTS = 3
-QUESTIONS_PER_DAY = 5
+QUESTIONS_PER_DAY = 3
 OSLO = ZoneInfo("Europe/Oslo")
 QUESTIONS_FILE = Path(__file__).parent / "data" / "questions.json"
 

@@ -12,6 +12,12 @@
   status = 200
   force = true
 
+# Adressa's videos and posters, copied into the build by `npm run videos`.
+[[headers]]
+  for = "/media/video/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
 # The app uses a history-API router, so every other path serves the SPA.
 [[redirects]]
   from = "/*"

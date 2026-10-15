@@ -1,7 +1,7 @@
 import type { Stories, Story } from "./api";
 import { getReaderKey } from "./readerKey";
 
-type PrivateStory = Pick<Story, "lead" | "authors" | "modifiedAt" | "summary" | "body">;
+type PrivateStory = Pick<Story, "lead" | "authors" | "modifiedAt" | "summary" | "body" | "opplystSummary">;
 // See scripts/encrypt-stories.mjs: the stories under a content key, wrapped once per reader.
 type Package = { v: number; iv: string; data: string; readers: Record<string, { iv: string; key: string }> };
 
@@ -16,8 +16,8 @@ async function open(raw: BufferSource, iv: string, data: string) {
 }
 
 /**
- * With the reader's key, add the full stories (Adressa's summary and the article text) from the
- * encrypted package. Without a key, or with one that no longer has access, the stories stay as
+ * With the reader's key, add the full stories (Adressa's summary, the article text and Opplyst's
+ * bullet points) from the encrypted package. Without a key, or with one that no longer has access, the stories stay as
  * the public facts.
  */
 export async function withFullStories(data: Stories): Promise<Stories> {
@@ -42,7 +42,14 @@ export async function withFullStories(data: Stories): Promise<Stories> {
       stories: data.stories.map((s) => {
         const full = unlocked.stories[s.id];
         if (!full || s.imported) return s;
-        return { ...s, ...full, lead: full.lead ?? s.lead, imported: true };
+        return {
+          ...s,
+          ...full,
+          lead: full.lead ?? s.lead,
+          // Packages made before the bullet points have none.
+          opplystSummary: full.opplystSummary ?? s.opplystSummary ?? null,
+          imported: true,
+        };
       }),
     };
   } catch {

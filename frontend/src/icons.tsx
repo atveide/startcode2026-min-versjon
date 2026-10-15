@@ -35,6 +35,13 @@ const paths = {
   ),
   bulb: <path d="M9 18h6m-5 3h4M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0 0 12 3Z" />,
   next: <path d="M5 12h14m-6-6 6 6-6 6" />,
+  home: <path d="M4 10.5 12 4l8 6.5V20h-5v-6H9v6H4v-9.5Z" />,
+  play: <path d="M8 5v14l11-7L8 5Z" fill="currentColor" />,
+  pause: <path d="M8 5v14M16 5v14" strokeWidth="3" />,
+  sound: <path d="M4 9v6h4l5 4V5L8 9H4Zm12.5-.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" />,
+  muted: <path d="M4 9v6h4l5 4V5L8 9H4Zm12 0 5 6m0-6-5 6" />,
+  skip: <path d="M6 5v14l9-7-9-7Zm12 0v14" />,
+  chevron: <path d="m9 6 6 6-6 6" />,
   northEast: <path d="M7 17 17 7M8 7h9v9" />,
 };
 

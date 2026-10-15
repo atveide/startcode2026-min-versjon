@@ -26,9 +26,14 @@ dist/
 # Readers' personal keys and links for the encrypted full stories, and the package itself; never commit them.
 frontend/.reader*
 frontend/public/private/
+# Adressa's videos for the hosted frontend, copied in by `npm run videos`
+frontend/public/media/
 
 # Xcode
 ios/build/
 ios/DerivedData/
 xcuserdata/
 *.xcuserstate
+
+# Imported videos (originals, web copies, posters); public metadata is in backend/app/data/videos.json
+backend/media/

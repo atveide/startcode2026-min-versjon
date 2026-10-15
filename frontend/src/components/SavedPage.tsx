@@ -1,66 +1,71 @@
 import { useEffect, useState } from "react";
 import { Icon } from "../icons";
-import { filterStories } from "../logic";
+import { storyMatches, videoMatches } from "../logic";
 import { Link } from "../router";
 import { useApp } from "../state";
 import BottomNav from "./BottomNav";
-import { SaveButton, SearchBox, Thumb, Wordmark } from "./bits";
+import { Brand, SaveButton, SearchBox, Thumb } from "./bits";
 
 export default function SavedPage() {
-  const { saved, storiesById } = useApp();
+  const { saved, storiesById, videosById } = useApp();
   const [query, setQuery] = useState("");
   useEffect(() => {
-    document.title = "Lagrede saker · Opplyst";
+    document.title = "Lagret · Opplyst";
   }, []);
 
-  const stories = saved.map((id) => storiesById.get(id)).filter((s) => s !== undefined);
-  const results = filterStories(stories, query);
+  // Stories open as articles; videos open in the feed, where they play.
+  const items = saved.flatMap((id) => {
+    const story = storiesById.get(id);
+    if (story)
+      return storyMatches(story, query)
+        ? [{ id, to: `/sak/${id}`, title: story.title, label: story.category, thumb: story.image?.src ?? null }]
+        : [];
+    const video = videosById.get(id);
+    if (video)
+      return videoMatches(video, query)
+        ? [{ id, to: `/nyheter#video-${id}`, title: video.title, label: `Video · ${video.source}`, thumb: video.poster }]
+        : [];
+    return [];
+  });
 
   return (
     <>
-      <main id="main" className="wrap saved-page" tabIndex={-1}>
-        <header className="topline">
-          <Link className="brand" to="/" aria-label="Opplyst – til forsiden">
-            <Wordmark />
+      <main id="main" className="saved" tabIndex={-1}>
+        <header className="page-top">
+          <Link to="/" className="brand-link" aria-label="Opplyst fra Adressa – til dagens quiz">
+            <Brand />
           </Link>
-          <span className="masthead-caption">Ukens nyheter, kort fortalt</span>
         </header>
-        <header className="saved-heading">
-          <span className="eyebrow">Ta vare på det som interesserer deg</span>
-          <h1>Lagrede saker</h1>
-          <p>Sakene du vil komme tilbake til. De lagres på denne enheten.</p>
-        </header>
-        <SearchBox id="saved-search" value={query} onChange={setQuery} placeholder="Søk i lagrede saker" />
-        {results.length ? (
-          <div className="saved-list">
-            {results.map((s) => (
-              <div className="saved-item" key={s.id}>
-                <Link className="history-item" to={`/sak/${s.id}`}>
-                  <Thumb image={s.image} />
-                  <div>
-                    <span className="small muted">{s.category}</span>
-                    <h3>{s.title}</h3>
-                  </div>
-                  <span className="arrow">
-                    <Icon name="arrow" size={19} />
+        <h1>Lagret</h1>
+        <p className="saved-intro">Saker og videoer du vil komme tilbake til. De lagres på denne enheten.</p>
+        {saved.length > 0 && (
+          <SearchBox id="saved-search" value={query} onChange={setQuery} placeholder="Søk i det du har lagret" />
+        )}
+        {items.length ? (
+          <ul className="saved-list">
+            {items.map((item) => (
+              <li className="saved-item" key={item.id}>
+                <Link className="saved-link" to={item.to}>
+                  <Thumb src={item.thumb} />
+                  <span>
+                    <small>{item.label}</small>
+                    <strong>{item.title}</strong>
                   </span>
                 </Link>
-                <SaveButton story={s} />
-              </div>
+                <SaveButton id={item.id} />
+              </li>
             ))}
-          </div>
+          </ul>
         ) : (
-          <div className="empty saved-empty">
-            <Icon name="bookmark" size={36} />
-            <h2>{query ? "Ingen treff i lagrede saker" : "Ingen lagrede saker ennå"}</h2>
-            <p>
-              {query
-                ? "Prøv et annet søkeord."
-                : "Trykk på bokmerket på en sak for å finne den igjen her."}
-            </p>
-            <Link className="primary" to="/#feed">
-              Utforsk feeden
-            </Link>
+          <div className="empty">
+            <Icon name="bookmark" size={32} />
+            <h2>{query ? "Ingen treff" : "Ingenting lagret ennå"}</h2>
+            <p>{query ? "Prøv et annet søkeord." : "Trykk på Lagre på en sak eller video for å finne den igjen her."}</p>
+            {!query && (
+              <Link className="btn btn-primary" to="/nyheter">
+                Til nyhetene
+              </Link>
+            )}
           </div>
         )}
       </main>
