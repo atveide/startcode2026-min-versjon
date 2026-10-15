@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
+from app import summaries
 from app.headlines import (
     HEADLINES,
     HEADLINES_BY_ID,
@@ -14,6 +15,7 @@ from app.headlines import (
 )
 from app.judge import judge_guess
 from app.stories import WEEK, Story, image_path, load_stories
+from app.videos import FeedEntry, Video, available_videos, build_feed, media_path
 
 router = APIRouter()
 
@@ -36,6 +38,9 @@ class StoriesOut(BaseModel):
     week: int
     importedAt: str | None
     stories: list[Story]
+    # Adressa's videos, and the order of the one feed that mixes them with the stories.
+    videos: list[Video]
+    feed: list[FeedEntry]
 
 
 class GuessIn(BaseModel):
@@ -98,12 +103,19 @@ def get_quiz() -> QuizOut:
 @router.get("/stories")
 def list_stories() -> StoriesOut:
     stories, imported_at = load_stories()
-    return StoriesOut(week=WEEK.week, importedAt=imported_at, stories=stories)
+    videos = available_videos()
+    return StoriesOut(
+        week=WEEK.week,
+        importedAt=imported_at,
+        stories=summaries.attach(stories),
+        videos=videos,
+        feed=build_feed([s.id for s in stories], videos),
+    )
 
 
 @router.get("/stories/{story_id}")
 def get_story(story_id: str) -> Story:
-    stories, _ = load_stories()
+    stories = summaries.attach(load_stories()[0])
     story = next((s for s in stories if s.id == story_id), None)
     if story is None:
         raise HTTPException(status_code=404, detail="Unknown story")
@@ -116,6 +128,16 @@ def get_image(name: str) -> FileResponse:
     if path is None:
         raise HTTPException(status_code=404, detail="Unknown image")
     return FileResponse(path, headers={"Cache-Control": "no-cache"})
+
+
+@router.get("/media/video/{name}")
+def get_video_media(name: str) -> FileResponse:
+    """A video's web copy or poster. Range requests work, so phones can seek and stream."""
+    found = media_path(name)
+    if found is None:
+        raise HTTPException(status_code=404, detail="Unknown video")
+    path, media_type = found
+    return FileResponse(path, media_type=media_type, headers={"Cache-Control": "no-cache"})
 
 
 @router.post("/guess")

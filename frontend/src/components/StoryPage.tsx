@@ -1,23 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import type { Block, Story } from "../api";
 import { Icon } from "../icons";
-import { formatDate } from "../logic";
+import { formatDate, formatDay } from "../logic";
 import { BLANK } from "../quiz";
 import { askForKey, getReaderKey } from "../readerKey";
 import { goBack, Link, navigate, previousPath } from "../router";
 import { useApp } from "../state";
 import BottomNav from "./BottomNav";
-import { accent, NewsGraphic, SaveButton, Tag, Wordmark } from "./bits";
+import { accent, Brand, NewsGraphic, SaveButton } from "./bits";
 
 export default function StoryPage({ id, fromQuiz }: { id: string; fromQuiz: boolean }) {
-  const { storiesById, markRead, markQuizRead, importedAt, toast } = useApp();
+  const { storiesById, markOpened, markQuizRead, importedAt, toast } = useApp();
   const story = storiesById.get(id);
 
   useEffect(() => {
     if (!story) return;
-    markRead(story.id);
+    markOpened(story.id);
     if (fromQuiz) markQuizRead(story.id);
-  }, [story, fromQuiz, markRead, markQuizRead]);
+  }, [story, fromQuiz, markOpened, markQuizRead]);
 
   useEffect(() => {
     if (story) document.title = `${story.title} · Opplyst`;
@@ -41,25 +41,25 @@ export default function StoryPage({ id, fromQuiz }: { id: string; fromQuiz: bool
   return (
     <>
       <ReadingProgress />
-      <button className="article-floater back-button" onClick={() => goBack(fromQuiz ? "/quiz" : "/")} aria-label="Gå tilbake">
+      <button className="article-floater back-button" onClick={() => goBack(fromQuiz ? "/quiz" : "/nyheter")} aria-label="Gå tilbake">
         <Icon name="back" size={25} />
       </button>
       <button className="article-floater share-button" onClick={share} aria-label="Del saken">
         <Icon name="share" size={23} />
       </button>
-      <SaveButton story={story} className="article-save" />
+      <SaveButton id={story.id} className="article-floater article-save" />
       <header className="article-masthead">
-        <Link to="/" aria-label="Opplyst – til forsiden">
-          <Wordmark />
+        <Link to="/" className="brand-link" aria-label="Opplyst fra Adressa – til dagens quiz">
+          <Brand />
         </Link>
-        <span className="caption">Ukens nyheter fra Adresseavisen</span>
       </header>
       <main id="main" className="article" tabIndex={-1} style={accent(story)}>
         <article>
           {fromQuiz && <QuizContext story={story} />}
-          {story.image && <Hero story={story} />}
-          <header className={`article-intro ${story.image ? "" : "no-hero"}`}>
-            <Tag story={story} />
+          <header className="article-intro">
+            <p className="kicker">
+              {story.category} <span aria-hidden="true">·</span> {formatDay(story.publishedAt)}
+            </p>
             <h1>{story.title}</h1>
             <p className="article-meta">
               <time dateTime={story.publishedAt}>Publisert {formatDate(story.publishedAt)}</time>
@@ -79,8 +79,10 @@ export default function StoryPage({ id, fromQuiz }: { id: string; fromQuiz: bool
               )}
             </p>
           </header>
+          <ShortVersion story={story} />
+          {story.image && <Hero story={story} />}
           <div className="article-body">
-            {story.lead && <p className="summary-text">{story.lead}</p>}
+            {story.lead && story.opplystSummary?.points.length ? <p className="summary-text">{story.lead}</p> : null}
             {story.imported ? <FullStory story={story} /> : <NotImported story={story} />}
             <section id="sources" aria-labelledby="sources-title">
               <div className="section-label">
@@ -105,7 +107,7 @@ export default function StoryPage({ id, fromQuiz }: { id: string; fromQuiz: bool
           </div>
         </article>
       </main>
-      {fromQuiz ? <QuizReturn /> : <BottomNav current="feed" />}
+      {fromQuiz ? <QuizReturn /> : <BottomNav current="news" />}
     </>
   );
 }
@@ -206,10 +208,10 @@ function NotImported({ story }: { story: Story }) {
           : `Hele saken er låst. Har du fått en opplåsingslenke, åpner du den her. Ellers leser du saken hos ${story.source}.`}
       </p>
       <div className="not-imported-actions">
-        <button className="primary" onClick={askForKey}>
+        <button className="btn btn-primary" onClick={askForKey}>
           <Icon name="lock" size={18} /> Lås opp med lenken
         </button>
-        <a className="secondary" href={story.url} target="_blank" rel="noopener noreferrer">
+        <a className="btn btn-outline" href={story.url} target="_blank" rel="noopener noreferrer">
           Les hos {story.source} <Icon name="external" size={18} />
         </a>
       </div>
@@ -217,6 +219,7 @@ function NotImported({ story }: { story: Story }) {
   );
 }
 
+/** The question the reader came from, folded up so the story comes first. Never the answer. */
 function QuizContext({ story }: { story: Story }) {
   const { quiz, progress } = useApp();
   const index = quiz.headlines.findIndex((h) => h.story_id === story.id);
@@ -224,20 +227,45 @@ function QuizContext({ story }: { story: Story }) {
   const [before, after] = quiz.headlines[index].text.split(BLANK);
   const answer = progress.questions[index].answer;
   return (
-    <aside className="quiz-context" aria-label="Spørsmålet du leser for">
-      <Icon name="bulb" size={24} />
-      <div>
-        <span className="eyebrow">
-          Dagens spill · Spørsmål {index + 1} av {quiz.headlines.length}
+    <details className="quiz-context">
+      <summary>
+        <Icon name="bulb" size={22} />
+        <span>
+          Dagens quiz · spørsmål {index + 1} av {quiz.headlines.length}
         </span>
-        <p>
-          {answer ? "Svaret: " : "Finn ordet som mangler: "}
-          {before}
-          <mark>{answer ?? BLANK}</mark>
-          {after}
-        </p>
-      </div>
-    </aside>
+        <span className="quiz-context-toggle" aria-hidden="true" />
+      </summary>
+      <p>
+        {answer ? "Svaret: " : "Finn ordet som mangler: "}
+        {before}
+        <mark>{answer ?? BLANK}</mark>
+        {after}
+      </p>
+    </details>
+  );
+}
+
+/** Opplyst's bullet points first, clearly ours; without them, Adressa's own lead. */
+function ShortVersion({ story }: { story: Story }) {
+  const own = story.opplystSummary;
+  if (!own?.points.length) return story.lead ? <p className="article-lead">{story.lead}</p> : null;
+  return (
+    <section className="short-version" aria-labelledby="short-title">
+      <h2 id="short-title" className="kicker">
+        Kortversjon
+      </h2>
+      <ul className="short-points">
+        {own.points.map((point) => (
+          <li key={point}>{point}</li>
+        ))}
+      </ul>
+      <p className="short-origin">
+        {own.label} · Kilde:{" "}
+        <a href={own.sourceUrl} target="_blank" rel="noopener noreferrer">
+          {own.source} ↗
+        </a>
+      </p>
+    </section>
   );
 }
 
@@ -279,12 +307,12 @@ function StoryNotFound() {
           <Icon name="search" size={36} />
           <h2>Fant ikke saken</h2>
           <p>Saken finnes ikke i ukens utvalg.</p>
-          <Link className="primary" to="/">
-            Til forsiden
+          <Link className="btn btn-primary" to="/nyheter">
+            Til nyhetene
           </Link>
         </div>
       </main>
-      <BottomNav current="feed" />
+      <BottomNav current="news" />
     </>
   );
 }

@@ -12,6 +12,7 @@
 //
 // The personal keys and links stay in frontend/.readers.json and frontend/.reader-links.txt, and
 // the package in public/private/ is ciphertext only; all three are git-ignored.
+import {spawnSync} from 'node:child_process';
 import {createCipheriv, createHash, randomBytes} from 'node:crypto';
 import {existsSync, mkdirSync, readFileSync, writeFileSync} from 'node:fs';
 import {dirname, resolve} from 'node:path';
@@ -59,10 +60,28 @@ if (!Object.keys(readers).length) throw new Error('Ingen lesere ennå. Legg til 
 // Only what the public week.json lacks: the full story, never the local photo copies.
 const PRIVATE_FIELDS = ['lead', 'authors', 'modifiedAt', 'summary', 'body'];
 
+// Opplyst's bullet points come from articles that aren't ours to publish either, so they travel in
+// the same package. The backend prints the ones that match the current import.
+function opplystSummaries() {
+  const run = spawnSync('uv', ['run', 'python', '-m', 'app.summaries', '--export'], {
+    cwd: resolve(frontend, '../backend'),
+    encoding: 'utf8',
+  });
+  if (run.status !== 0) {
+    console.warn(`Fikk ikke hentet Opplysts kortversjoner, sakene får dem ikke: ${run.stderr || run.error}`);
+    return {};
+  }
+  return JSON.parse(run.stdout);
+}
+
 const {articles, importedAt} = JSON.parse(readFileSync(resolve(cacheDir(), 'articles.json'), 'utf8'));
+const summaries = opplystSummaries();
 const stories = Object.fromEntries(articles
   .filter(a => Array.isArray(a.body) && a.body.length)
-  .map(a => [a.id, Object.fromEntries(PRIVATE_FIELDS.map(f => [f, a[f] ?? null]))]));
+  .map(a => [a.id, {
+    ...Object.fromEntries(PRIVATE_FIELDS.map(f => [f, a[f] ?? null])),
+    opplystSummary: summaries[a.id] ?? null,
+  }]));
 
 // WebCrypto expects the auth tag appended to the ciphertext.
 function seal(key, plain) {
@@ -89,6 +108,7 @@ writeFileSync(readersFile, JSON.stringify(readers, null, 2) + '\n', {mode: 0o600
 const links = Object.entries(readers).map(([name, key]) => `${name}\t${APP_URL}#nokkel=${key}`);
 writeFileSync(linksFile, links.join('\n') + '\n', {mode: 0o600});
 
-console.log(`Krypterte ${Object.keys(stories).length} saker for ${links.length} lesere til ${outFile}`);
+const withSummary = Object.values(stories).filter(s => s.opplystSummary).length;
+console.log(`Krypterte ${Object.keys(stories).length} saker (${withSummary} med Opplysts kortversjon) for ${links.length} lesere til ${outFile}`);
 if (added.length) console.log(`Nye lesere: ${added.join(', ')}`);
 console.log(`Lenkene ligger i ${linksFile}. Bygg og deploy appen for at endringen skal gjelde.`);

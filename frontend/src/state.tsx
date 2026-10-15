@@ -9,9 +9,10 @@ import {
   useRef,
   useState,
 } from "react";
-import { fetchHint, Quiz, revealAnswer, Story, submitGuess } from "./api";
+import { FeedEntry, fetchHint, Quiz, revealAnswer, Stories, Story, submitGuess, Video } from "./api";
 import { Icon } from "./icons";
 import { isDone, loadProgress, newProgress, QuestionState, QuizProgress, saveProgress } from "./quiz";
+import { askForKey } from "./readerKey";
 import { loadIds, save } from "./storage";
 
 type FeedFilter = { query: string; category: string };
@@ -19,22 +20,29 @@ type FeedFilter = { query: string; category: string };
 type AppState = {
   stories: Story[];
   storiesById: Map<string, Story>;
+  videos: Video[];
+  videosById: Map<string, Video>;
+  /** The one feed of stories and videos, in the backend's stable order. */
+  feed: FeedEntry[];
   /** When the local Adressa import last succeeded, or null when this machine has none. */
   importedAt: string | null;
   quiz: Quiz;
   progress: QuizProgress;
+  start: () => void;
   guess: (word: string) => Promise<void>;
   hint: () => Promise<void>;
   giveUp: () => Promise<void>;
+  setDraft: (text: string) => void;
   next: () => void;
   restart: () => void;
   markQuizRead: (storyId: string) => void;
   saved: string[];
   toggleSaved: (id: string) => void;
-  read: string[];
-  markRead: (id: string) => void;
-  feed: FeedFilter;
-  setFeed: (filter: FeedFilter) => void;
+  /** Stories the reader has opened. Opening is not the same as having read them. */
+  opened: string[];
+  markOpened: (id: string) => void;
+  filter: FeedFilter;
+  setFilter: (filter: FeedFilter) => void;
   toast: (message: string) => void;
   showAbout: () => void;
 };
@@ -48,13 +56,15 @@ export function useApp(): AppState {
 }
 
 const SAVED_KEY = "opplyst-saved-v1";
-const READ_KEY = "opplyst-read-v1";
+const OPENED_KEY = "opplyst-read-v1";
 
-type Props = { stories: Story[]; importedAt: string | null; quiz: Quiz; children: ReactNode };
+type Props = { data: Stories; quiz: Quiz; children: ReactNode };
 
-export function AppProvider({ stories, importedAt, quiz, children }: Props) {
+export function AppProvider({ data, quiz, children }: Props) {
+  const { stories, videos, feed, importedAt } = data;
   const storiesById = useMemo(() => new Map(stories.map((s) => [s.id, s])), [stories]);
-  const ids = useMemo(() => stories.map((s) => s.id), [stories]);
+  const videosById = useMemo(() => new Map(videos.map((v) => [v.id, v])), [videos]);
+  const ids = useMemo(() => [...stories.map((s) => s.id), ...videos.map((v) => v.id)], [stories, videos]);
 
   const [progress, setProgress] = useState(() => loadProgress(quiz));
   const progressRef = useRef(progress);
@@ -62,8 +72,8 @@ export function AppProvider({ stories, importedAt, quiz, children }: Props) {
   useEffect(() => saveProgress(progress), [progress]);
 
   const [saved, setSaved] = useState(() => loadIds(SAVED_KEY, ids));
-  const [read, setRead] = useState(() => loadIds(READ_KEY, ids));
-  const [feed, setFeed] = useState<FeedFilter>({ query: "", category: "Alle" });
+  const [opened, setOpened] = useState(() => loadIds(OPENED_KEY, ids));
+  const [filter, setFilter] = useState<FeedFilter>({ query: "", category: "Alle" });
 
   const [toastState, setToastState] = useState({ message: "", visible: false });
   const toastTimer = useRef<number | undefined>(undefined);
@@ -80,6 +90,8 @@ export function AppProvider({ stories, importedAt, quiz, children }: Props) {
     setProgress((p) => ({ ...p, questions: p.questions.map((q, i) => (i === index ? change(q) : q)) }));
   }, []);
 
+  const start = useCallback(() => setProgress((p) => (p.started ? p : { ...p, started: true })), []);
+
   const guess = useCallback(
     async (word: string) => {
       const index = progressRef.current.index;
@@ -90,7 +102,9 @@ export function AppProvider({ stories, importedAt, quiz, children }: Props) {
           ? q
           : {
               ...q,
+              draft: "",
               guesses: [...q.guesses, { word, score: res.score }],
+              // Only the backend's verdict solves a question; a high score alone does not.
               ...(res.solved ? { answer: res.answer, fullText: res.full_text } : {}),
             },
       );
@@ -113,9 +127,14 @@ export function AppProvider({ stories, importedAt, quiz, children }: Props) {
     if (isDone(progressRef.current.questions[index])) return;
     const res = await revealAnswer(quiz.headlines[index].id);
     updateQuestion(index, (q) =>
-      isDone(q) ? q : { ...q, answer: res.answer, fullText: res.full_text, gaveUp: true },
+      isDone(q) ? q : { ...q, answer: res.answer, fullText: res.full_text, gaveUp: true, draft: "" },
     );
   }, [quiz, updateQuestion]);
+
+  const setDraft = useCallback(
+    (text: string) => updateQuestion(progressRef.current.index, (q) => (q.draft === text ? q : { ...q, draft: text })),
+    [updateQuestion],
+  );
 
   const next = useCallback(() => {
     setProgress((p) =>
@@ -123,7 +142,7 @@ export function AppProvider({ stories, importedAt, quiz, children }: Props) {
     );
   }, []);
 
-  const restart = useCallback(() => setProgress(newProgress(quiz)), [quiz]);
+  const restart = useCallback(() => setProgress({ ...newProgress(quiz), started: true }), [quiz]);
 
   const markQuizRead = useCallback(
     (storyId: string) => {
@@ -150,38 +169,44 @@ export function AppProvider({ stories, importedAt, quiz, children }: Props) {
         return;
       }
       setSaved(nextSaved);
-      toast(wasSaved ? "Saken er fjernet fra lagrede" : "Saken er lagret på denne enheten");
+      const what = videosById.has(id) ? "Videoen" : "Saken";
+      toast(wasSaved ? `${what} er fjernet fra Lagret` : `${what} er lagret på denne enheten`);
     },
-    [saved, toast],
+    [saved, toast, videosById],
   );
 
-  const markRead = useCallback((id: string) => {
-    setRead((current) => {
+  const markOpened = useCallback((id: string) => {
+    setOpened((current) => {
       if (current[0] === id) return current;
-      const nextRead = [id, ...current.filter((x) => x !== id)];
-      save(READ_KEY, nextRead);
-      return nextRead;
+      const nextOpened = [id, ...current.filter((x) => x !== id)];
+      save(OPENED_KEY, nextOpened);
+      return nextOpened;
     });
   }, []);
 
   const value: AppState = {
     stories,
     storiesById,
+    videos,
+    videosById,
+    feed,
     importedAt,
     quiz,
     progress,
+    start,
     guess,
     hint,
     giveUp,
+    setDraft,
     next,
     restart,
     markQuizRead,
     saved,
     toggleSaved,
-    read,
-    markRead,
-    feed,
-    setFeed,
+    opened,
+    markOpened,
+    filter,
+    setFilter,
     toast,
     showAbout,
   };
@@ -192,12 +217,31 @@ export function AppProvider({ stories, importedAt, quiz, children }: Props) {
       <div className={`toast ${toastState.visible ? "visible" : ""}`} role="status" aria-live="polite">
         {toastState.message}
       </div>
-      <About dialogRef={aboutRef} />
+      <About dialogRef={aboutRef} locked={stories.some((s) => !s.imported)} />
     </AppContext.Provider>
   );
 }
 
-function About({ dialogRef }: { dialogRef: RefObject<HTMLDialogElement | null> }) {
+function canGoFullscreen(): boolean {
+  return (
+    Boolean(document.fullscreenEnabled) &&
+    !document.fullscreenElement &&
+    !matchMedia("(display-mode: fullscreen), (display-mode: standalone)").matches
+  );
+}
+
+async function enterFullscreen() {
+  try {
+    await document.documentElement.requestFullscreen({ navigationUI: "hide" });
+    // Phones keep the app upright where the browser allows it.
+    await (screen.orientation as ScreenOrientation & { lock?: (o: string) => Promise<void> }).lock?.("portrait");
+  } catch {
+    // Fullscreen or the orientation lock was refused; the app works the same without.
+  }
+}
+
+function About({ dialogRef, locked }: { dialogRef: RefObject<HTMLDialogElement | null>; locked: boolean }) {
+  const close = () => dialogRef.current?.close();
   return (
     <dialog
       ref={dialogRef}
@@ -208,30 +252,64 @@ function About({ dialogRef }: { dialogRef: RefObject<HTMLDialogElement | null> }
     >
       <div className="modal-head">
         <h2 id="about-title">Om Opplyst</h2>
-        <button className="icon-button" onClick={() => dialogRef.current?.close()} aria-label="Lukk">
+        <button className="icon-button" onClick={close} aria-label="Lukk">
           <Icon name="close" />
         </button>
       </div>
       <div className="modal-body">
         <p>
-          Opplyst gjør det morsomt å følge med på det som skjer rundt deg. Hver dag får du et nytt spill med
-          spørsmål fra ukens nyheter. Står du fast, leser du saken og går tilbake til spørsmålet.
+          Opplyst gjør én nyhet forståelig om gangen. Hver dag får du en quiz med spørsmål fra ukens nyheter i
+          Adresseavisen. Står du fast, leser du saken og går tilbake til spørsmålet. Det koster ingen poeng. Hopper du over, får
+          du se svaret, men ingen poeng for spørsmålet.
         </p>
-        <ul>
-          <li>Dagens spill med hint og vurdering av svaret ditt</li>
-          <li>Saken bak hvert spørsmål, med Adressas egen oppsummering</li>
-          <li>Nyhetsfeed, søk, kategorier og lagrede saker</li>
-        </ul>
         <p>
-          Spørsmålene og sakene bygger på ukens journalistikk fra Adresseavisen (Polaris Media). Claude vurderer
-          svarene i spillet. Hele saken med Adressas oppsummering vises bare der den er hentet med eget
-          abonnement; ellers lenker appen til saken hos Adressa.
+          Nærheten (0–100) viser hvor nær betydningen gjetningen din er ordet som mangler. Claude vurderer
+          gjetningene. Kortversjonene merket «Oppsummert av Opplyst med KI» er skrevet av Claude ut fra Adressas
+          sak; journalistikken er Adresseavisens. Adressas egen «Kort oppsummert» vises uendret i saken.
+        </p>
+        <p>
+          Videoene er Adresseavisens egne klipp fra TikTok, vist med Adressas logo, kreditering og teksting.
         </p>
         <p className="small">
-          Uoffisiell hackathon-prototype med Adressa-design fra hackathonpakken. Den har ingen tilknytning til
-          eller godkjenning fra Adresseavisen eller Polaris Media. Quizfremdrift og lagrede saker lagres bare i
-          denne nettleseren.
+          Startbildet: Nedre Bakklandet. Foto:{" "}
+          <a href="https://commons.wikimedia.org/wiki/File:Nedre_Bakklandet.jpg" target="_blank" rel="noopener noreferrer">
+            Guy Delsaut, Wikimedia Commons
+          </a>
+          ,{" "}
+          <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            CC BY-SA 4.0
+          </a>
+          . Nedskalert og komprimert; utsnitt i visningen.
         </p>
+        <p className="small">
+          Uoffisiell hackathon-prototype fra Make No Mistakes med design fra et uoffisielt Adressa-kit. Ingen
+          tilknytning til eller godkjenning fra Adresseavisen eller Polaris Media. Quizfremdrift og lagrede saker
+          lagres bare i denne nettleseren.
+        </p>
+        <div className="modal-actions">
+          {locked && (
+            <button
+              className="btn btn-outline"
+              onClick={() => {
+                close();
+                askForKey();
+              }}
+            >
+              <Icon name="lock" size={18} /> Lås opp hele sakene
+            </button>
+          )}
+          {canGoFullscreen() && (
+            <button
+              className="btn btn-outline"
+              onClick={() => {
+                close();
+                enterFullscreen();
+              }}
+            >
+              Vis i fullskjerm
+            </button>
+          )}
+        </div>
       </div>
     </dialog>
   );

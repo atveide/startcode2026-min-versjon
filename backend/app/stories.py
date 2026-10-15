@@ -35,6 +35,21 @@ class Summary(BaseModel):
     disclosureUrl: str | None = None
 
 
+class OpplystSummary(BaseModel):
+    """Opplyst's own short version of the story, written by Claude from Adressa's article.
+
+    Kept apart from Adressa's «Kort oppsummert» and labelled as ours (see app.summaries).
+    """
+
+    points: list[str]  # two or three short bullet points
+    label: str
+    model: str
+    promptVersion: str
+    generatedAt: str
+    source: str  # whose journalism it sums up
+    sourceUrl: str
+
+
 class Image(BaseModel):
     src: str
     alt: str | None = None
@@ -62,6 +77,7 @@ class Story(BaseModel):
     image: Image | None = None
     body: list[Block] = []
     imported: bool = False  # True when the local cache has the full article
+    opplystSummary: OpplystSummary | None = None  # set by app.summaries, never from the import
 
     @property
     def text(self) -> str:
@@ -108,6 +124,7 @@ def _from_cache(article: dict, public: Story | None) -> Story:
     fields = {**(public.model_dump() if public else {}), **article, "image": image}
     fields["source"] = SOURCE
     fields["imported"] = bool(article.get("body"))
+    fields.pop("opplystSummary", None)
     return Story.model_validate(fields)
 
 

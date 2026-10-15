@@ -55,6 +55,14 @@ export function navigate(to: string) {
   transition("forward", emit);
 }
 
+/** Swap the current page for another one, without a new history entry or a slide. */
+export function redirect(to: string) {
+  const url = new URL(to, location.origin);
+  history.replaceState({ ...(history.state as EntryState | null), y: 0 }, "", url.pathname + url.search + url.hash);
+  scrollTarget = url.hash ? { hash: url.hash.slice(1) } : { y: 0 };
+  emit();
+}
+
 /** Go back in history when the previous page is ours, otherwise open `fallback`. */
 export function goBack(fallback = "/") {
   if ((history.state as EntryState | null)?.inApp) history.back();
