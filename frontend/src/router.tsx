@@ -1,4 +1,5 @@
 import { AnchorHTMLAttributes, MouseEvent, useSyncExternalStore } from "react";
+import { flushSync } from "react-dom";
 
 // A small history-API router. Each entry remembers its scroll position, so going
 // back to the feed lands where the reader left it.
@@ -20,6 +21,19 @@ function emit() {
   listeners.forEach((listener) => listener());
 }
 
+// Page changes slide like an app: forward comes in from the right, back from the left (see
+// the ::view-transition rules in styles.css). Without View Transitions, or with reduced
+// motion, the page just swaps.
+function transition(direction: "forward" | "back", update: () => void) {
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!("startViewTransition" in document) || reduced || document.visibilityState !== "visible") {
+    update();
+    return;
+  }
+  document.documentElement.dataset.nav = direction;
+  document.startViewTransition(() => flushSync(update));
+}
+
 history.scrollRestoration = "manual";
 if (!(history.state as EntryState | null)?.inApp) {
   history.replaceState({ y: 0, inApp: false } satisfies EntryState, "");
@@ -29,7 +43,7 @@ window.addEventListener("popstate", () => {
   // Plain #hash jumps create entries without our state; let the browser scroll those.
   const state = history.state as EntryState | null;
   scrollTarget = state ? { y: state.y } : null;
-  emit();
+  transition("back", emit);
 });
 
 export function navigate(to: string) {
@@ -38,7 +52,7 @@ export function navigate(to: string) {
   history.replaceState({ ...history.state, y: scrollY }, "");
   history.pushState({ y: 0, inApp: true, from } satisfies EntryState, "", url.pathname + url.search + url.hash);
   scrollTarget = url.hash ? { hash: url.hash.slice(1) } : { y: 0 };
-  emit();
+  transition("forward", emit);
 }
 
 /** Go back in history when the previous page is ours, otherwise open `fallback`. */

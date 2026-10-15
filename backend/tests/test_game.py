@@ -149,8 +149,11 @@ def test_stories_without_a_local_import_are_public_facts_only(no_cache) -> None:
     )
     for story in body["stories"]:
         assert story["imported"] is False
-        assert story["summary"] is None and story["image"] is None and story["body"] == []
+        assert story["summary"] is None and story["body"] == []
         assert story["url"].startswith("https://www.adressa.no/")
+        # Only Adressa's public share image, linked from their image service, never a copy.
+        if story["image"]:
+            assert story["image"]["src"].startswith("https://vcdn.polarismedia.no/")
     assert client.get("/api/stories/finnes-ikke").status_code == 404
 
 

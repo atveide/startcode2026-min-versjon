@@ -118,7 +118,7 @@ function Hero({ story }: { story: Story }) {
         {failed ? (
           <NewsGraphic />
         ) : (
-          <img src={image.src} alt={image.alt ?? ""} onError={() => setFailed(true)} />
+          <img src={image.src} alt={image.alt ?? ""} referrerPolicy="no-referrer" onError={() => setFailed(true)} />
         )}
         {image.credit && !image.caption && <p className="photo-credit">Foto: {image.credit}</p>}
       </figure>

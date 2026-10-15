@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import type { Story } from "../api";
 import { Icon } from "../icons";
 import { filterStories, formatDate } from "../logic";
@@ -9,6 +9,7 @@ import BottomNav from "./BottomNav";
 import { accent, PanelImage, ReadBadge, SaveButton, SearchBox, Tag } from "./bits";
 
 export default function HomePage() {
+  useReveal();
   return (
     <>
       <main id="main" className="feed" tabIndex={-1}>
@@ -18,6 +19,29 @@ export default function HomePage() {
       <BottomNav current="feed" />
     </>
   );
+}
+
+// Each panel's text and photo ease in the first time it scrolls into view.
+function useReveal() {
+  useEffect(() => {
+    const main = document.querySelector<HTMLElement>("main.feed");
+    if (!main || !("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    main.classList.add("reveal");
+    const seen = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add("is-visible")),
+      { threshold: 0.3 },
+    );
+    const watch = () => main.querySelectorAll(".story-panel:not(.is-visible)").forEach((el) => seen.observe(el));
+    watch();
+    // Filtering and search render new cards.
+    const changes = new MutationObserver(watch);
+    changes.observe(main, { childList: true, subtree: true });
+    return () => {
+      seen.disconnect();
+      changes.disconnect();
+      main.classList.remove("reveal");
+    };
+  }, []);
 }
 
 function scrollToFeed() {

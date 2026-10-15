@@ -1,6 +1,7 @@
 import { Fragment, ReactNode, useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { fetchQuiz, fetchStories, Quiz, Stories } from "./api";
 import { Wordmark } from "./components/bits";
+import FullscreenPrompt from "./components/FullscreenPrompt";
 import HomePage from "./components/HomePage";
 import QuizPage from "./components/QuizPage";
 import SavedPage from "./components/SavedPage";
@@ -45,6 +46,7 @@ export default function App() {
   return (
     <AppProvider stories={data.stories.stories} importedAt={data.stories.importedAt} quiz={data.quiz}>
       <Routes />
+      <FullscreenPrompt />
     </AppProvider>
   );
 }

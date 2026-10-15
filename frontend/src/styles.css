@@ -26,7 +26,7 @@ ul,ol{margin:0;padding:0;list-style:none}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .skip-link{position:fixed;top:-100px;left:16px;z-index:100;background:var(--brand-solid);color:white;padding:12px 20px;border-radius:8px}
 .skip-link:focus{top:12px}
-#main{animation:route-in .28s cubic-bezier(.22,.8,.24,1)}
+@supports not (view-transition-name:none){#main{animation:route-in .28s cubic-bezier(.22,.8,.24,1)}}
 @keyframes route-in{from{opacity:0;transform:translate3d(0,12px,0)}to{opacity:1;transform:none}}
 
 /* Brand */
@@ -438,3 +438,50 @@ figure.article-hero{margin:0}
 .not-imported .primary{gap:8px}
 .source .source-logo{width:42px;height:42px;flex:none;padding:7px;border-radius:50%;background:#005379;object-fit:contain}
 @media(max-width:700px){.hero-caption{padding:10px 22px 0}.article-text p{font-size:17px}}
+
+
+/* App feel. Page changes slide (router.tsx starts a view transition); the bottom nav stays put. */
+::view-transition-old(root),::view-transition-new(root){animation-duration:.42s;animation-timing-function:cubic-bezier(.22,.8,.24,1)}
+html[data-nav=forward]::view-transition-old(root){animation-name:vt-out-left}
+html[data-nav=forward]::view-transition-new(root){animation-name:vt-in-right}
+html[data-nav=back]::view-transition-old(root){animation-name:vt-out-right}
+html[data-nav=back]::view-transition-new(root){animation-name:vt-in-left}
+@keyframes vt-in-right{from{transform:translate3d(28%,0,0);opacity:0}}
+@keyframes vt-out-left{to{transform:translate3d(-14%,0,0);opacity:0}}
+@keyframes vt-in-left{from{transform:translate3d(-14%,0,0);opacity:0}}
+@keyframes vt-out-right{to{transform:translate3d(28%,0,0);opacity:0}}
+.bottom-nav{view-transition-name:bottom-nav}
+.quiz-return{view-transition-name:quiz-return}
+::view-transition-group(bottom-nav),::view-transition-group(quiz-return){animation-duration:.42s;animation-timing-function:cubic-bezier(.22,.8,.24,1)}
+
+/* Panels reveal their text as they come into view (HomePage adds .reveal and .is-visible). */
+.feed.reveal .story-panel .cover-copy,.feed.reveal .story-panel .feed-copy{transition:opacity .55s ease,transform .7s cubic-bezier(.22,.8,.24,1)}
+.feed.reveal .story-panel:not(.is-visible) .cover-copy,.feed.reveal .story-panel:not(.is-visible) .feed-copy{opacity:0;transform:translate3d(0,32px,0)}
+.feed.reveal .story-panel .panel-image{transition:transform 1.6s cubic-bezier(.22,.8,.24,1)}
+.feed.reveal .story-panel:not(.is-visible) .panel-image{transform:scale(1.08)}
+
+@media(max-width:700px){
+  /* One story fills the screen, and a swipe settles on the next one. */
+  html:has(main.feed){scroll-snap-type:y mandatory;scroll-padding-top:0;overscroll-behavior-y:none}
+  .feed .story-panel,.feed .feed-tools,.feed .feed-end{scroll-snap-align:start;scroll-snap-stop:always}
+  .feed .feed-card{margin-bottom:0}
+  .feed .feed-tools{margin:0 auto;padding:max(28px,env(safe-area-inset-top)) 0 24px}
+  /* Room for the notch and status bar in fullscreen. */
+  .story-top{top:calc(24px + env(safe-area-inset-top))}
+  .quiz-top{padding-top:calc(22px + env(safe-area-inset-top))}
+  .article-masthead{padding-top:calc(12px + env(safe-area-inset-top))}
+  .article-floater,.article-save{top:calc(18px + env(safe-area-inset-top))}
+}
+body{overscroll-behavior-y:none}
+
+/* «Opplyst er best i fullskjerm»: shown once at start where the browser supports fullscreen. */
+.fs-prompt{position:fixed;inset:0;z-index:80;display:grid;place-items:end center;padding:20px;padding-bottom:max(20px,env(safe-area-inset-bottom));background:#00101dcc;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);animation:fs-fade .3s ease}
+.fs-card{width:min(440px,100%);background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:22px;padding:28px 24px 20px;text-align:center;box-shadow:0 24px 80px #0008;animation:fs-up .45s cubic-bezier(.22,.8,.24,1)}
+.fs-card .wordmark{font-size:36px;justify-content:center}
+.fs-card h2{font-size:24px;margin:16px 0 8px;letter-spacing:-.03em}
+.fs-card p{font-size:15px;color:var(--muted);line-height:1.55;margin-bottom:22px}
+.fs-card .quiz-submit{max-width:none;background:#0b6a9a;color:#fff}
+.fs-skip{display:block;width:100%;min-height:44px;margin-top:8px;font-size:14px;color:var(--muted);text-decoration:underline;text-underline-offset:4px}
+@keyframes fs-fade{from{opacity:0}}
+@keyframes fs-up{from{opacity:0;transform:translate3d(0,40px,0)}}
+@media(min-width:701px){.fs-prompt{place-items:center}}

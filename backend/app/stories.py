@@ -103,7 +103,8 @@ def _from_cache(article: dict, public: Story | None) -> Story:
     if image and file and IMAGE_FILE.match(file):
         image = {**image, "src": f"/api/media/adressa/{file}"}
     else:
-        image = None
+        # No local copy: fall back to the public share image from week.json, if any.
+        image = public.image.model_dump() if public and public.image else None
     fields = {**(public.model_dump() if public else {}), **article, "image": image}
     fields["source"] = SOURCE
     fields["imported"] = bool(article.get("body"))

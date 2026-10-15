@@ -27,6 +27,7 @@ export function PanelImage({ image, priority = false }: { image: StoryImage | nu
       src={image.src}
       alt={image.alt ?? ""}
       loading={priority ? "eager" : "lazy"}
+      referrerPolicy="no-referrer"
       draggable={false}
       onError={() => setFailedSrc(image.src)}
     />
@@ -42,7 +43,7 @@ export function Thumb({ image }: { image: StoryImage | null }) {
         <Icon name="feed" size={24} />
       </span>
     );
-  return <img src={image.src} alt="" loading="lazy" onError={() => setFailed(true)} />;
+  return <img src={image.src} alt="" loading="lazy" referrerPolicy="no-referrer" onError={() => setFailed(true)} />;
 }
 
 export function Tag({ story }: { story: Story }) {

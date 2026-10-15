@@ -7,7 +7,13 @@
       "url": "https://www.adressa.no/nyheter/trondelag/i/X9ev8o/her-markeres-starten-paa-milliardprosjektet",
       "category": "Trøndelag",
       "publishedAt": "2026-10-15T17:04:02.000Z",
-      "lead": null
+      "lead": null,
+      "image": {
+        "src": "https://vcdn.polarismedia.no/c4e6123c-2f1b-32a5-9917-ab11598092e0?fit=crop&h=630&q=80&tight=true&w=1200",
+        "alt": null,
+        "caption": null,
+        "credit": "Leif Arne Holme"
+      }
     },
     {
       "id": "adressa-gdBzx0",
@@ -15,7 +21,13 @@
       "url": "https://www.adressa.no/nyheter/trondheim/i/gdBzx0/samboeren-synes-det-var-veldig-ekkelt-jeg-synes-det-er-et-overtramp",
       "category": "Trondheim",
       "publishedAt": "2026-10-15T16:33:37.000Z",
-      "lead": "Familien på fire lå og sov da mannen kom kjørende på elsparkesykkel. – Jeg tenker med gru på hva som kunne ha skjedd, sier huseier."
+      "lead": "Familien på fire lå og sov da mannen kom kjørende på elsparkesykkel. – Jeg tenker med gru på hva som kunne ha skjedd, sier huseier.",
+      "image": {
+        "src": "https://vcdn.polarismedia.no/c22fd9a9-0ab0-39a5-848a-ebc1fdd38cd8?fit=crop&h=630&q=80&tight=true&w=1200",
+        "alt": null,
+        "caption": null,
+        "credit": "SKJERMPRINT FRA VIDEO"
+      }
     },
     {
       "id": "adressa-PdX23e",
@@ -23,7 +35,13 @@
       "url": "https://www.adressa.no/kultur/i/PdX23e/jeg-har-vaert-27-aar-og-foelt-meg-litt-strandet-jeg-ogsaa",
       "category": "Kultur",
       "publishedAt": "2026-10-15T10:39:41.000Z",
-      "lead": "27 år gammel flytter Eva fra Trondheim til Oslo, uten noen konkret plan."
+      "lead": "27 år gammel flytter Eva fra Trondheim til Oslo, uten noen konkret plan.",
+      "image": {
+        "src": "https://vcdn.polarismedia.no/c4f24263-5f76-36b3-bbbe-761dd4684605?fit=crop&h=630&q=80&tight=true&w=1200",
+        "alt": null,
+        "caption": null,
+        "credit": null
+      }
     },
     {
       "id": "adressa-eGkEja",
@@ -31,7 +49,13 @@
       "url": "https://www.adressa.no/politikk/i/eGkEja/vil-vrake-store-prosjekt-gaar-inn-for-bybane",
       "category": "Politikk",
       "publishedAt": "2026-10-15T06:39:24.000Z",
-      "lead": "Glem Byåstunnelen og andre store veiprosjekt. Nå vil de bruke milliarder på å forandre Trondheim for alltid."
+      "lead": "Glem Byåstunnelen og andre store veiprosjekt. Nå vil de bruke milliarder på å forandre Trondheim for alltid.",
+      "image": {
+        "src": "https://vcdn.polarismedia.no/1a04335c-d34f-3d02-9f44-cc742126fc29?fit=crop&h=630&q=80&tight=true&w=1200",
+        "alt": null,
+        "caption": null,
+        "credit": "ROY TOMMY BRÅTEN"
+      }
     },
     {
       "id": "adressa-77RoE4",
@@ -39,7 +63,13 @@
       "url": "https://www.adressa.no/nyheter/trondheim/i/77RoE4/vil-bygge-140-boliger-paa-borettslagets-parkeringsplasser",
       "category": "Trondheim",
       "publishedAt": "2026-10-15T04:25:40.000Z",
-      "lead": "Borettslaget har allerede 304 boliger. Nå kan det bli mye større."
+      "lead": "Borettslaget har allerede 304 boliger. Nå kan det bli mye større.",
+      "image": {
+        "src": "https://vcdn.polarismedia.no/653843ad-0460-3047-9675-2a6b0b81117b?fit=crop&h=630&q=80&tight=true&w=1200",
+        "alt": null,
+        "caption": null,
+        "credit": "RICHARD SAGEN"
+      }
     },
     {
       "id": "adressa-4OV4lR",
@@ -47,7 +77,13 @@
       "url": "https://www.adressa.no/kultur/i/4OV4lR/har-gaatt-til-sak-mot-restaurant-i-trondheim",
       "category": "Kultur",
       "publishedAt": "2026-10-14T20:34:43.000Z",
-      "lead": "Trondhjems Kunstforening (TKF) og driverne av restauranten Bifrons er i konflikt om manglende husleiebetaling. Nå tas saken til retten."
+      "lead": "Trondhjems Kunstforening (TKF) og driverne av restauranten Bifrons er i konflikt om manglende husleiebetaling. Nå tas saken til retten.",
+      "image": {
+        "src": "https://vcdn.polarismedia.no/38635ead-9769-345a-9e9f-30025be8b7f1?fit=crop&h=630&q=80&tight=true&w=1200",
+        "alt": null,
+        "caption": null,
+        "credit": "TERJE SVAAN"
+      }
     },
     {
       "id": "adressa-gdR99q",
@@ -55,7 +91,13 @@
       "url": "https://www.adressa.no/okonomi/i/gdR99q/naa-skal-de-bygge-for-en-halv-milliard-her",
       "category": "Økonomi",
       "publishedAt": "2026-10-14T15:32:03.000Z",
-      "lead": "To firma har fått en kjempekontrakt med Statsbygg. Veidekke og Norconsult skal bygge det nye musikkhuset for NTNU."
+      "lead": "To firma har fått en kjempekontrakt med Statsbygg. Veidekke og Norconsult skal bygge det nye musikkhuset for NTNU.",
+      "image": {
+        "src": "https://vcdn.polarismedia.no/71a4ed0b-9b56-379b-8582-90c87668effa?fit=crop&h=630&q=80&tight=true&w=1200",
+        "alt": null,
+        "caption": null,
+        "credit": null
+      }
     },
     {
       "id": "adressa-b85jlv",
@@ -63,7 +105,13 @@
       "url": "https://www.adressa.no/nyheter/trondheim/i/b85jlv/maa-ta-eksamen-med-penn-og-papir-frustrerende",
       "category": "Trondheim",
       "publishedAt": "2026-10-13T04:44:30.000Z",
-      "lead": "Plassmangel i eksamenslokalene til NTNU skaper misnøye blant studenter."
+      "lead": "Plassmangel i eksamenslokalene til NTNU skaper misnøye blant studenter.",
+      "image": {
+        "src": "https://vcdn.polarismedia.no/af1c91ca-8516-38e3-83ff-7bab1598c2e7?fit=crop&h=630&q=80&tight=true&w=1200",
+        "alt": null,
+        "caption": null,
+        "credit": "MIA WITH-KALLAND"
+      }
     }
   ]
 }
