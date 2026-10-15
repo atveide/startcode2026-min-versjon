@@ -1,4 +1,6 @@
-# startcode2026ny
+# startcode2026 – min versjon
+
+Augusts egen kopi av `lekegrind`-branchen fra [gerhardadler/startcode2026ny](https://github.com/gerhardadler/startcode2026ny), for å prøve meg frem. Live: https://startcode-august-demo.netlify.app
 
 Monorepo with a FastAPI backend and a React (Vite + TypeScript) frontend.
 
