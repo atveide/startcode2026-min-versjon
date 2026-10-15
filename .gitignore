@@ -26,3 +26,9 @@ dist/
 # Readers' personal keys and links for the encrypted full stories, and the package itself; never commit them.
 frontend/.reader*
 frontend/public/private/
+
+# Xcode
+ios/build/
+ios/DerivedData/
+xcuserdata/
+*.xcuserstate
