@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 BLANK = "___"
+MAX_HINTS = 3
 
 
 @dataclass(frozen=True)
@@ -23,3 +24,9 @@ HEADLINES = [
 ]
 
 HEADLINES_BY_ID = {h.id: h for h in HEADLINES}
+
+
+def hint(answer: str, level: int) -> str:
+    """Level 1 shows the word length; each further level reveals one more letter."""
+    revealed = min(level - 1, len(answer) - 1)
+    return " ".join(answer[:revealed].upper() + "_" * (len(answer) - revealed))
