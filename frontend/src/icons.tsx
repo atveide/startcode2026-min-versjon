@@ -28,10 +28,8 @@ const paths = {
     </>
   ),
   bulb: <path d="M9 18h6m-5 3h4M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0 0 12 3Z" />,
-  book: <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15ZM4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5" />,
-  spark: <path d="M12 3v4m0 10v4M3 12h4m10 0h4M6 6l2.5 2.5m7 7L18 18M6 18l2.5-2.5m7-7L18 6" />,
-  flag: <path d="M5 21V4m0 0h11l-2 4 2 4H5" />,
-  refresh: <path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7" />,
+  next: <path d="M5 12h14m-6-6 6 6-6 6" />,
+  northEast: <path d="M7 17 17 7M8 7h9v9" />,
 };
 
 export type IconName = keyof typeof paths;

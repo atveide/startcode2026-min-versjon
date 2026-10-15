@@ -5,32 +5,46 @@ import { normalize } from "../logic";
 import { BLANK, heat, isDone, MAX_POINTS, pointsFor, QuestionState, totalPoints, verdict } from "../quiz";
 import { Link } from "../router";
 import { useApp } from "../state";
+import BottomNav from "./BottomNav";
 import { accent, NewsGraphic, PanelImage, Tag } from "./bits";
 
 export default function QuizPage() {
   const { progress } = useApp();
   useEffect(() => {
-    document.title = "Ukens nyhetsquiz · Opplyst";
+    document.title = "Ukens spill · Opplyst";
   }, []);
-  return progress.finished ? <ResultView /> : <QuestionView />;
+  return (
+    <>
+      {progress.finished ? <ResultView /> : <QuestionView />}
+      <BottomNav current="quiz" />
+    </>
+  );
 }
 
 function QuizFrame({ story, children }: { story?: Story; children: ReactNode }) {
   const { quiz, progress } = useApp();
+  const count = quiz.headlines.length;
+  const position = progress.finished ? count : progress.index + 1;
   return (
     <main id="main" className="quiz-page" tabIndex={-1}>
-      <section className="quiz-panel story-panel" style={story ? accent(story) : undefined} aria-label="Ukens nyhetsquiz">
+      <section className="quiz-panel story-panel" style={story ? accent(story) : undefined} aria-labelledby="quiz-title">
         {story ? <PanelImage image={story.images[0]} priority /> : <NewsGraphic />}
         <div className="panel-shade" />
         <header className="quiz-top">
-          <Link className="quiz-close" to="/" aria-label="Lukk quizen og gå til forsiden">
-            <Icon name="close" />
+          <span className="quiz-title" id="quiz-title">
+            Ukens spill
+          </span>
+          <Link className="quiz-close" to="/" aria-label="Lukk spillet og gå til forsiden">
+            <Icon name="close" size={26} />
           </Link>
-          <div className="quiz-meta">
-            <span>Ukens nyhetsquiz · Uke {quiz.week}</span>
-            <span className="quiz-points">{totalPoints(progress)} poeng</span>
-          </div>
         </header>
+        <div className="quiz-progress">
+          <span>
+            {position} av {count}
+          </span>
+          <Steps />
+          <strong>{totalPoints(progress)} poeng</strong>
+        </div>
         <div className="quiz-copy">{children}</div>
       </section>
     </main>
@@ -42,12 +56,7 @@ function Steps() {
   return (
     <div className="quiz-steps" aria-hidden="true">
       {progress.questions.map((q, i) => (
-        <span
-          key={i}
-          className={
-            isDone(q) ? (q.gaveUp ? "gave-up" : "solved") : i === progress.index && !progress.finished ? "current" : ""
-          }
-        />
+        <span key={i} className={i === progress.index && !progress.finished ? "current" : isDone(q) ? "done" : ""} />
       ))}
     </div>
   );
@@ -95,7 +104,11 @@ function QuestionView() {
   function onSubmit(e: FormEvent) {
     e.preventDefault();
     const word = input.trim();
-    if (!word || pending || done) return;
+    if (!word) {
+      inputRef.current?.focus();
+      return;
+    }
+    if (pending || done) return;
     if (q.guesses.some((g) => normalize(g.word) === normalize(word))) {
       setError(`Du har allerede prøvd «${word}».`);
       return;
@@ -113,41 +126,30 @@ function QuestionView() {
 
   return (
     <QuizFrame story={story}>
-      <Steps />
-      <div className="story-kicker">
-        <span className="story-label">
-          Spørsmål {index + 1} av {quiz.headlines.length}
-        </span>
-        {story && <Tag story={story} />}
-        {q.readStory && (
-          <span className="read-badge">
-            Saken er lest <Icon name="check" size={13} />
-          </span>
-        )}
-      </div>
+      {story && <Tag story={story} />}
       <h1 className="quiz-headline">
         {before}
-        <span className={`quiz-blank ${done ? (q.gaveUp ? "gave-up" : "solved") : ""}`}>
-          {q.answer ?? "?"}
-          {!done && <span className="sr-only"> (ordet som mangler)</span>}
-        </span>
+        {done ? (
+          <span className={`quiz-blank filled ${q.gaveUp ? "skipped" : ""}`}>{q.answer}</span>
+        ) : (
+          <span className="quiz-blank" role="img" aria-label="ordet som mangler" />
+        )}
         {after}
       </h1>
 
-      {q.hint && !done && (
-        <p className="quiz-hint">
-          Hint:<span aria-label={`Hint: ${q.hint.replace(/ /g, "")}`}>{q.hint}</span>
-        </p>
-      )}
-
       {done ? (
-        <Outcome q={q} story={story} isLast={isLast} onNext={next} nextRef={nextRef} />
+        <Outcome q={q} isLast={isLast} onNext={next} nextRef={nextRef} />
       ) : (
         <>
+          <label className="quiz-label" htmlFor="guess-input">
+            Hvilket ord mangler?
+          </label>
+          {q.hint && (
+            <p className="quiz-hint">
+              Hint:<span aria-label={`Hint: ${q.hint.replace(/ /g, "")}`}>{q.hint}</span>
+            </p>
+          )}
           <form className="guess-form" onSubmit={onSubmit}>
-            <label className="sr-only" htmlFor="guess-input">
-              Ordet som mangler
-            </label>
             <input
               id="guess-input"
               ref={inputRef}
@@ -155,28 +157,24 @@ function QuestionView() {
               value={input}
               readOnly={pending !== null}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Skriv ordet som mangler"
+              placeholder="Skriv svaret ditt"
               autoComplete="off"
               autoCapitalize="off"
               spellCheck={false}
               enterKeyHint="send"
             />
-            <button className="guess-submit" type="submit" disabled={pending !== null || !input.trim()}>
-              {pending === "guess" ? "Sjekker…" : "Gjett"}
+            <button className="quiz-submit" type="submit" disabled={pending !== null}>
+              {pending === "guess" ? "Sjekker …" : "Svar"}
+              <Icon name="next" size={20} />
             </button>
           </form>
-          <div className="quiz-actions">
-            <button
-              className="quiz-chip"
-              onClick={() => run("hint", hint)}
-              disabled={pending !== null || hintsLeft <= 0}
-            >
-              <Icon name="spark" size={17} />
-              {hintsLeft > 0 ? `Hint (${hintsLeft} igjen · koster 1 poeng)` : "Ingen hint igjen"}
+          <div className="quiz-links">
+            <button onClick={() => run("hint", hint)} disabled={pending !== null || hintsLeft <= 0}>
+              {hintsLeft > 0 ? "Vis hint" : "Ingen hint igjen"}
             </button>
-            <button className="quiz-chip give-up" onClick={() => run("giveUp", giveUp)} disabled={pending !== null}>
-              <Icon name="flag" size={17} />
-              Gi opp
+            <span aria-hidden="true" />
+            <button onClick={() => run("giveUp", giveUp)} disabled={pending !== null}>
+              Hopp over
             </button>
           </div>
         </>
@@ -188,10 +186,8 @@ function QuestionView() {
         </p>
       )}
 
-      {stuck && story && <StuckCard story={story} hasRead={q.readStory} />}
-
-      {q.guesses.length > 0 && (
-        <ol className="quiz-guesses" aria-label="Forsøkene dine, nærmest først">
+      {!done && q.guesses.length > 0 && (
+        <ol className="quiz-tries" aria-label="Forsøkene dine, nærmest først">
           {[...q.guesses]
             .sort((a, b) => b.score - a.score)
             .map((g) => (
@@ -206,64 +202,61 @@ function QuestionView() {
         </ol>
       )}
 
-      <p className="quiz-foot">Svarene vurderes etter mening, ikke stavemåte. Kilde: VG.</p>
+      {story && <StoryLink story={story} stuck={stuck} hasRead={q.readStory} />}
     </QuizFrame>
   );
 }
 
-function StuckCard({ story, hasRead }: { story: Story; hasRead: boolean }) {
+/** The story behind the question. After a wrong guess it turns into a clear nudge to read it. */
+function StoryLink({ story, stuck, hasRead }: { story: Story; stuck: boolean; hasRead: boolean }) {
   return (
-    <aside className={`stuck-card ${hasRead ? "has-read" : ""}`} aria-live="polite">
-      <div>
-        <strong>{hasRead ? "Svaret står i saken" : "Står du fast? Les saken."}</strong>
-        <p>
-          {hasRead
-            ? `Du har lest «${story.title}». Bruk det du lærte, eller les den en gang til.`
-            : `Svaret finner du i «${story.title}». Les saken, og kom tilbake til spørsmålet.`}
-        </p>
-      </div>
-      <Link className="stuck-cta" to={`/sak/${story.id}?fra=quiz`}>
-        <Icon name="book" size={19} />
-        {hasRead ? "Les igjen" : "Les saken"}
+    <div className={`quiz-story ${stuck ? "stuck" : ""}`} aria-live="polite">
+      <small>
+        {stuck && !hasRead
+          ? "Står du fast? Svaret står i saken"
+          : hasRead
+            ? "Saken bak spørsmålet · lest"
+            : "Saken bak spørsmålet"}
+      </small>
+      <Link to={`/sak/${story.id}?fra=quiz`}>
+        <span>{story.title}</span>
+        <Icon name="northEast" size={18} />
       </Link>
-    </aside>
+    </div>
   );
 }
 
 function Outcome({
   q,
-  story,
   isLast,
   onNext,
   nextRef,
 }: {
   q: QuestionState;
-  story?: Story;
   isLast: boolean;
   onNext: () => void;
   nextRef: RefObject<HTMLButtonElement | null>;
 }) {
-  const tries = q.guesses.length;
   return (
-    <div className={`quiz-result ${q.gaveUp ? "gave-up" : ""}`} aria-live="polite">
-      <p className="quiz-result-title">{q.gaveUp ? `Svaret var «${q.answer}»` : `Riktig! +${pointsFor(q)} poeng`}</p>
-      <p>
-        {q.gaveUp
-          ? "Ingen poeng denne gangen, men nå vet du det."
-          : `Løst på ${tries} forsøk${q.hints ? ` med ${q.hints} hint` : ""}${q.readStory ? ", etter å ha lest saken" : ""}.`}
-      </p>
-      <div className="quiz-result-actions">
-        <button className="cover-cta" ref={nextRef} onClick={onNext}>
-          {isLast ? "Se resultatet" : "Neste spørsmål"}
-          <Icon name="arrow" size={24} />
-        </button>
-        {story && (
-          <Link className="read-more" to={`/sak/${story.id}?fra=quiz`}>
-            {q.readStory ? "Les saken igjen" : "Les hele saken"}
-          </Link>
-        )}
+    <>
+      <div className={`quiz-feedback ${q.gaveUp ? "skipped" : ""}`} aria-live="polite">
+        <span className="quiz-feedback-icon">
+          <Icon name={q.gaveUp ? "next" : "check"} size={22} />
+        </span>
+        <span>
+          <strong>{q.gaveUp ? "Hoppet over" : "Riktig!"}</strong>
+          <span>
+            {q.gaveUp
+              ? "Ingen poeng denne gangen, men nå vet du det."
+              : `${q.readStory ? "Du leste deg opp og fant svaret." : "Du husket nyheten."} +${pointsFor(q)} poeng`}
+          </span>
+        </span>
       </div>
-    </div>
+      <button className="quiz-submit" ref={nextRef} onClick={onNext}>
+        {isLast ? "Se resultatet" : "Neste spørsmål"}
+        <Icon name="next" size={20} />
+      </button>
+    </>
   );
 }
 
@@ -275,7 +268,6 @@ function ResultView() {
 
   return (
     <QuizFrame>
-      <Steps />
       <span className="story-label">Uke {quiz.week} · Ferdig</span>
       <h1 className="quiz-headline">{title}</h1>
       <p className="result-score">
@@ -308,14 +300,13 @@ function ResultView() {
         })}
       </ol>
       <div className="result-actions">
-        <Link className="cover-cta" to="/#feed">
+        <Link className="quiz-submit" to="/#feed">
           Utforsk ukens saker
-          <Icon name="arrow" size={24} />
+          <Icon name="next" size={20} />
         </Link>
-        <button className="swipe-hint" onClick={restart}>
-          <Icon name="refresh" size={18} />
-          Spill igjen
-        </button>
+        <div className="quiz-links">
+          <button onClick={restart}>Spill igjen</button>
+        </div>
       </div>
       <p className="quiz-foot">Ny quiz kommer neste uke. Følg med på nyhetene, så er du klar.</p>
     </QuizFrame>
