@@ -435,7 +435,9 @@ figure.article-hero{margin:0}
 .no-summary{display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-size:14px;line-height:1.6}
 .no-summary svg{flex:none;margin-top:3px;color:var(--color-brand)}
 .not-imported p{color:var(--text);font-size:15px;line-height:1.6;margin-bottom:18px}
-.not-imported .primary{gap:8px}
+.not-imported-actions{display:flex;flex-wrap:wrap;gap:10px}
+.not-imported .primary,.not-imported .secondary{gap:8px}
+.not-imported .secondary{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);color:var(--text);border-radius:8px;min-height:44px;padding:12px 20px;font-size:14px;font-weight:700}
 .source .source-logo{width:42px;height:42px;flex:none;padding:7px;border-radius:50%;background:#005379;object-fit:contain}
 @media(max-width:700px){.hero-caption{padding:10px 22px 0}.article-text p{font-size:17px}}
 

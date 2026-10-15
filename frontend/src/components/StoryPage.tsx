@@ -3,6 +3,7 @@ import type { Block, Story } from "../api";
 import { Icon } from "../icons";
 import { formatDate } from "../logic";
 import { BLANK } from "../quiz";
+import { askForKey, getReaderKey } from "../readerKey";
 import { goBack, Link, navigate, previousPath } from "../router";
 import { useApp } from "../state";
 import BottomNav from "./BottomNav";
@@ -98,7 +99,7 @@ export default function StoryPage({ id, fromQuiz }: { id: string; fromQuiz: bool
             </section>
             <p className="snapshot-foot">
               {story.imported && importedAt
-                ? `Hentet fra ${story.source} ${formatDate(importedAt)} med eget abonnement, og lagret bare på denne maskinen. Saken kan være endret hos Adressa siden.`
+                ? `Hentet fra ${story.source} ${formatDate(importedAt)}. Saken kan være endret hos Adressa siden.`
                 : `Journalistikk fra ${story.source}. Hele saken leser du hos Adressa.`}
             </p>
           </div>
@@ -194,14 +195,24 @@ function BodyBlock({ block }: { block: Block }) {
   return <p>{block.text}</p>;
 }
 
-/** Without the local import there is no article text here; the story lives on adressa.no. */
+/** Locked: the full story opens with a personal unlock link, or is read on adressa.no. */
 function NotImported({ story }: { story: Story }) {
+  const hasKey = Boolean(getReaderKey());
   return (
     <section className="deep-panel not-imported" aria-label="Hele saken">
-      <p>Hele saken er ikke hentet på denne maskinen. Les den hos {story.source}, og kom tilbake hit etterpå.</p>
-      <a className="primary" href={story.url} target="_blank" rel="noopener noreferrer">
-        Les saken hos {story.source} <Icon name="external" size={18} />
-      </a>
+      <p>
+        {hasKey
+          ? "Lenken på denne enheten gir ikke tilgang til hele saken lenger. Spør den som sendte den om en ny."
+          : `Hele saken er låst. Har du fått en opplåsingslenke, åpner du den her. Ellers leser du saken hos ${story.source}.`}
+      </p>
+      <div className="not-imported-actions">
+        <button className="primary" onClick={askForKey}>
+          <Icon name="lock" size={18} /> Lås opp med lenken
+        </button>
+        <a className="secondary" href={story.url} target="_blank" rel="noopener noreferrer">
+          Les hos {story.source} <Icon name="external" size={18} />
+        </a>
+      </div>
     </section>
   );
 }

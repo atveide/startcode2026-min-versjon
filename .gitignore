@@ -22,3 +22,7 @@ dist/
 
 # Netlify CLI
 .netlify/
+
+# Readers' personal keys and links for the encrypted full stories, and the package itself; never commit them.
+frontend/.reader*
+frontend/public/private/

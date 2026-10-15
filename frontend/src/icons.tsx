@@ -9,6 +9,12 @@ const paths = {
   ),
   close: <path d="m6 6 12 12M18 6 6 18" />,
   menu: <path d="M5 6h14M5 12h14M5 18h14" />,
+  lock: (
+    <>
+      <rect x="5" y="11" width="14" height="10" rx="2" />
+      <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+    </>
+  ),
   feed: (
     <>
       <rect x="5" y="3" width="16" height="17" rx="2" />

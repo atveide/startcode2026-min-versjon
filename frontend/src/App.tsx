@@ -8,6 +8,7 @@ import SavedPage from "./components/SavedPage";
 import StoryPage from "./components/StoryPage";
 import { takeScrollTarget, useLocation } from "./router";
 import { AppProvider } from "./state";
+import { withFullStories } from "./unlock";
 
 type Data =
   | { status: "loading" }
@@ -19,7 +20,7 @@ export default function App() {
 
   const load = useCallback(() => {
     setData({ status: "loading" });
-    Promise.all([fetchStories(), fetchQuiz()])
+    Promise.all([fetchStories().then(withFullStories), fetchQuiz()])
       .then(([stories, quiz]) => setData({ status: "ready", stories, quiz }))
       .catch((err: Error) => setData({ status: "error", message: err.message }));
   }, []);

@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "../icons";
+import { askForKey } from "../readerKey";
 import { Link } from "../router";
 import { useApp } from "../state";
 
 export type NavTab = "feed" | "quiz" | "saved";
 
 export default function BottomNav({ current }: { current: NavTab }) {
-  const { saved, showAbout } = useApp();
+  const { saved, showAbout, stories } = useApp();
+  const locked = stories.some((s) => !s.imported);
   const [open, setOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -85,6 +87,17 @@ export default function BottomNav({ current }: { current: NavTab }) {
           <Icon name="info" size={18} />
           Om Opplyst
         </button>
+        {locked && (
+          <button
+            onClick={() => {
+              setOpen(false);
+              askForKey();
+            }}
+          >
+            <Icon name="lock" size={18} />
+            Lås opp hele sakene
+          </button>
+        )}
       </div>
     </nav>
   );

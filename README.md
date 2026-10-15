@@ -32,10 +32,19 @@ The design is ported from the Adressa feed prototype (dark only). Game progress,
 
 ### Adressa content
 
-The stories are real articles from Adresseavisen (Polaris Media), picked for students by the local import in the feed project (`npm run import:adressa`, which reads them with your own subscription). Article text, Adressa's «Kort oppsummert» and press photos are not ours to publish, so they never go into git and never reach the hosted app:
+The stories are real articles from Adresseavisen (Polaris Media), picked for students by the local import in the feed project (`npm run import:adressa`, which reads them with your own subscription). Article text, Adressa's «Kort oppsummert» and press photos are not ours to publish, so they never go into git and reach the hosted app only encrypted, for the readers given a link:
 
 - **Locally**, set `ADRESSA_CACHE_DIR` in `backend/.env` to the import's `data/adressa` folder. Stories then show Adressa's summary (with its AI and editorial disclosure), the article text and the photos, served from `/api/media/adressa/…`.
 - **Without the cache** (Render, or a teammate's machine) the game works the same, and every story shows its title, lead and a button to read it on adressa.no.
+- **With an unlock link** the hosted app shows the full stories too. `frontend/scripts/encrypt-stories.mjs` encrypts them from the local cache into `frontend/public/private/stories.enc.json`, with one personal key per reader. The key travels in the link's `#nokkel=…`, which never reaches a server; the app keeps it on the device and decrypts there. Keys, links and the package are git-ignored, so only the deployed app carries the ciphertext.
+
+  ```sh
+  npm --prefix frontend run encrypt -- --testers 10   # or --add Kari Ola; links land in frontend/.reader-links.txt
+  npm --prefix frontend run encrypt -- --remove Ola   # takes Ola's access away
+  npm --prefix frontend run encrypt                   # after each import, same links
+  ```
+
+  Then build and deploy the frontend. A reader who added the app to the Home Screen pastes the link under the menu's «Lås opp hele sakene».
 
 **A new week:** run the import, then make the public list and the questions in one go:
 
