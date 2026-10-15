@@ -6,18 +6,40 @@ from fastapi.testclient import TestClient
 
 from app.api import routes
 from app.config import settings
-from app.headlines import HEADLINES, QUESTIONS_PER_DAY, daily_headlines, quiz_id, today
+from app.generate_questions import gives_away, problems
+from app.headlines import (
+    BLANK,
+    HEADLINES,
+    HEADLINES_BY_ID,
+    QUESTIONS_FILE,
+    QUESTIONS_PER_DAY,
+    Headline,
+    daily_headlines,
+    load_pool,
+    quiz_id,
+    today,
+)
 from app.judge import Judgement
 from app.main import app
 from app.stories import WEEK, load_stories
 
 client = TestClient(app)
 WEEK_BY_ID = {s.id: s for s in WEEK.stories}
+# A fixed question, so the API tests don't depend on this week's pool.
+KNOWN = Headline(
+    999, f"MDG vil ha bybane i stedet for flere {BLANK} gjennom Midtbyen", "busser", "x"
+)
 
 
 @pytest.fixture
 def no_cache(monkeypatch) -> None:
     monkeypatch.setattr(settings, "adressa_cache_dir", None)
+
+
+@pytest.fixture
+def known(monkeypatch) -> Headline:
+    monkeypatch.setitem(HEADLINES_BY_ID, KNOWN.id, KNOWN)
+    return KNOWN
 
 
 @pytest.fixture
@@ -66,15 +88,26 @@ def cache(tmp_path, monkeypatch):
 def test_every_question_points_to_a_story_of_the_week() -> None:
     for headline in HEADLINES:
         assert headline.story_id in WEEK_BY_ID, headline.id
-        assert headline.answer.lower() not in headline.text.lower()
+        assert headline.text.count(BLANK) == 1, headline.id
+        assert not gives_away(headline.answer, headline.text), headline.id
 
 
 def test_story_titles_do_not_give_the_answer_away() -> None:
     # The quiz shows the story's title under «Saken bak spørsmålet».
     for headline in HEADLINES:
-        assert headline.answer.lower() not in WEEK_BY_ID[headline.story_id].title.lower(), (
-            headline.id
-        )
+        assert not gives_away(headline.answer, WEEK_BY_ID[headline.story_id].title), headline.id
+
+
+def test_pool_has_enough_stories_for_a_day() -> None:
+    assert len({h.story_id for h in HEADLINES}) >= QUESTIONS_PER_DAY
+
+
+def test_pool_file_holds_only_questions(tmp_path) -> None:
+    pool = json.loads(QUESTIONS_FILE.read_text(encoding="utf-8"))
+    assert all(set(q) == {"text", "answer", "story_id"} for q in pool)
+    file = tmp_path / "questions.json"
+    file.write_text(json.dumps([{"text": f"En {BLANK}", "answer": "sak", "story_id": "a"}] * 2))
+    assert [h.id for h in load_pool(file)] == [1, 2]
 
 
 @pytest.mark.skipif(
@@ -86,7 +119,7 @@ def test_every_answer_is_in_its_story() -> None:
     for headline in HEADLINES:
         story = stories[headline.story_id]
         assert story.imported, story.id
-        assert headline.answer.lower() in story.text.lower(), headline.id
+        assert problems(headline, story) == [], headline.id
 
 
 def test_daily_game_is_stable_within_a_day_and_changes_between_days() -> None:
@@ -135,18 +168,19 @@ def test_stories_use_the_local_import_when_there_is_one(cache) -> None:
         assert client.get(f"/api/media/adressa/{name}").status_code == 404, name
 
 
-def test_guess_below_threshold(monkeypatch) -> None:
+def test_guess_below_threshold(monkeypatch, known) -> None:
     monkeypatch.setattr(routes, "judge_guess", lambda h, g: Judgement(correct=False, score=42))
-    response = client.post("/api/guess", json={"headline_id": 1, "guess": "trengsel"})
+    response = client.post("/api/guess", json={"headline_id": known.id, "guess": "trikker"})
     assert response.json() == {"score": 42, "solved": False, "answer": None, "full_text": None}
 
 
-def test_guess_solved(monkeypatch) -> None:
+def test_guess_solved(monkeypatch, known) -> None:
     monkeypatch.setattr(routes, "judge_guess", lambda h, g: Judgement(correct=True, score=100))
-    response = client.post("/api/guess", json={"headline_id": 1, "guess": "plassmangel"})
+    response = client.post("/api/guess", json={"headline_id": known.id, "guess": "bussene"})
     body = response.json()
     assert body["solved"] is True
-    assert body["answer"] == "plassmangel"
+    assert body["answer"] == "busser"
+    assert body["full_text"] == "MDG vil ha bybane i stedet for flere busser gjennom Midtbyen"
 
 
 def test_unknown_headline() -> None:
@@ -157,15 +191,16 @@ def test_unknown_headline() -> None:
 def test_exact_answer_skips_model() -> None:
     from app.judge import judge_guess
 
-    assert judge_guess(HEADLINES[0], "  PLASSMANGEL ") == Judgement(correct=True, score=100)
+    assert judge_guess(KNOWN, "  BUSSER ") == Judgement(correct=True, score=100)
 
 
-def test_hints_reveal_letters_progressively() -> None:
-    levels = [client.get(f"/api/headlines/3/hint/{n}").json()["hint"] for n in (1, 2, 3)]
+def test_hints_reveal_letters_progressively(known) -> None:
+    url = f"/api/headlines/{known.id}/hint"
+    levels = [client.get(f"{url}/{n}").json()["hint"] for n in (1, 2, 3)]
     assert levels == ["_ _ _ _ _ _", "B _ _ _ _ _", "B U _ _ _ _"]
-    assert client.get("/api/headlines/3/hint/4").status_code == 422
+    assert client.get(f"{url}/4").status_code == 422
 
 
-def test_reveal() -> None:
-    response = client.post("/api/headlines/5/reveal")
-    assert response.json()["answer"] == "batteriet"
+def test_reveal(known) -> None:
+    response = client.post(f"/api/headlines/{known.id}/reveal")
+    assert response.json()["answer"] == "busser"

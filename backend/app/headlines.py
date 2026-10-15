@@ -1,12 +1,15 @@
+import json
 import random
 from dataclasses import dataclass
 from datetime import date, datetime
+from pathlib import Path
 from zoneinfo import ZoneInfo
 
 BLANK = "___"
 MAX_HINTS = 3
 QUESTIONS_PER_DAY = 5
 OSLO = ZoneInfo("Europe/Oslo")
+QUESTIONS_FILE = Path(__file__).parent / "data" / "questions.json"
 
 
 @dataclass(frozen=True)
@@ -21,100 +24,18 @@ class Headline:
         return self.text.replace(BLANK, self.answer)
 
 
-# The week's question pool, written from this week's Adresseavisen stories. Every answer is in
-# its story but not in the story's title, which the quiz shows under «Saken bak spørsmålet».
-HEADLINES = [
-    Headline(
-        1,
-        f"NTNU-studenter må ta eksamen med penn og papir på grunn av {BLANK} i eksamenslokalene",
-        "plassmangel",
-        "adressa-b85jlv",
-    ),
-    Headline(
-        2,
-        f"Veidekke og Norconsult skal bygge et nytt {BLANK} for NTNU på Gløshaugen",
-        "musikkhus",
-        "adressa-gdR99q",
-    ),
-    Headline(
-        3,
-        f"MDG mener det ikke går an å ha flere {BLANK} gjennom Midtbyen, og vil heller ha bybane",
-        "busser",
-        "adressa-eGkEja",
-    ),
-    Headline(
-        4,
-        f"For å få råd til bybane vil MDG droppe store veiprosjekter som {BLANK}",
-        "Byåstunnelen",
-        "adressa-eGkEja",
-    ),
-    Headline(
-        5,
-        f"Politiet fant den stjålne elsykkelen fra garasjen på Havstein, men {BLANK} mangler fortsatt",
-        "batteriet",
-        "adressa-gdBzx0",
-    ),
-    Headline(
-        6,
-        f"På Rinnleiret i Levanger skal det bygges 37 nye {BLANK} til Forsvaret",
-        "stridsvogner",
-        "adressa-X9ev8o",
-    ),
-    Headline(
-        7,
-        f"Sigrid Strømmens debutroman handler om en 27-åring som flytter fra Trondheim til {BLANK}",
-        "Oslo",
-        "adressa-PdX23e",
-    ),
-    Headline(
-        8,
-        f"Trondhjems Kunstforening har gått til sak mot restauranten Bifrons over manglende {BLANK}",
-        "husleie",
-        "adressa-4OV4lR",
-    ),
-    Headline(
-        9,
-        f"NTNU-studentene fikk velge mellom papireksamen før jul eller {BLANK} eksamen etter jul",
-        "digital",
-        "adressa-b85jlv",
-    ),
-    Headline(
-        10,
-        f"Det nye musikkhuset for NTNU på Gløshaugen skal hete {BLANK}",
-        "Resonans",
-        "adressa-gdR99q",
-    ),
-    Headline(
-        11,
-        f"Byplankontoret har {BLANK} bygging på den østre tomta ved Søndre Halset borettslag",
-        "avvist",
-        "adressa-77RoE4",
-    ),
-    Headline(
-        12,
-        f"Familien på Havstein hadde installert {BLANK} i garasjen før innbruddet",
-        "overvåkningskamera",
-        "adressa-gdBzx0",
-    ),
-    Headline(
-        13,
-        f"Sjefen for Hærens våpenskole kaller Norges nye Leopard 2 A8 NOR «en helt fantastisk {BLANK}»",
-        "vogn",
-        "adressa-X9ev8o",
-    ),
-    Headline(
-        14,
-        f"Sigrid Strømmens roman er delt i tre deler: «Trondheim», «Oslo» og «{BLANK}»",
-        "Skogen",
-        "adressa-PdX23e",
-    ),
-    Headline(
-        15,
-        f"Restauranten Bifrons holder til i Bispegata 9A, rett ved {BLANK}",
-        "Nidarosdomen",
-        "adressa-4OV4lR",
-    ),
-]
+def load_pool(path: Path = QUESTIONS_FILE) -> list[Headline]:
+    """A question pool file; ids follow the order in the file."""
+    questions = json.loads(path.read_text(encoding="utf-8"))
+    return [
+        Headline(n, q["text"], q["answer"], q["story_id"]) for n, q in enumerate(questions, start=1)
+    ]
+
+
+# The week's question pool, made from this week's Adresseavisen stories by
+# `python -m app.generate_questions`. Every answer is in its story but not in the story's title,
+# which the quiz shows under «Saken bak spørsmålet».
+HEADLINES = load_pool()
 
 HEADLINES_BY_ID = {h.id: h for h in HEADLINES}
 

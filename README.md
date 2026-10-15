@@ -24,7 +24,8 @@ The design is ported from the Adressa feed prototype (dark only). Game progress,
 | Where | What |
 | --- | --- |
 | `backend/app/data/week.json` | The week's stories: public facts only (title, link, section, time, lead) |
-| `backend/app/headlines.py` | The week's question pool and how today's five are picked |
+| `backend/app/headlines.py` | Loads the week's question pool and picks today's five |
+| `backend/app/generate_questions.py` | Makes the question pool from the local Adressa import with Claude |
 | `backend/app/stories.py` | Merges `week.json` with the local Adressa import, if there is one |
 | `frontend/src/components/` | Pages: `HomePage`, `QuizPage`, `StoryPage`, `SavedPage` |
 | `frontend/src/styles.css` | All styling, on top of the Adressa tokens in `tokens.css` |
@@ -36,14 +37,14 @@ The stories are real articles from Adresseavisen (Polaris Media), picked for stu
 - **Locally**, set `ADRESSA_CACHE_DIR` in `backend/.env` to the import's `data/adressa` folder. Stories then show Adressa's summary (with its AI and editorial disclosure), the article text and the photos, served from `/api/media/adressa/…`.
 - **Without the cache** (Render, or a teammate's machine) the game works the same, and every story shows its title, lead and a button to read it on adressa.no.
 
-**A new week:** run the import, then write the public list and new questions:
+**A new week:** run the import, then make the public list and the questions in one go:
 
 ```sh
 cd backend
-uv run python -m app.export_week /path/to/vgx-local/data/adressa/articles.json
+uv run python -m app.generate_questions
 ```
 
-Then replace the pool in `headlines.py` with questions about the new stories. Every answer must be in its story but not in its title (the game shows the title). The tests check both; the first needs the local cache.
+It reads the stories from `ADRESSA_CACHE_DIR`, writes `data/week.json` and asks Claude for two fill-in-the-blank questions per story into `data/questions.json` (just the sentence, the answer and the story id). Suggestions whose answer isn't in the story, or that the title or the sentence gives away, or that copy the article, are thrown out. `app.export_week` still writes only `week.json`. The tests check the pool too; the answer check needs the local cache.
 
 ## Design system
 

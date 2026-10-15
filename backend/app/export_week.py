@@ -23,9 +23,14 @@ def export(cache_file: Path) -> dict:
     return {"week": newest.isocalendar().week, "stories": stories}
 
 
+def write(cache_file: Path) -> dict:
+    week = export(cache_file)
+    WEEK_FILE.write_text(json.dumps(week, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return week
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         sys.exit("usage: python -m app.export_week /path/to/articles.json")
-    week = export(Path(sys.argv[1]))
-    WEEK_FILE.write_text(json.dumps(week, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    week = write(Path(sys.argv[1]))
     print(f"Skrev {len(week['stories'])} saker for uke {week['week']} til {WEEK_FILE}")
