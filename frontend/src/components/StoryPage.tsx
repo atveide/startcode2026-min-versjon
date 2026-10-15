@@ -1,7 +1,7 @@
-import { FormEvent, KeyboardEvent, ReactNode, useEffect, useId, useRef, useState } from "react";
-import type { QA, Story } from "../api";
+import { useEffect, useRef, useState } from "react";
+import type { Block, Story } from "../api";
 import { Icon } from "../icons";
-import { Answer, answerQuestion, formatDate } from "../logic";
+import { formatDate } from "../logic";
 import { BLANK } from "../quiz";
 import { goBack, Link, navigate, previousPath } from "../router";
 import { useApp } from "../state";
@@ -9,7 +9,7 @@ import BottomNav from "./BottomNav";
 import { accent, NewsGraphic, SaveButton, Tag, Wordmark } from "./bits";
 
 export default function StoryPage({ id, fromQuiz }: { id: string; fromQuiz: boolean }) {
-  const { storiesById, markRead, markQuizRead, snapshot, toast } = useApp();
+  const { storiesById, markRead, markQuizRead, importedAt, toast } = useApp();
   const story = storiesById.get(id);
 
   useEffect(() => {
@@ -25,12 +25,12 @@ export default function StoryPage({ id, fromQuiz }: { id: string; fromQuiz: bool
   if (!story) return <StoryNotFound />;
 
   async function share() {
-    const url = location.origin + location.pathname;
+    // Share Adressa's own link: the story belongs to them.
     try {
-      if (navigator.share) await navigator.share({ title: story!.title, url });
+      if (navigator.share) await navigator.share({ title: story!.title, url: story!.url });
       else {
-        await navigator.clipboard.writeText(url);
-        toast("Lenken er kopiert");
+        await navigator.clipboard.writeText(story!.url);
+        toast("Lenken til saken hos Adresseavisen er kopiert");
       }
     } catch (err) {
       if ((err as Error).name !== "AbortError") toast("Vi fikk ikke delt lenken. Kopier adressen fra nettleseren.");
@@ -51,81 +51,158 @@ export default function StoryPage({ id, fromQuiz }: { id: string; fromQuiz: bool
         <Link to="/" aria-label="Opplyst – til forsiden">
           <Wordmark />
         </Link>
-        <span className="caption">Ukens nyheter, kort fortalt</span>
+        <span className="caption">Ukens nyheter fra Adresseavisen</span>
       </header>
       <main id="main" className="article" tabIndex={-1} style={accent(story)}>
         <article>
           {fromQuiz && <QuizContext story={story} />}
-          {story.images.length > 0 && <Gallery story={story} />}
-          <header className={`article-intro ${story.images.length ? "" : "no-hero"}`}>
+          {story.image && <Hero story={story} />}
+          <header className={`article-intro ${story.image ? "" : "no-hero"}`}>
             <Tag story={story} />
             <h1>{story.title}</h1>
             <p className="article-meta">
-              <time dateTime={story.updated}>{formatDate(story.updated)}</time>
+              <time dateTime={story.publishedAt}>Publisert {formatDate(story.publishedAt)}</time>
+              {story.modifiedAt && (
+                <>
+                  <span>·</span>
+                  <span>Oppdatert {formatDate(story.modifiedAt)}</span>
+                </>
+              )}
               <span>·</span>
-              <button onClick={() => document.getElementById("sources")?.scrollIntoView({ behavior: "smooth" })}>
-                {story.sources.length} {story.sources.length === 1 ? "kilde" : "kilder"}
-              </button>
-              <span>· Lagret utgave</span>
+              <span>{story.source}</span>
+              {story.authors.length > 0 && (
+                <>
+                  <span>·</span>
+                  <span>{story.authors.join(", ")}</span>
+                </>
+              )}
             </p>
           </header>
           <div className="article-body">
-            <p className="summary-text">{story.summary.join(" ")}</p>
-            <section aria-labelledby="latest-title">
-              <div className="section-label">
-                <h2 id="latest-title">Siste utvikling</h2>
-                <Info label="Vis informasjon om sammendraget">
-                  Sammendraget er et forkortet, lagret utdrag fra VG {snapshot}. Det oppdateres ikke automatisk.
-                  Kildene finner du nederst.
-                </Info>
-              </div>
-              <ul className="bullet-list">
-                {story.developments.map((d) => (
-                  <li key={d}>{d}</li>
-                ))}
-              </ul>
-            </section>
-            <DeepDive story={story} />
-            <section>
-              <details className="question">
-                <summary>Bakgrunn</summary>
-                <p>{story.background}</p>
-              </details>
-            </section>
+            {story.lead && <p className="summary-text">{story.lead}</p>}
+            {story.imported ? <FullStory story={story} /> : <NotImported story={story} />}
             <section id="sources" aria-labelledby="sources-title">
               <div className="section-label">
-                <h2 id="sources-title">
-                  Basert på {story.sources.length} {story.sources.length === 1 ? "kilde" : "kilder"}
-                </h2>
-                <Info label="Vis informasjon om kildelisten">
-                  Lenkene går til originalartiklene hos VG. De kan kreve innlogging.
-                </Info>
+                <h2 id="sources-title">Kilde</h2>
               </div>
               <div className="source-list">
-                {story.sources.map((source) => (
-                  <a className="source" key={source.url} href={source.url} target="_blank" rel="noopener noreferrer">
-                    <span className="source-badge" aria-hidden="true">
-                      VG
-                    </span>
-                    <span>
-                      <strong>{source.title}</strong>
-                      <small>vg.no · Åpnes hos VG</small>
-                    </span>
-                    <Icon name="external" size={18} />
-                  </a>
-                ))}
+                <a className="source" href={story.url} target="_blank" rel="noopener noreferrer">
+                  <img className="source-logo" src="/assets/brand/adressa-monogram.svg" alt="" />
+                  <span>
+                    <strong>Les originalartikkelen hos {story.source}</strong>
+                    <small>adressa.no · Publisert {formatDate(story.publishedAt)} · Kan kreve abonnement</small>
+                  </span>
+                  <Icon name="external" size={18} />
+                </a>
               </div>
             </section>
             <p className="snapshot-foot">
-              Opplyst · Lagret utvalg fra VG · {snapshot}
-              <br />
-              Lagret informasjon. Åpne originalkildene for senere oppdateringer.
+              {story.imported && importedAt
+                ? `Hentet fra ${story.source} ${formatDate(importedAt)} med eget abonnement, og lagret bare på denne maskinen. Saken kan være endret hos Adressa siden.`
+                : `Journalistikk fra ${story.source}. Hele saken leser du hos Adressa.`}
             </p>
           </div>
         </article>
       </main>
       {fromQuiz ? <QuizReturn /> : <BottomNav current="feed" />}
     </>
+  );
+}
+
+function Hero({ story }: { story: Story }) {
+  const [failed, setFailed] = useState(false);
+  const image = story.image!;
+  return (
+    <>
+      <figure className="article-hero">
+        {failed ? (
+          <NewsGraphic />
+        ) : (
+          <img src={image.src} alt={image.alt ?? ""} onError={() => setFailed(true)} />
+        )}
+        {image.credit && !image.caption && <p className="photo-credit">Foto: {image.credit}</p>}
+      </figure>
+      {image.caption && (
+        <p className="hero-caption">
+          {image.caption}
+          {image.credit && <span> Foto: {image.credit}</span>}
+        </p>
+      )}
+    </>
+  );
+}
+
+/** Adressa's «Kort oppsummert» and the article text, from the local import. */
+function FullStory({ story }: { story: Story }) {
+  const summary = story.summary;
+  return (
+    <>
+      <section className="deep-panel adressa-summary" aria-labelledby="summary-title">
+        <div className="section-label">
+          <h2 id="summary-title">{summary?.heading ?? "Kort oppsummert"}</h2>
+        </div>
+        {summary ? (
+          <>
+            <ul className="bullet-list summary-list">
+              {summary.bullets.map((b) => (
+                <li key={b}>{b}</li>
+              ))}
+            </ul>
+            {summary.disclosure && (
+              <p className="summary-disclosure">
+                {summary.disclosure}{" "}
+                {summary.disclosureUrl && (
+                  <a href={summary.disclosureUrl} target="_blank" rel="noopener noreferrer">
+                    Mer om KI-bruken ↗
+                  </a>
+                )}
+              </p>
+            )}
+            <p className="summary-source">
+              Kilde:{" "}
+              <a href={summary.sourceUrl} target="_blank" rel="noopener noreferrer">
+                {summary.source} ↗
+              </a>
+            </p>
+          </>
+        ) : (
+          <p className="no-summary">
+            <Icon name="info" size={18} />
+            <span>Adresseavisen har ikke laget en kort oppsummering av denne saken. Les ingressen og saken under.</span>
+          </p>
+        )}
+      </section>
+      <section className="article-text" aria-label="Saken">
+        {story.body.map((block, i) => (
+          <BodyBlock key={i} block={block} />
+        ))}
+      </section>
+    </>
+  );
+}
+
+function BodyBlock({ block }: { block: Block }) {
+  if (block.type === "heading") return <h3>{block.text}</h3>;
+  if (block.type === "list")
+    return (
+      <ul className="bullet-list">
+        {(block.items ?? []).map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    );
+  return <p>{block.text}</p>;
+}
+
+/** Without the local import there is no article text here; the story lives on adressa.no. */
+function NotImported({ story }: { story: Story }) {
+  return (
+    <section className="deep-panel not-imported" aria-label="Hele saken">
+      <p>Hele saken er ikke hentet på denne maskinen. Les den hos {story.source}, og kom tilbake hit etterpå.</p>
+      <a className="primary" href={story.url} target="_blank" rel="noopener noreferrer">
+        Les saken hos {story.source} <Icon name="external" size={18} />
+      </a>
+    </section>
   );
 }
 
@@ -140,7 +217,7 @@ function QuizContext({ story }: { story: Story }) {
       <Icon name="bulb" size={24} />
       <div>
         <span className="eyebrow">
-          Ukens quiz · Spørsmål {index + 1} av {quiz.headlines.length}
+          Dagens spill · Spørsmål {index + 1} av {quiz.headlines.length}
         </span>
         <p>
           {answer ? "Svaret: " : "Finn ordet som mangler: "}
@@ -166,171 +243,6 @@ function QuizReturn() {
         {progress.finished ? "Tilbake til resultatet" : "Tilbake til spørsmålet"}
       </button>
     </div>
-  );
-}
-
-function Gallery({ story }: { story: Story }) {
-  const [index, setIndex] = useState(0);
-  const [failed, setFailed] = useState<string[]>([]);
-  const count = story.images.length;
-  const image = story.images[index];
-  const step = (delta: number) => setIndex((i) => (i + delta + count) % count);
-
-  function onKeyDown(e: KeyboardEvent) {
-    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
-      e.preventDefault();
-      step(e.key === "ArrowRight" ? 1 : -1);
-    }
-  }
-
-  return (
-    <div
-      className="article-hero"
-      {...(count > 1
-        ? { tabIndex: 0, role: "region", "aria-label": "Bildegalleri – bruk piltastene", onKeyDown }
-        : {})}
-    >
-      {failed.includes(image.src) ? (
-        <NewsGraphic />
-      ) : (
-        <img src={image.src} alt={image.alt} onError={() => setFailed((f) => [...f, image.src])} />
-      )}
-      {count > 1 && (
-        <div className="gallery-controls">
-          <button className="previous" onClick={() => step(-1)} aria-label="Forrige bilde">
-            <Icon name="back" size={20} />
-          </button>
-          <button className="next" onClick={() => step(1)} aria-label="Neste bilde">
-            <Icon name="arrow" size={20} />
-          </button>
-          <span className="gallery-counter" aria-live="polite">
-            {index + 1} / {count}
-          </span>
-        </div>
-      )}
-      {image.credit && <p className="photo-credit">{image.credit}</p>}
-    </div>
-  );
-}
-
-function Info({ label, children }: { label: string; children: ReactNode }) {
-  const [open, setOpen] = useState(false);
-  const id = useId();
-  return (
-    <>
-      <button className="info-button" aria-label={label} aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}>
-        i
-      </button>
-      <p className="info-text" id={id} hidden={!open}>
-        {children}
-      </p>
-    </>
-  );
-}
-
-function DeepDive({ story }: { story: Story }) {
-  const [asking, setAsking] = useState(false);
-  const [question, setQuestion] = useState("");
-  const [chat, setChat] = useState<(Answer & { q: string })[]>([]);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-  const chatRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (asking) inputRef.current?.focus();
-  }, [asking]);
-
-  useEffect(() => {
-    chatRef.current?.lastElementChild?.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [chat]);
-
-  function submit(e?: FormEvent) {
-    e?.preventDefault();
-    const q = question.trim();
-    if (!q) return;
-    setChat((c) => [...c, { q, ...answerQuestion(story, q) }].slice(-20));
-    setQuestion("");
-  }
-
-  return (
-    <section className="deep-panel" aria-labelledby="deep-title">
-      <div className="section-label">
-        <h2 id="deep-title">Gå i dybden</h2>
-        <Info label="Vis informasjon om Gå i dybden">
-          Svarene er skrevet på forhånd fra det lagrede innholdet. Spørsmålsfeltet finner relevante svar lokalt og
-          er ikke koblet til en KI-tjeneste.
-        </Info>
-      </div>
-      <p>Velg et spørsmål, eller still ditt eget.</p>
-      {story.qa.map((item, i) => (
-        <QAItem key={item.q} item={item} story={story} open={i === 0} />
-      ))}
-      <button className="outline ask-toggle" aria-expanded={asking} onClick={() => setAsking(!asking)}>
-        Still ditt eget spørsmål <Icon name="send" size={16} />
-      </button>
-      {asking && (
-        <form className="ask-form" onSubmit={submit}>
-          <label className="sr-only" htmlFor="question-input">
-            Spørsmål om saken
-          </label>
-          <div className="question-entry">
-            <textarea
-              id="question-input"
-              ref={inputRef}
-              placeholder="Lurer du på noe annet?"
-              rows={2}
-              maxLength={500}
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  submit();
-                }
-              }}
-            />
-            <button type="submit" aria-label="Send spørsmål">
-              <Icon name="send" size={21} />
-            </button>
-          </div>
-          <p className="ask-note">Svar fra det lagrede innholdet · ingen KI-tilkobling</p>
-        </form>
-      )}
-      <div className="chat" aria-live="polite" ref={chatRef}>
-        {chat.map((item, i) => (
-          <div key={i} style={{ display: "contents" }}>
-            <div className="chat-question">{item.q}</div>
-            <div className="chat-answer">{item.answer}</div>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function QAItem({ item, story, open }: { item: QA; story: Story; open: boolean }) {
-  const [more, setMore] = useState(false);
-  const [sources, setSources] = useState(false);
-  return (
-    <details className="question" open={open}>
-      <summary>{item.q}</summary>
-      <p>{item.a}</p>
-      <div className="answer-actions">
-        <button onClick={() => setMore(!more)}>{more ? "Vis mindre" : "Fortell mer"}</button>
-        <button aria-expanded={sources} onClick={() => setSources(!sources)}>
-          Kilder
-        </button>
-      </div>
-      {more && <div className="answer-extra">{story.background}</div>}
-      {sources && (
-        <div className="inline-sources">
-          {story.sources.map((s) => (
-            <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer">
-              {s.title} ↗
-            </a>
-          ))}
-        </div>
-      )}
-    </details>
   );
 }
 

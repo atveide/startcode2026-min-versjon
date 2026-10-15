@@ -20,10 +20,5 @@ dist/
 .idea/
 .vscode/
 
-# Press photos (VG/NTB/Reuters/AP) are not ours to publish; keep them local only.
-frontend/public/assets/photos/*
-!frontend/public/assets/photos/README.md
-!frontend/public/assets/photos/sources.json
-
 # Netlify CLI
 .netlify/

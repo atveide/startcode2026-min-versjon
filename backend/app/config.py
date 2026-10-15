@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:5173"]
     anthropic_api_key: str | None = None
     database_path: str = "game.db"
+    # Folder with the local Adressa import (articles.json and images/). Optional.
+    adressa_cache_dir: str | None = None
 
 
 settings = Settings()

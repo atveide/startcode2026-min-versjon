@@ -1,11 +1,12 @@
+import random
 from dataclasses import dataclass
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
 
 BLANK = "___"
 MAX_HINTS = 3
-
-# The quiz is weekly: a new id starts a fresh round for every player.
-QUIZ_ID = "2026-uke-42"
-QUIZ_WEEK = 42
+QUESTIONS_PER_DAY = 5
+OSLO = ZoneInfo("Europe/Oslo")
 
 
 @dataclass(frozen=True)
@@ -20,40 +21,87 @@ class Headline:
         return self.text.replace(BLANK, self.answer)
 
 
+# The week's question pool, written from this week's Adresseavisen stories. Every answer is in
+# its story but not in the story's title, which the quiz shows under «Saken bak spørsmålet».
 HEADLINES = [
     Headline(
         1,
-        f"To vektere ble angrepet under {BLANK} på en buss på Nesodden",
-        "billettkontroll",
-        "6aa3970d-0f96-4fa6-8317-6efda75b5d2c",
+        f"NTNU-studenter må ta eksamen med penn og papir på grunn av {BLANK} i eksamenslokalene",
+        "plassmangel",
+        "adressa-b85jlv",
     ),
     Headline(
         2,
-        f"Diddy og motstanderen havnet i {BLANK} i to uker etter fengselskampen",
-        "isolat",
-        "a26a6ab3-6e7f-45db-8a66-2b1315d9733c",
+        f"Veidekke og Norconsult skal bygge et nytt {BLANK} for NTNU på Gløshaugen",
+        "musikkhus",
+        "adressa-gdR99q",
     ),
     Headline(
         3,
-        f"Isabelle Eriksen er gravid – graviditeten var ikke {BLANK}",
-        "planlagt",
-        "506a1c27-8236-4bc4-b110-71d550d73a82",
+        f"MDG mener det ikke går an å ha flere {BLANK} gjennom Midtbyen, og vil heller ha bybane",
+        "busser",
+        "adressa-eGkEja",
     ),
     Headline(
         4,
-        f"Spor fra jentas {BLANK} knyttet drap fra 1960 til en politietterforsker",
-        "veske",
-        "c93cbf33-0c5f-4004-a582-a847cc2b8b96",
+        f"For å få råd til bybane vil MDG droppe store veiprosjekter som {BLANK}",
+        "Byåstunnelen",
+        "adressa-eGkEja",
     ),
     Headline(
         5,
-        f"78 mål på 18 kamper ga ny {BLANK} i Champions League-runden",
-        "rekord",
-        "b21dceae-645f-465e-8df2-eb75ee43fb54",
+        f"Politiet fant den stjålne elsykkelen fra garasjen på Havstein, men {BLANK} mangler fortsatt",
+        "batteriet",
+        "adressa-gdBzx0",
+    ),
+    Headline(
+        6,
+        f"På Rinnleiret i Levanger skal det bygges 37 nye {BLANK} til Forsvaret",
+        "stridsvogner",
+        "adressa-X9ev8o",
+    ),
+    Headline(
+        7,
+        f"Sigrid Strømmens debutroman handler om en 27-åring som flytter fra Trondheim til {BLANK}",
+        "Oslo",
+        "adressa-PdX23e",
+    ),
+    Headline(
+        8,
+        f"Trondhjems Kunstforening har gått til sak mot restauranten Bifrons over manglende {BLANK}",
+        "husleie",
+        "adressa-4OV4lR",
     ),
 ]
 
 HEADLINES_BY_ID = {h.id: h for h in HEADLINES}
+
+
+def today() -> date:
+    return datetime.now(OSLO).date()
+
+
+def daily_headlines(day: date) -> list[Headline]:
+    """Today's game: questions from the week's news, a new mix every day.
+
+    The same day always gives the same game. No two questions in a game share a story.
+    """
+    pool = list(HEADLINES)
+    random.Random(day.toordinal()).shuffle(pool)
+    picked: list[Headline] = []
+    stories: set[str] = set()
+    for headline in pool:
+        if headline.story_id not in stories:
+            picked.append(headline)
+            stories.add(headline.story_id)
+        if len(picked) == QUESTIONS_PER_DAY:
+            break
+    return picked
+
+
+def quiz_id(day: date) -> str:
+    """A new id every day starts a fresh game for every player."""
+    return f"dag-{day.isoformat()}"
 
 
 def hint(answer: str, level: int) -> str:

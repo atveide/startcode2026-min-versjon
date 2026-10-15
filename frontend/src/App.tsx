@@ -43,7 +43,7 @@ export default function App() {
     );
   }
   return (
-    <AppProvider stories={data.stories.stories} snapshot={data.stories.snapshot} quiz={data.quiz}>
+    <AppProvider stories={data.stories.stories} importedAt={data.stories.importedAt} quiz={data.quiz}>
       <Routes />
     </AppProvider>
   );

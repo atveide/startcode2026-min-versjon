@@ -6,6 +6,7 @@ dependencies = [
     "anthropic>=1.14",
     "fastapi[standard]>=0.115",
     "pydantic-settings>=2.6",
+    "tzdata>=2026.5",
 ]
 
 [dependency-groups]

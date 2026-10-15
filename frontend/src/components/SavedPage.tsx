@@ -36,7 +36,7 @@ export default function SavedPage() {
             {results.map((s) => (
               <div className="saved-item" key={s.id}>
                 <Link className="history-item" to={`/sak/${s.id}`}>
-                  <Thumb image={s.images[0]} />
+                  <Thumb image={s.image} />
                   <div>
                     <span className="small muted">{s.category}</span>
                     <h3>{s.title}</h3>

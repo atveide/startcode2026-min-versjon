@@ -11,7 +11,7 @@ import { accent, NewsGraphic, PanelImage, Tag } from "./bits";
 export default function QuizPage() {
   const { progress } = useApp();
   useEffect(() => {
-    document.title = "Ukens spill · Opplyst";
+    document.title = "Dagens spill · Opplyst";
   }, []);
   return (
     <>
@@ -28,11 +28,11 @@ function QuizFrame({ story, children }: { story?: Story; children: ReactNode }) 
   return (
     <main id="main" className="quiz-page" tabIndex={-1}>
       <section className="quiz-panel story-panel" style={story ? accent(story) : undefined} aria-labelledby="quiz-title">
-        {story ? <PanelImage image={story.images[0]} priority /> : <NewsGraphic />}
+        {story ? <PanelImage image={story.image} priority /> : <NewsGraphic />}
         <div className="panel-shade" />
         <header className="quiz-top">
           <span className="quiz-title" id="quiz-title">
-            Ukens spill
+            Dagens spill
           </span>
           <Link className="quiz-close" to="/" aria-label="Lukk spillet og gå til forsiden">
             <Icon name="close" size={26} />
@@ -268,7 +268,7 @@ function ResultView() {
 
   return (
     <QuizFrame>
-      <span className="story-label">Uke {quiz.week} · Ferdig</span>
+      <span className="story-label">Dagens spill · Ferdig</span>
       <h1 className="quiz-headline">{title}</h1>
       <p className="result-score">
         <strong>{points}</strong>av {max} poeng
@@ -308,7 +308,7 @@ function ResultView() {
           <button onClick={restart}>Spill igjen</button>
         </div>
       </div>
-      <p className="quiz-foot">Ny quiz kommer neste uke. Følg med på nyhetene, så er du klar.</p>
+      <p className="quiz-foot">Nytt spill i morgen, med nye spørsmål fra ukens nyheter. Følg med, så er du klar.</p>
     </QuizFrame>
   );
 }

@@ -83,16 +83,16 @@ export function verdict(points: number, max: number): { title: string; text: str
   if (ratio >= 0.8)
     return {
       title: "Godt opplyst!",
-      text: "Du har fulgt med denne uken. Utforsk feeden, så er du klar til neste runde.",
+      text: "Du har fulgt med på ukens nyheter. Utforsk feeden, så er du klar til morgendagens spill.",
     };
   if (ratio >= 0.5)
     return {
       title: "Godt på vei",
-      text: "Du kan mye om ukens nyheter. Les sakene du bommet på, så går det enda bedre neste uke.",
+      text: "Du kan mye om ukens nyheter. Les sakene du bommet på, så går det enda bedre i morgen.",
     };
   return {
     title: "Tid for å lese seg opp",
-    text: "Sakene bak spørsmålene ligger i feeden. Les deg opp, så stiller du sterkere neste uke.",
+    text: "Sakene bak spørsmålene ligger i feeden. Les deg opp, så stiller du sterkere i morgen.",
   };
 }
 

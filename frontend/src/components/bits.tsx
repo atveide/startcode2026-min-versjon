@@ -1,10 +1,11 @@
 import { CSSProperties, useState } from "react";
 import type { Story, StoryImage } from "../api";
 import { Icon } from "../icons";
+import { categoryColor } from "../logic";
 import { useApp } from "../state";
 
 export function accent(story: Story): CSSProperties {
-  return { "--accent": story.color } as CSSProperties;
+  return { "--accent": categoryColor(story.category) } as CSSProperties;
 }
 
 export function NewsGraphic() {
@@ -17,14 +18,14 @@ export function NewsGraphic() {
 }
 
 /** A full-bleed panel photo. Falls back to the news graphic when the photo is missing. */
-export function PanelImage({ image, priority = false }: { image?: StoryImage; priority?: boolean }) {
+export function PanelImage({ image, priority = false }: { image: StoryImage | null; priority?: boolean }) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
   if (!image || failedSrc === image.src) return <NewsGraphic />;
   return (
     <img
       className="panel-image"
       src={image.src}
-      alt={image.alt}
+      alt={image.alt ?? ""}
       loading={priority ? "eager" : "lazy"}
       draggable={false}
       onError={() => setFailedSrc(image.src)}
@@ -33,7 +34,7 @@ export function PanelImage({ image, priority = false }: { image?: StoryImage; pr
 }
 
 /** A small thumbnail, or a placeholder when the photo is missing. */
-export function Thumb({ image }: { image?: StoryImage }) {
+export function Thumb({ image }: { image: StoryImage | null }) {
   const [failed, setFailed] = useState(false);
   if (!image || failed)
     return (

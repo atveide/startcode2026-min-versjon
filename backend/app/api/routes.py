@@ -1,17 +1,19 @@
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from app.headlines import (
     HEADLINES,
     HEADLINES_BY_ID,
     MAX_HINTS,
-    QUIZ_ID,
-    QUIZ_WEEK,
     Headline,
+    daily_headlines,
     hint,
+    quiz_id,
+    today,
 )
 from app.judge import judge_guess
-from app.stories import SNAPSHOT, STORIES, STORIES_BY_ID, Story
+from app.stories import WEEK, Story, image_path, load_stories
 
 router = APIRouter()
 
@@ -24,13 +26,15 @@ class HeadlineOut(BaseModel):
 
 class QuizOut(BaseModel):
     id: str
+    date: str
     week: int
     max_hints: int
     headlines: list[HeadlineOut]
 
 
 class StoriesOut(BaseModel):
-    snapshot: str
+    week: int
+    importedAt: str | None
     stories: list[Story]
 
 
@@ -80,25 +84,38 @@ def list_headlines() -> list[HeadlineOut]:
 
 @router.get("/quiz")
 def get_quiz() -> QuizOut:
+    """Today's game, drawn from the week's question pool."""
+    day = today()
     return QuizOut(
-        id=QUIZ_ID,
-        week=QUIZ_WEEK,
+        id=quiz_id(day),
+        date=day.isoformat(),
+        week=WEEK.week,
         max_hints=MAX_HINTS,
-        headlines=[_headline_out(h) for h in HEADLINES],
+        headlines=[_headline_out(h) for h in daily_headlines(day)],
     )
 
 
 @router.get("/stories")
 def list_stories() -> StoriesOut:
-    return StoriesOut(snapshot=SNAPSHOT, stories=STORIES)
+    stories, imported_at = load_stories()
+    return StoriesOut(week=WEEK.week, importedAt=imported_at, stories=stories)
 
 
 @router.get("/stories/{story_id}")
 def get_story(story_id: str) -> Story:
-    story = STORIES_BY_ID.get(story_id)
+    stories, _ = load_stories()
+    story = next((s for s in stories if s.id == story_id), None)
     if story is None:
         raise HTTPException(status_code=404, detail="Unknown story")
     return story
+
+
+@router.get("/media/adressa/{name}")
+def get_image(name: str) -> FileResponse:
+    path = image_path(name)
+    if path is None:
+        raise HTTPException(status_code=404, detail="Unknown image")
+    return FileResponse(path, headers={"Cache-Control": "no-cache"})
 
 
 @router.post("/guess")

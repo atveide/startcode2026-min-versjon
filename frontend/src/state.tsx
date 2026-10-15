@@ -19,7 +19,8 @@ type FeedFilter = { query: string; category: string };
 type AppState = {
   stories: Story[];
   storiesById: Map<string, Story>;
-  snapshot: string;
+  /** When the local Adressa import last succeeded, or null when this machine has none. */
+  importedAt: string | null;
   quiz: Quiz;
   progress: QuizProgress;
   guess: (word: string) => Promise<void>;
@@ -49,9 +50,9 @@ export function useApp(): AppState {
 const SAVED_KEY = "opplyst-saved-v1";
 const READ_KEY = "opplyst-read-v1";
 
-type Props = { stories: Story[]; snapshot: string; quiz: Quiz; children: ReactNode };
+type Props = { stories: Story[]; importedAt: string | null; quiz: Quiz; children: ReactNode };
 
-export function AppProvider({ stories, snapshot, quiz, children }: Props) {
+export function AppProvider({ stories, importedAt, quiz, children }: Props) {
   const storiesById = useMemo(() => new Map(stories.map((s) => [s.id, s])), [stories]);
   const ids = useMemo(() => stories.map((s) => s.id), [stories]);
 
@@ -166,7 +167,7 @@ export function AppProvider({ stories, snapshot, quiz, children }: Props) {
   const value: AppState = {
     stories,
     storiesById,
-    snapshot,
+    importedAt,
     quiz,
     progress,
     guess,
@@ -191,12 +192,12 @@ export function AppProvider({ stories, snapshot, quiz, children }: Props) {
       <div className={`toast ${toastState.visible ? "visible" : ""}`} role="status" aria-live="polite">
         {toastState.message}
       </div>
-      <About dialogRef={aboutRef} snapshot={snapshot} />
+      <About dialogRef={aboutRef} />
     </AppContext.Provider>
   );
 }
 
-function About({ dialogRef, snapshot }: { dialogRef: RefObject<HTMLDialogElement | null>; snapshot: string }) {
+function About({ dialogRef }: { dialogRef: RefObject<HTMLDialogElement | null> }) {
   return (
     <dialog
       ref={dialogRef}
@@ -213,18 +214,18 @@ function About({ dialogRef, snapshot }: { dialogRef: RefObject<HTMLDialogElement
       </div>
       <div className="modal-body">
         <p>
-          Opplyst gjør det morsomt å følge med på det som skjer rundt deg. Ukens nyhetsquiz bygger på sakene fra
-          den siste uken. Står du fast, leser du saken og går tilbake til spørsmålet.
+          Opplyst gjør det morsomt å følge med på det som skjer rundt deg. Hver dag får du et nytt spill med
+          spørsmål fra ukens nyheter. Står du fast, leser du saken og går tilbake til spørsmålet.
         </p>
         <ul>
-          <li>Ukens nyhetsquiz med hint og vurdering av svaret ditt</li>
-          <li>Saken bak hvert spørsmål, med sammendrag og fordypning</li>
+          <li>Dagens spill med hint og vurdering av svaret ditt</li>
+          <li>Saken bak hvert spørsmål, med Adressas egen oppsummering</li>
           <li>Nyhetsfeed, søk, kategorier og lagrede saker</li>
         </ul>
         <p>
-          I konseptet er Polaris Medias journalistikk grunnlaget for både spørsmål og saker. Denne prototypen
-          bruker et lagret utvalg på fem saker fra VG, {snapshot}, som plassholder. Claude vurderer svarene i
-          quizen. Spørsmålsfeltet i sakene svarer bare fra lagret innhold.
+          Spørsmålene og sakene bygger på ukens journalistikk fra Adresseavisen (Polaris Media). Claude vurderer
+          svarene i spillet. Hele saken med Adressas oppsummering vises bare der den er hentet med eget
+          abonnement; ellers lenker appen til saken hos Adressa.
         </p>
         <p className="small">
           Uoffisiell hackathon-prototype med Adressa-design fra hackathonpakken. Den har ingen tilknytning til

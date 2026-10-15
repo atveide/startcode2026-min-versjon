@@ -1,27 +1,39 @@
-export type StoryImage = { src: string; alt: string; credit?: string | null };
-export type Source = { title: string; url: string };
-export type QA = { q: string; a: string; tags: string[] };
+export type StoryImage = { src: string; alt: string | null; caption: string | null; credit: string | null };
+
+/** Adressa's own «Kort oppsummert», unchanged, with its AI and editorial disclosure. */
+export type Summary = {
+  heading: string;
+  bullets: string[];
+  source: string;
+  sourceUrl: string;
+  disclosure: string | null;
+  disclosureUrl: string | null;
+};
+
+export type Block = { type: "paragraph" | "heading" | "list"; text: string | null; items: string[] | null };
 
 export type Story = {
   id: string;
   title: string;
+  url: string;
   category: string;
-  color: string;
-  latest: boolean;
-  updated: string;
-  images: StoryImage[];
-  summary: string[];
-  developments: string[];
-  background: string;
-  sources: Source[];
-  qa: QA[];
+  source: string;
+  publishedAt: string;
+  modifiedAt: string | null;
+  authors: string[];
+  lead: string | null;
+  summary: Summary | null;
+  image: StoryImage | null;
+  body: Block[];
+  /** True when the local Adressa import has the full article on this machine. */
+  imported: boolean;
 };
 
-export type Stories = { snapshot: string; stories: Story[] };
+export type Stories = { week: number; importedAt: string | null; stories: Story[] };
 
 export type Headline = { id: number; text: string; story_id: string };
 
-export type Quiz = { id: string; week: number; max_hints: number; headlines: Headline[] };
+export type Quiz = { id: string; date: string; week: number; max_hints: number; headlines: Headline[] };
 
 export type GuessResult = {
   score: number;
