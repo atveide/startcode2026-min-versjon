@@ -1,0 +1,445 @@
+{
+  "schemaVersion": 1,
+  "kit": "Unofficial Adressa hackathon kit",
+  "reviewedOn": "2026-10-15",
+  "status": "Unofficial source-informed demo; not an official profile manual",
+  "classificationDefinitions": {
+    "source": "Downloaded or extracted source bytes, unchanged after retrieval",
+    "derived": "Source asset modified as listed in changes; source rights retained",
+    "original": "Created for this kit, without copied editorial content"
+  },
+  "observedColors": {
+    "sourceUrl": "https://www.adressa.no/css/snowflake.adressa.2f7e1ff8a86e7c48a8e6.css",
+    "retrievedOn": "2026-10-15",
+    "selector": ":root",
+    "values": {
+      "--color-primary": "#005379",
+      "--color-primary-dark-1": "#004666",
+      "--color-primary-dark-2": "#003852",
+      "--color-secondary": "#28aae2",
+      "--color-background": "#f9f9f9",
+      "--color-footer-background": "#f1f1f1",
+      "--color-sport": "#4e9d2d",
+      "--color-kultur": "#c3002f",
+      "--color-krim": "#0c212a",
+      "--color-black": "#010101",
+      "--color-trdby": "#ffa235",
+      "--color-rbk": "#be9e55"
+    },
+    "sourceStylesheetIncluded": false
+  },
+  "sourceDocumentHashes": {
+    "officialHomeHtmlSha256": "94667a2cbe5aaed0e83fa8bed80404b336a1b815a85bf01359e66ef9fdee1885",
+    "officialStylesheetSha256": "3d4c4c15cb98ee13c3f42d777e4a8f8035677ddd903f84d2a2bf116d92cb8d2a"
+  },
+  "assets": [
+    {
+      "path": "public/assets/brand/adresseavisen-original.svg",
+      "classification": "source",
+      "title": "Official Adresseavisen masthead SVG",
+      "bytes": 5968,
+      "sha256": "e8d82b3ea6a7dc981da5384f8333ebb9301c734da4cfbe3c30b97cb2765be8ec",
+      "source": {
+        "url": "https://www.adressa.no/",
+        "method": "Unchanged inline SVG extracted from first .logo-link.adressa-logo",
+        "retrievedOn": "2026-10-15"
+      },
+      "license": {
+        "id": "LicenseRef-Brand-Mark",
+        "noticeFile": "licenses/BRAND-MARK-NOTICE.md",
+        "statement": "No explicit reuse license found on official source. Brand mark excluded from license for original project code.",
+        "contextUrl": "https://commons.wikimedia.org/wiki/File:Adresseavisen.svg",
+        "contextNote": "Commons PD-textlogo applies to a separate Commons rendering; it is not the file shipped here."
+      },
+      "format": "image/svg+xml",
+      "viewBox": "0 0 120 24",
+      "originalFill": "#000",
+      "modified": false
+    },
+    {
+      "path": "public/assets/brand/adressa-blue.svg",
+      "classification": "derived",
+      "title": "Demo color variant of official masthead",
+      "bytes": 5971,
+      "sha256": "6a47a34af288e81c47e580e4c20b44bab264b084081d170f1c8c2b85021f6bc1",
+      "source": {
+        "derivedFrom": "public/assets/brand/adresseavisen-original.svg",
+        "sourceUrl": "https://www.adressa.no/"
+      },
+      "license": {
+        "id": "LicenseRef-Brand-Mark",
+        "noticeFile": "licenses/BRAND-MARK-NOTICE.md",
+        "statement": "No explicit reuse license found on official source. Brand mark excluded from license for original project code.",
+        "contextUrl": "https://commons.wikimedia.org/wiki/File:Adresseavisen.svg",
+        "contextNote": "Commons PD-textlogo applies to a separate Commons rendering; it is not the file shipped here."
+      },
+      "format": "image/svg+xml",
+      "viewBox": "0 0 120 24",
+      "changes": [
+        "Only the path fill was changed from #000 to #005379"
+      ],
+      "officialVariantVerified": false
+    },
+    {
+      "path": "public/assets/brand/adressa-white.svg",
+      "classification": "derived",
+      "title": "Demo color variant of official masthead",
+      "bytes": 5971,
+      "sha256": "8dbefed15cef1ffaa2f457b89b49b901199c6442c4a63803f1621cc04c4b512f",
+      "source": {
+        "derivedFrom": "public/assets/brand/adresseavisen-original.svg",
+        "sourceUrl": "https://www.adressa.no/"
+      },
+      "license": {
+        "id": "LicenseRef-Brand-Mark",
+        "noticeFile": "licenses/BRAND-MARK-NOTICE.md",
+        "statement": "No explicit reuse license found on official source. Brand mark excluded from license for original project code.",
+        "contextUrl": "https://commons.wikimedia.org/wiki/File:Adresseavisen.svg",
+        "contextNote": "Commons PD-textlogo applies to a separate Commons rendering; it is not the file shipped here."
+      },
+      "format": "image/svg+xml",
+      "viewBox": "0 0 120 24",
+      "changes": [
+        "Only the path fill was changed from #000 to #ffffff"
+      ],
+      "officialVariantVerified": false
+    },
+    {
+      "path": "public/assets/fonts/bitter-latin-wght-normal.woff2",
+      "classification": "source",
+      "title": "Bitter Latin variable normal",
+      "bytes": 34072,
+      "sha256": "0efe0fbe6068354f3fad5a88bf31384051206652468eaa22232119354e7ea423",
+      "source": {
+        "url": "https://cdn.jsdelivr.net/npm/@fontsource-variable/bitter@5.3.0/files/bitter-latin-wght-normal.woff2",
+        "package": "@fontsource-variable/bitter",
+        "version": "5.3.0",
+        "retrievedOn": "2026-10-15"
+      },
+      "license": {
+        "id": "OFL-1.1",
+        "textFile": "licenses/Bitter-OFL.txt",
+        "licenseSourceUrl": "https://cdn.jsdelivr.net/npm/@fontsource-variable/bitter@5.3.0/LICENSE"
+      },
+      "format": "font/woff2",
+      "modified": false,
+      "axes": [
+        {
+          "tag": "wght",
+          "min": 100.0,
+          "max": 900.0
+        }
+      ],
+      "norwegianGlyphsVerified": "æøåÆØÅ",
+      "officialBrandFontVerified": false
+    },
+    {
+      "path": "public/assets/fonts/inter-latin-wght-normal.woff2",
+      "classification": "source",
+      "title": "Inter Latin variable normal",
+      "bytes": 48256,
+      "sha256": "3100e775e8616cd2611beecfa23a4263d7037586789b43f035236a2e6fbd4c62",
+      "source": {
+        "url": "https://cdn.jsdelivr.net/npm/@fontsource-variable/inter@5.3.0/files/inter-latin-wght-normal.woff2",
+        "package": "@fontsource-variable/inter",
+        "version": "5.3.0",
+        "retrievedOn": "2026-10-15"
+      },
+      "license": {
+        "id": "OFL-1.1",
+        "textFile": "licenses/Inter-OFL.txt",
+        "licenseSourceUrl": "https://cdn.jsdelivr.net/npm/@fontsource-variable/inter@5.3.0/LICENSE"
+      },
+      "format": "font/woff2",
+      "modified": false,
+      "axes": [
+        {
+          "tag": "wght",
+          "min": 100.0,
+          "max": 900.0
+        }
+      ],
+      "norwegianGlyphsVerified": "æøåÆØÅ",
+      "officialBrandFontVerified": false
+    },
+    {
+      "path": "public/assets/fonts/fonts.css",
+      "classification": "original",
+      "title": "Local font loading CSS",
+      "bytes": 433,
+      "sha256": "ecccea6b4857fd340513f5b322b9e39bb3dfc9414e120b8c53559521edc2b01c",
+      "source": {
+        "createdFor": "This unofficial hackathon kit"
+      },
+      "license": {
+        "id": "LicenseRef-Project-Code",
+        "statement": "Covered by the project license for original code, if provided."
+      },
+      "format": "text/css",
+      "changes": []
+    },
+    {
+      "path": "public/assets/images/trondheim.jpg",
+      "classification": "derived",
+      "title": "Nidelva from Gamle Bybro",
+      "bytes": 188192,
+      "sha256": "898970bbb50790c2de0d5258723adfd5c199d11ccc1cb1e8afd3d5e24800a832",
+      "source": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/2/22/Nidelv.jpg",
+        "pageUrl": "https://commons.wikimedia.org/wiki/File:Nidelv.jpg",
+        "author": "Addrexoline",
+        "photographedOn": "2021-07-14",
+        "retrievedOn": "2026-10-15",
+        "originalFile": {
+          "sha256": "fea344c10c635487735b2468477ec3b8ccb0d9d78f303f56b7cd62df37d9e49e",
+          "bytes": 5219157,
+          "width": 3889,
+          "height": 2593
+        }
+      },
+      "license": {
+        "id": "CC-BY-SA-4.0",
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "textFile": "licenses/CC-BY-SA-4.0.txt",
+        "evidenceUrl": "https://commons.wikimedia.org/wiki/File:Nidelv.jpg"
+      },
+      "format": "image/jpeg",
+      "width": 1600,
+      "height": 1067,
+      "changes": [
+        "Resized proportionally to maximum 1600 px on longest side",
+        "Re-encoded as progressive JPEG quality 82; ancillary metadata removed"
+      ],
+      "attribution": "Illustrasjonsfoto: Addrexoline / Wikimedia Commons / CC BY-SA 4.0. Nedskalert og komprimert; utsnitt i visningen.",
+      "attributionNearImageRequired": false,
+      "illustrationOnly": true
+    },
+    {
+      "path": "public/assets/images/bakklandet.jpg",
+      "classification": "derived",
+      "title": "Nedre Bakklandet",
+      "bytes": 326963,
+      "sha256": "f89482ee8b90040503020761fac858757ac6791f6e9db92c759bd9ed4662d3e2",
+      "source": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/b/b1/Nedre_Bakklandet.jpg",
+        "pageUrl": "https://commons.wikimedia.org/wiki/File:Nedre_Bakklandet.jpg",
+        "author": "Guy Delsaut",
+        "photographedOn": "2019-08-27",
+        "retrievedOn": "2026-10-15",
+        "originalFile": {
+          "sha256": "856d0b3479fbc23a8bbb407473811823a452c9c9603213d6b499c26e0d208f93",
+          "bytes": 1352358,
+          "width": 2560,
+          "height": 1712
+        }
+      },
+      "license": {
+        "id": "CC-BY-SA-4.0",
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "textFile": "licenses/CC-BY-SA-4.0.txt",
+        "evidenceUrl": "https://commons.wikimedia.org/wiki/File:Nedre_Bakklandet.jpg"
+      },
+      "format": "image/jpeg",
+      "width": 1600,
+      "height": 1070,
+      "changes": [
+        "Resized proportionally to maximum 1600 px on longest side",
+        "Re-encoded as progressive JPEG quality 82; ancillary metadata removed"
+      ],
+      "attribution": "Illustrasjonsfoto: Guy Delsaut / Wikimedia Commons / CC BY-SA 4.0. Nedskalert og komprimert; utsnitt i visningen.",
+      "attributionNearImageRequired": false,
+      "illustrationOnly": true
+    },
+    {
+      "path": "public/assets/images/bymarka.jpg",
+      "classification": "derived",
+      "title": "Vintervatnet Bymarka",
+      "bytes": 229770,
+      "sha256": "82d28a12d9a39dc198312c64cfcc87ba87eb956a4bb425c56b7371e8cb838d4c",
+      "source": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/e/e7/Vintervatnet_Bymarka.jpg",
+        "pageUrl": "https://commons.wikimedia.org/wiki/File:Vintervatnet_Bymarka.jpg",
+        "author": "Cato Edvardsen",
+        "photographedOn": "2016-06-15",
+        "retrievedOn": "2026-10-15",
+        "originalFile": {
+          "sha256": "f47af570a4183cb92143bf823c6d317a27dedb2c12c027fdea2fd049e9771d5b",
+          "bytes": 1636885,
+          "width": 3900,
+          "height": 2613
+        }
+      },
+      "license": {
+        "id": "CC-BY-SA-4.0",
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "textFile": "licenses/CC-BY-SA-4.0.txt",
+        "evidenceUrl": "https://commons.wikimedia.org/wiki/File:Vintervatnet_Bymarka.jpg"
+      },
+      "format": "image/jpeg",
+      "width": 1600,
+      "height": 1072,
+      "changes": [
+        "Resized proportionally to maximum 1600 px on longest side",
+        "Re-encoded as progressive JPEG quality 82; ancillary metadata removed"
+      ],
+      "attribution": "Illustrasjonsfoto: Cato Edvardsen / Wikimedia Commons / CC BY-SA 4.0. Nedskalert og komprimert; utsnitt i visningen.",
+      "attributionNearImageRequired": true,
+      "illustrationOnly": true
+    },
+    {
+      "path": "public/assets/images/lerkendal.jpg",
+      "classification": "derived",
+      "title": "Lerkendal stadion, 2023",
+      "bytes": 401100,
+      "sha256": "ec5a2a250d7aa9da6ddd29b4d7a928ff100f2c032f6f0bc49cb26b6195ae473d",
+      "source": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Lerkendal_stadion,_2023.jpg",
+        "pageUrl": "https://commons.wikimedia.org/wiki/File:Lerkendal_stadion,_2023.jpg",
+        "author": "Ssu",
+        "photographedOn": "2023-07-13",
+        "retrievedOn": "2026-10-15",
+        "originalFile": {
+          "sha256": "50c31de4f72833db1d71ababea9ee05a8c9ed22174e808ac2fe2a2807dc08463",
+          "bytes": 3150210,
+          "width": 4032,
+          "height": 3024
+        }
+      },
+      "license": {
+        "id": "CC-BY-SA-4.0",
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "textFile": "licenses/CC-BY-SA-4.0.txt",
+        "evidenceUrl": "https://commons.wikimedia.org/wiki/File:Lerkendal_stadion,_2023.jpg"
+      },
+      "format": "image/jpeg",
+      "width": 1600,
+      "height": 1200,
+      "changes": [
+        "Resized proportionally to maximum 1600 px on longest side",
+        "Re-encoded as progressive JPEG quality 82; ancillary metadata removed"
+      ],
+      "attribution": "Illustrasjonsfoto: Ssu / Wikimedia Commons / CC BY-SA 4.0. Nedskalert og komprimert; utsnitt i visningen.",
+      "attributionNearImageRequired": false,
+      "illustrationOnly": true
+    },
+    {
+      "path": "public/assets/brand/app-icon.svg",
+      "classification": "original",
+      "title": "Proposed hackathon app icon, not official",
+      "bytes": 292,
+      "sha256": "eeaac7158d6caa8c5456f42e79ffe648eabf591bfd761575c1fd35c572bf7b84",
+      "source": {
+        "createdFor": "This unofficial hackathon kit"
+      },
+      "license": {
+        "id": "MIT",
+        "textFile": "LICENSE"
+      },
+      "format": "image/svg+xml",
+      "illustrationOnly": true
+    },
+    {
+      "path": "public/assets/images/byliv.svg",
+      "classification": "original",
+      "title": "Original illustration for this hackathon kit",
+      "bytes": 1909,
+      "sha256": "241eeb38c6f19869e3dc6ceca9a5b92b9b0831e0548e94ad7c8d6194dba0bc75",
+      "source": {
+        "createdFor": "This unofficial hackathon kit"
+      },
+      "license": {
+        "id": "MIT",
+        "textFile": "LICENSE"
+      },
+      "format": "image/svg+xml",
+      "illustrationOnly": true
+    },
+    {
+      "path": "public/assets/images/marka.svg",
+      "classification": "original",
+      "title": "Original illustration for this hackathon kit",
+      "bytes": 789,
+      "sha256": "ede95dca0ed07af9b0282b342e05b4ea996d81f29c03692a6187045d75a2e99b",
+      "source": {
+        "createdFor": "This unofficial hackathon kit"
+      },
+      "license": {
+        "id": "MIT",
+        "textFile": "LICENSE"
+      },
+      "format": "image/svg+xml",
+      "illustrationOnly": true
+    },
+    {
+      "path": "public/assets/images/fotball.svg",
+      "classification": "original",
+      "title": "Original illustration for this hackathon kit",
+      "bytes": 1220,
+      "sha256": "423164ef647a85e5d2f430bdb870b4f7f5eaef4800accc04c949f5c6a0bb76aa",
+      "source": {
+        "createdFor": "This unofficial hackathon kit"
+      },
+      "license": {
+        "id": "MIT",
+        "textFile": "LICENSE"
+      },
+      "format": "image/svg+xml",
+      "illustrationOnly": true
+    },
+    {
+      "path": "public/assets/images/kultur.svg",
+      "classification": "original",
+      "title": "Original illustration for this hackathon kit",
+      "bytes": 882,
+      "sha256": "1d93b4a75f8252c4b84eadf32d518e550305d696f12b748c3f5df1d0f2dce558",
+      "source": {
+        "createdFor": "This unofficial hackathon kit"
+      },
+      "license": {
+        "id": "MIT",
+        "textFile": "LICENSE"
+      },
+      "format": "image/svg+xml",
+      "illustrationOnly": true
+    }
+  ],
+  "licenseTexts": [
+    {
+      "path": "licenses/Bitter-OFL.txt",
+      "sha256": "b91c95cc26646b272255eb5a195f71fa369d96232754afdfe4e8e4f74eef427b"
+    },
+    {
+      "path": "licenses/Inter-OFL.txt",
+      "sha256": "3b0a5fca3d17942cde889069889dedbbbd075e9b599968c82a95f4d944e9b345"
+    },
+    {
+      "path": "licenses/CC-BY-SA-4.0.txt",
+      "sha256": "28a9529c7d0bb4dc51f4bf5c116a3d16ef247a052f7591466768ddf563fd1cf5"
+    },
+    {
+      "path": "licenses/BRAND-MARK-NOTICE.md",
+      "sha256": "f8748e05d315bc4608e2ab40458e36704dc4031cfae73bbdddbe65489ac61ea6"
+    },
+    {
+      "path": "licenses/Lucide-LICENSE.txt",
+      "sha256": "b495047bd93a9b06913511076f504daba17d5bbeb3e0650f3bb53a4220329c57"
+    }
+  ],
+  "validation": {
+    "svgXmlParsed": true,
+    "svgActiveContentAbsent": true,
+    "woff2ParsedAndVariableAxisVerified": true,
+    "norwegianGlyphsVerified": true,
+    "jpegDecodeVerified": true,
+    "photosVisuallyInspected": true
+  },
+  "editorialContent": "Article text in the demo is original fictional demo content, not copied from Adresseavisen. Photos are location illustrations and do not document those fictional events.",
+  "thirdPartyCode": [
+    {
+      "package": "lucide-react",
+      "version": "1.57.0",
+      "licenseFile": "licenses/Lucide-LICENSE.txt",
+      "source": "https://lucide.dev/license"
+    }
+  ]
+}
