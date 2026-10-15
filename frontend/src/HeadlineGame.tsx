@@ -1,22 +1,25 @@
 import { FormEvent, useEffect, useState } from "react";
-import { fetchHeadlines, GuessResult, Headline, submitGuess } from "./api";
+import { fetchHeadlines, fetchHint, Headline, Hint, revealAnswer, submitGuess } from "./api";
 
 const BLANK = "___";
 const MAX_POINTS = 10;
 
-// 10 points for a first-try solve, one point less per extra guess.
-function pointsFor(guessCount: number): number {
-  return Math.max(0, MAX_POINTS - (guessCount - 1));
-}
-
 type Guess = { word: string; score: number };
+type Result = { guesses: number; hints: number; gaveUp: boolean };
+
+// 10 points for a first-try solve; every extra guess and every hint costs a point.
+function pointsFor(result: Result): number {
+  if (result.gaveUp) return 0;
+  return Math.max(0, MAX_POINTS - (result.guesses - 1) - result.hints);
+}
 
 export default function HeadlineGame() {
   const [headlines, setHeadlines] = useState<Headline[] | null>(null);
   const [index, setIndex] = useState(0);
   const [guesses, setGuesses] = useState<Guess[]>([]);
-  const [solved, setSolved] = useState<GuessResult | null>(null);
-  const [results, setResults] = useState<number[]>([]); // guess count per finished headline
+  const [hint, setHint] = useState<Hint | null>(null);
+  const [answer, setAnswer] = useState<string | null>(null); // set once solved or given up
+  const [results, setResults] = useState<Result[]>([]);
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,33 +33,51 @@ export default function HeadlineGame() {
 
   if (error && !headlines) return <p className="error">{error}</p>;
   if (!headlines) return <p>Laster…</p>;
-
   if (showSummary) return <Summary results={results} onRestart={restart} />;
 
   const headline = headlines[index];
   const [before, after] = headline.text.split(BLANK);
+  const hintsUsed = hint?.level ?? 0;
+  const done = answer !== null;
+  const result = done ? results[results.length - 1] : null;
 
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    const word = input.trim();
-    if (!word || pending || solved) return;
-
+  async function run(action: () => Promise<void>) {
     setPending(true);
     setError(null);
     try {
-      const result = await submitGuess(headline.id, word);
-      const next = [...guesses, { word, score: result.score }];
-      setGuesses(next);
-      setInput("");
-      if (result.solved) {
-        setSolved(result);
-        setResults([...results, next.length]);
-      }
+      await action();
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setPending(false);
     }
+  }
+
+  function finish(word: string, guessCount: number, gaveUp: boolean) {
+    setAnswer(word);
+    setResults([...results, { guesses: guessCount, hints: hintsUsed, gaveUp }]);
+  }
+
+  function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    const word = input.trim();
+    if (!word || pending || done) return;
+
+    run(async () => {
+      const res = await submitGuess(headline.id, word);
+      const next = [...guesses, { word, score: res.score }];
+      setGuesses(next);
+      setInput("");
+      if (res.solved) finish(res.answer!, next.length, false);
+    });
+  }
+
+  function onHint() {
+    run(async () => setHint(await fetchHint(headline.id, hintsUsed + 1)));
+  }
+
+  function onGiveUp() {
+    run(async () => finish((await revealAnswer(headline.id)).answer, guesses.length, true));
   }
 
   function nextHeadline() {
@@ -66,19 +87,22 @@ export default function HeadlineGame() {
     }
     setIndex(index + 1);
     setGuesses([]);
-    setSolved(null);
+    setHint(null);
+    setAnswer(null);
   }
 
   function restart() {
     setIndex(0);
     setGuesses([]);
-    setSolved(null);
+    setHint(null);
+    setAnswer(null);
     setResults([]);
     setShowSummary(false);
   }
 
   const isLast = index === headlines.length - 1;
   const sortedGuesses = [...guesses].sort((a, b) => b.score - a.score);
+  const hintsLeft = hint ? hint.max_level - hint.level : null;
 
   return (
     <section className="game">
@@ -88,33 +112,50 @@ export default function HeadlineGame() {
 
       <h2 className="headline">
         {before}
-        <span className={solved ? "blank solved" : "blank"}>{solved ? solved.answer : "?"}</span>
+        <span className={result ? (result.gaveUp ? "blank gave-up" : "blank solved") : "blank"}>
+          {answer ?? "?"}
+        </span>
         {after}
       </h2>
 
-      {solved ? (
-        <div className="solved-box">
+      {hint && !done && <p className="hint">Hint: {hint.hint}</p>}
+
+      {result ? (
+        <div className={result.gaveUp ? "result-box gave-up" : "result-box"}>
           <p>
-            Riktig! Løst på {guesses.length} forsøk —{" "}
-            {pointsFor(guesses.length)} poeng.
+            {result.gaveUp
+              ? "Du ga opp — 0 poeng."
+              : `Riktig! Løst på ${result.guesses} forsøk${
+                  result.hints ? ` og ${result.hints} hint` : ""
+                } — ${pointsFor(result)} poeng.`}
           </p>
           <button autoFocus onClick={nextHeadline}>
             {isLast ? "Se resultat" : "Neste overskrift"}
           </button>
         </div>
       ) : (
-        <form onSubmit={onSubmit} className="guess-form">
-          <input
-            autoFocus
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Gjett ordet"
-            disabled={pending}
-          />
-          <button type="submit" disabled={pending || !input.trim()}>
-            {pending ? "Sjekker…" : "Gjett"}
-          </button>
-        </form>
+        <>
+          <form onSubmit={onSubmit} className="guess-form">
+            <input
+              autoFocus
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Gjett ordet"
+              disabled={pending}
+            />
+            <button type="submit" disabled={pending || !input.trim()}>
+              {pending ? "Sjekker…" : "Gjett"}
+            </button>
+          </form>
+          <div className="actions">
+            <button type="button" onClick={onHint} disabled={pending || hintsLeft === 0}>
+              Hint{hintsLeft !== null ? ` (${hintsLeft} igjen)` : ""}
+            </button>
+            <button type="button" className="give-up" onClick={onGiveUp} disabled={pending}>
+              Gi opp
+            </button>
+          </div>
+        </>
       )}
 
       {error && <p className="error">{error}</p>}
@@ -134,8 +175,8 @@ export default function HeadlineGame() {
   );
 }
 
-function Summary({ results, onRestart }: { results: number[]; onRestart: () => void }) {
-  const total = results.reduce((sum, n) => sum + pointsFor(n), 0);
+function Summary({ results, onRestart }: { results: Result[]; onRestart: () => void }) {
+  const total = results.reduce((sum, r) => sum + pointsFor(r), 0);
   return (
     <section className="game">
       <h2>Ferdig!</h2>
@@ -143,9 +184,10 @@ function Summary({ results, onRestart }: { results: number[]; onRestart: () => v
         Du fikk <strong>{total}</strong> av {results.length * MAX_POINTS} poeng.
       </p>
       <ol>
-        {results.map((n, i) => (
+        {results.map((r, i) => (
           <li key={i}>
-            {n} forsøk — {pointsFor(n)} poeng
+            {r.gaveUp ? "Ga opp" : `${r.guesses} forsøk`}
+            {r.hints ? `, ${r.hints} hint` : ""} — {pointsFor(r)} poeng
           </li>
         ))}
       </ol>
