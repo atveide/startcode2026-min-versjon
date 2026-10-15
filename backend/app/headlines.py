@@ -72,6 +72,48 @@ HEADLINES = [
         "husleie",
         "adressa-4OV4lR",
     ),
+    Headline(
+        9,
+        f"NTNU-studentene fikk velge mellom papireksamen før jul eller {BLANK} eksamen etter jul",
+        "digital",
+        "adressa-b85jlv",
+    ),
+    Headline(
+        10,
+        f"Det nye musikkhuset for NTNU på Gløshaugen skal hete {BLANK}",
+        "Resonans",
+        "adressa-gdR99q",
+    ),
+    Headline(
+        11,
+        f"Byplankontoret har {BLANK} bygging på den østre tomta ved Søndre Halset borettslag",
+        "avvist",
+        "adressa-77RoE4",
+    ),
+    Headline(
+        12,
+        f"Familien på Havstein hadde installert {BLANK} i garasjen før innbruddet",
+        "overvåkningskamera",
+        "adressa-gdBzx0",
+    ),
+    Headline(
+        13,
+        f"Sjefen for Hærens våpenskole kaller Norges nye Leopard 2 A8 NOR «en helt fantastisk {BLANK}»",
+        "vogn",
+        "adressa-X9ev8o",
+    ),
+    Headline(
+        14,
+        f"Sigrid Strømmens roman er delt i tre deler: «Trondheim», «Oslo» og «{BLANK}»",
+        "Skogen",
+        "adressa-PdX23e",
+    ),
+    Headline(
+        15,
+        f"Restauranten Bifrons holder til i Bispegata 9A, rett ved {BLANK}",
+        "Nidarosdomen",
+        "adressa-4OV4lR",
+    ),
 ]
 
 HEADLINES_BY_ID = {h.id: h for h in HEADLINES}
@@ -100,8 +142,12 @@ def daily_headlines(day: date) -> list[Headline]:
 
 
 def quiz_id(day: date) -> str:
-    """A new id every day starts a fresh game for every player."""
-    return f"dag-{day.isoformat()}"
+    """A new id every day starts a fresh game for every player.
+
+    It includes the questions, so a game that changes during the day (a new question pool)
+    also starts fresh instead of reusing progress made on other questions.
+    """
+    return f"dag-{day.isoformat()}-" + ".".join(str(h.id) for h in daily_headlines(day))
 
 
 def hint(answer: str, level: int) -> str:

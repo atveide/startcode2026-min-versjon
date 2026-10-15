@@ -97,7 +97,7 @@ def test_daily_game_is_stable_within_a_day_and_changes_between_days() -> None:
     assert [h.id for h in daily_headlines(day)] == [h.id for h in game]
     week = [[h.id for h in daily_headlines(day + timedelta(days=n))] for n in range(7)]
     assert len({tuple(g) for g in week}) > 1
-    assert quiz_id(day) == "dag-2026-10-15"
+    assert quiz_id(day) == "dag-2026-10-15-" + ".".join(str(h.id) for h in game)
 
 
 def test_quiz_is_todays_game() -> None:
