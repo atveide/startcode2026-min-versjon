@@ -9,6 +9,8 @@ import sys
 import anthropic
 from pydantic import BaseModel
 
+from app.config import settings
+
 MODEL = "claude-sonnet-5-5"
 
 SYSTEM_PROMPT = """\
@@ -35,7 +37,8 @@ class WordSimilarity(BaseModel):
     score: int
 
 
-client = anthropic.Anthropic()
+# An empty ANTHROPIC_API_KEY= in .env counts as unset.
+client = anthropic.Anthropic(api_key=settings.anthropic_api_key or None)
 
 
 def word_similarity(guess: str, target: str) -> int:
