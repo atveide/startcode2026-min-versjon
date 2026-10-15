@@ -24,3 +24,6 @@ dist/
 frontend/public/assets/photos/*
 !frontend/public/assets/photos/README.md
 !frontend/public/assets/photos/sources.json
+
+# Netlify CLI
+.netlify/
