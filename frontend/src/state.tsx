@@ -11,9 +11,10 @@ import {
 } from "react";
 import { FeedEntry, Quiz, revealAnswer, Stories, Story, submitGuess, Video } from "./api";
 import { Icon } from "./icons";
-import { isDone, loadProgress, newProgress, QuestionState, QuizProgress, saveProgress } from "./quiz";
+import { isComplete, isDone, loadProgress, newProgress, QuestionState, QuizProgress, saveProgress } from "./quiz";
 import { askForKey } from "./readerKey";
 import { loadIds, save } from "./storage";
+import { loadStreak, recordCompletion, Streak } from "./streak";
 
 type FeedFilter = { query: string; category: string };
 
@@ -28,6 +29,7 @@ type AppState = {
   importedAt: string | null;
   quiz: Quiz;
   progress: QuizProgress;
+  streak: Streak;
   start: () => void;
   guess: (word: string) => Promise<void>;
   giveUp: () => Promise<void>;
@@ -69,6 +71,12 @@ export function AppProvider({ data, quiz, children }: Props) {
   const progressRef = useRef(progress);
   progressRef.current = progress;
   useEffect(() => saveProgress(progress), [progress]);
+
+  const [streak, setStreak] = useState(loadStreak);
+  const complete = isComplete(progress);
+  useEffect(() => {
+    if (complete) setStreak((s) => recordCompletion(s, quiz.date));
+  }, [complete, quiz.date]);
 
   const [saved, setSaved] = useState(() => loadIds(SAVED_KEY, ids));
   const [opened, setOpened] = useState(() => loadIds(OPENED_KEY, ids));
@@ -183,6 +191,7 @@ export function AppProvider({ data, quiz, children }: Props) {
     importedAt,
     quiz,
     progress,
+    streak,
     start,
     guess,
     giveUp,
@@ -240,24 +249,21 @@ function About({ dialogRef, locked }: { dialogRef: RefObject<HTMLDialogElement |
       }}
     >
       <div className="modal-head">
-        <h2 id="about-title">Om Opplyst</h2>
+        <h2 id="about-title">Om Oppdatert</h2>
         <button className="icon-button" onClick={close} aria-label="Lukk">
           <Icon name="close" />
         </button>
       </div>
       <div className="modal-body">
         <p>
-          Opplyst gjør én nyhet forståelig om gangen. Hver dag får du en quiz med spørsmål fra ukens nyheter i
-          Adresseavisen. Står du fast, leser du saken og går tilbake til spørsmålet. Det koster ingen poeng. Hopper du over, får
+          Oppdatert gjør én nyhet forståelig om gangen. Hver dag får du en quiz med spørsmål fra ukens
+          nyheter. Står du fast, leser du saken og går tilbake til spørsmålet. Det koster ingen poeng. Hopper du over, får
           du se svaret, men ingen poeng for spørsmålet.
         </p>
         <p>
           Nærheten (0–100) viser hvor nær betydningen gjetningen din er ordet som mangler. Claude vurderer
-          gjetningene. Kortversjonene merket «Oppsummert av Opplyst med KI» er skrevet av Claude ut fra Adressas
-          sak; journalistikken er Adresseavisens. Adressas egen «Kort oppsummert» vises uendret i saken.
-        </p>
-        <p>
-          Videoene er Adresseavisens egne klipp fra TikTok, vist med Adressas logo, kreditering og teksting.
+          gjetningene. Kortversjonene merket «Oppsummert av Oppdatert med KI» er skrevet av Claude ut fra
+          saken. Avisens egen «Kort oppsummert» vises uendret i saken.
         </p>
         <p className="small">
           Startbildet: Nedre Bakklandet. Foto:{" "}
@@ -271,9 +277,7 @@ function About({ dialogRef, locked }: { dialogRef: RefObject<HTMLDialogElement |
           . Nedskalert og komprimert; utsnitt i visningen.
         </p>
         <p className="small">
-          Uoffisiell hackathon-prototype fra Make No Mistakes med design fra et uoffisielt Adressa-kit. Ingen
-          tilknytning til eller godkjenning fra Adresseavisen eller Polaris Media. Quizfremdrift og lagrede saker
-          lagres bare i denne nettleseren.
+          Quizfremdrift og lagrede saker lagres bare i denne nettleseren.
         </p>
         <div className="modal-actions">
           {locked && (

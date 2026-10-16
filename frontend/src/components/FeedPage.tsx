@@ -74,7 +74,7 @@ export default function FeedPage() {
   );
 
   useEffect(() => {
-    document.title = "Nyheter · Opplyst";
+    document.title = "Nyheter · Oppdatert";
   }, []);
 
   // Back where the reader left off: a #link first, then the remembered item, else the top.
@@ -129,9 +129,9 @@ export default function FeedPage() {
   return (
     <>
       <main id="main" className="feed" tabIndex={-1}>
-        <h1 className="sr-only">Nyheter fra Adresseavisen</h1>
+        <h1 className="sr-only">Nyheter</h1>
         <header className="feed-top">
-          <Link to="/" className="brand-link" aria-label="Opplyst fra Adressa – til dagens quiz">
+          <Link to="/" className="brand-link" aria-label="Oppdatert – til dagens quiz">
             <Brand />
           </Link>
           <button
@@ -198,12 +198,12 @@ function FilterBar({ count }: { count: number }) {
  * Opplyst's bullet points when there are some, else Adressa's own lead or summary point, always
  * with its origin.
  */
-function shortText(story: Story): { points?: string[]; text?: string; origin: string } | null {
+function shortText(story: Story): { points?: string[]; text?: string; origin?: string } | null {
   const own = story.opplystSummary;
-  if (own?.points.length) return { points: own.points, origin: `${own.label} · Kilde: ${own.source}` };
-  if (story.lead) return { text: story.lead, origin: `Ingress fra ${story.source}` };
+  if (own?.points.length) return { points: own.points, origin: own.label };
+  if (story.lead) return { text: story.lead };
   if (story.summary?.bullets[0])
-    return { text: story.summary.bullets[0], origin: `${story.summary.heading} fra ${story.source}` };
+    return { text: story.summary.bullets[0], origin: story.summary.heading };
   return null;
 }
 
@@ -232,7 +232,7 @@ function ArticleCard({ story, itemKey, id, first }: { story: Story; itemKey: str
         ) : (
           short?.text && <p className="card-summary">{short.text}</p>
         )}
-        {short && <p className="card-origin">{short.origin}</p>}
+        {short?.origin && <p className="card-origin">{short.origin}</p>}
         <div className="card-actions">
           <Link className="btn btn-outline" to={`/sak/${story.id}`}>
             Les saken <Icon name="next" size={22} />
@@ -405,7 +405,7 @@ function VideoCard({
           {video.title}
         </h2>
         <p className="card-origin">
-          Video: {video.source} · {video.platform} · {formatDay(video.publishedAt)}
+          Video · {video.platform} · {formatDay(video.publishedAt)}
         </p>
         {video.description && (
           <p id={`${id}-desc`} className="sr-only">
@@ -469,10 +469,10 @@ function EndCard({ all, scroller }: { all: Item[]; scroller: React.RefObject<HTM
       <h2 id="feed-end-title">Det var alle innslagene</h2>
       <p>
         {stories} {stories === 1 ? "sak" : "saker"}
-        {clips > 0 && ` og ${clips} ${clips === 1 ? "video" : "videoer"}`} fra Adresseavisen denne uken.
+        {clips > 0 && ` og ${clips} ${clips === 1 ? "video" : "videoer"}`} denne uken.
       </p>
       <a className="btn btn-primary" href={ADRESSA_URL} target="_blank" rel="noopener noreferrer">
-        Les flere saker på adressa.no <Icon name="external" size={20} />
+        Les flere saker <Icon name="external" size={20} />
       </a>
       {!isComplete(progress) && (
         <Link className="btn btn-outline" to="/">

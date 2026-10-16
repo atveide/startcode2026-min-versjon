@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Icon } from "../icons";
-import { formatDay } from "../logic";
 import {
   hasStarted,
   isComplete,
@@ -11,7 +10,7 @@ import {
 import { Link, navigate } from "../router";
 import { useApp } from "../state";
 import BottomNav from "./BottomNav";
-import { Brand } from "./bits";
+import { Brand, StreakBox } from "./bits";
 
 /**
  * The daily way in: a short invitation to today's quiz on a real photo. The photo is a general
@@ -26,18 +25,17 @@ export default function StartPage() {
   const started = hasStarted(progress);
 
   useEffect(() => {
-    document.title = "Opplyst – dagens quiz fra Adressa";
+    document.title = "Oppdatert – dagens quiz";
   }, []);
 
-  let title = "Hvor opplyst er du i dag?";
+  let title = "Hvor oppdatert er du i dag?";
   let text = `${count} spørsmål fra nyhetene. Står du fast, finner du svaret i saken.`;
   let primary = { label: "Start dagens quiz", to: "/quiz" };
   let secondary = null;
   if (complete) {
     title = verdict(points, max);
     text = `Du fikk ${points} av ${max} poeng i dagens quiz. Nye spørsmål i morgen.`;
-    primary = { label: "Se nyhetene", to: "/nyheter" };
-    secondary = { label: "Se svarene", to: "/quiz/svar" };
+    primary = { label: "Se resultatet", to: "/quiz" };
   } else if (started) {
     text = `Du er på spørsmål ${progress.index + 1} av ${count} og har ${points} poeng så langt.`;
     primary = { label: "Fortsett quizen", to: "/quiz" };
@@ -62,24 +60,15 @@ export default function StartPage() {
           <button
             className="icon-button on-photo"
             onClick={showAbout}
-            aria-label="Om Opplyst"
+            aria-label="Om Oppdatert"
           >
             <Icon name="info" size={26} />
           </button>
         </header>
         <div className="start-copy">
-          <p className="kicker">
-            Dagens quiz <span aria-hidden="true">·</span>{" "}
-            <time dateTime={quiz.date}>{formatDay(quiz.date)}</time>
-            {complete && (
-              <>
-                {" "}
-                <span aria-hidden="true">·</span> Ferdig
-              </>
-            )}
-          </p>
           <h1 id="start-title">{title}</h1>
           <p className="start-text">{text}</p>
+          <StreakBox className="on-photo" />
           <button
             className="btn btn-primary btn-wide"
             onClick={() => {

@@ -172,13 +172,13 @@ def test_stories_use_the_local_import_when_there_is_one(cache) -> None:
 
 
 def test_guess_below_threshold(monkeypatch, known) -> None:
-    monkeypatch.setattr(routes, "judge_guess", lambda h, g: Judgement(correct=False, score=42))
+    monkeypatch.setattr(routes, "judge_guess", lambda h, g: Judgement(reasoning="", correct=False, score=42))
     response = client.post("/api/guess", json={"headline_id": known.id, "guess": "trikker"})
     assert response.json() == {"score": 42, "solved": False, "answer": None, "full_text": None}
 
 
 def test_guess_solved(monkeypatch, known) -> None:
-    monkeypatch.setattr(routes, "judge_guess", lambda h, g: Judgement(correct=True, score=100))
+    monkeypatch.setattr(routes, "judge_guess", lambda h, g: Judgement(reasoning="", correct=True, score=100))
     response = client.post("/api/guess", json={"headline_id": known.id, "guess": "bussene"})
     body = response.json()
     assert body["solved"] is True
@@ -194,7 +194,8 @@ def test_unknown_headline() -> None:
 def test_exact_answer_skips_model() -> None:
     from app.judge import judge_guess
 
-    assert judge_guess(KNOWN, "  BUSSER ") == Judgement(correct=True, score=100)
+    judgement = judge_guess(KNOWN, "  BUSSER ")
+    assert judgement.correct and judgement.score == 100
 
 
 def test_hints_reveal_letters_progressively(known) -> None:

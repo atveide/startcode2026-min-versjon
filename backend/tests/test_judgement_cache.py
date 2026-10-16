@@ -16,7 +16,7 @@ def test_same_guess_is_judged_once(monkeypatch) -> None:
 
     def fake_model(headline, guess):
         calls.append(guess)
-        return Judgement(correct=False, score=len(calls) * 10)
+        return Judgement(reasoning=f"call {len(calls)}", correct=False, score=len(calls) * 10)
 
     monkeypatch.setattr(judge, "_ask_model", fake_model)
 
@@ -24,6 +24,6 @@ def test_same_guess_is_judged_once(monkeypatch) -> None:
     second = judge_guess(HEADLINES[0], "  lofoten ")
     other_headline = judge_guess(HEADLINES[1], "Lofoten")
 
-    assert first == second == Judgement(correct=False, score=10)
+    assert first == second == Judgement(reasoning="call 1", correct=False, score=10)
     assert other_headline.score == 20
     assert calls == ["Lofoten", "Lofoten"]

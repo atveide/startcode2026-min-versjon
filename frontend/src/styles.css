@@ -1215,6 +1215,69 @@ mark.answer {
 .answers-share {
     margin: -6px 0 22px;
 }
+/* Days in a row with a finished quiz: current and best, on the start page and the result. */
+.streak-box {
+    margin: 0 0 22px;
+    padding: 14px 16px;
+    border: 1px solid #83c9ed4d;
+    border-radius: 12px;
+    background: var(--raised);
+    box-shadow: inset 0 1px 0 #ffffff0f;
+}
+.streak-box.on-photo {
+    background: #0b0b0bb3;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+}
+.streak-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin: 0;
+}
+.streak-stat {
+    min-width: 0;
+}
+.streak-stat + .streak-stat {
+    padding-left: 16px;
+    border-left: 1px solid #ffffff1f;
+}
+.streak-stat dt {
+    font-size: 12px;
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 6px;
+}
+.streak-stat dd {
+    margin: 0;
+    font-size: 15px;
+    color: #ccc;
+}
+.streak-stat b {
+    display: inline-block;
+    padding: 4px 0; /* as tall as the current streak's blue box, so the numbers line up */
+    font: 700 34px/1 var(--head);
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+    margin-right: 2px;
+}
+.streak-stat.current b {
+    display: inline-block;
+    min-width: 1.6em;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: var(--action);
+    color: var(--on-action);
+    text-align: center;
+}
+.streak-note {
+    margin: 12px 0 0;
+    padding-top: 10px;
+    border-top: 1px solid #ffffff1f;
+    font-size: 14px;
+    color: #ccc;
+}
 .result-list {
     display: grid;
     gap: 14px;

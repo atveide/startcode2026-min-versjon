@@ -26,7 +26,7 @@ import {
 import { Link, navigate } from "../router";
 import { useApp } from "../state";
 import BottomNav from "./BottomNav";
-import { Brand, PanelImage, Thumb } from "./bits";
+import { Brand, PanelImage, Thumb, StreakBox } from "./bits";
 
 /** `/quiz` plays today's quiz; `/quiz/svar` and a finished quiz show the overview. */
 export default function QuizPage({ answers = false }: { answers?: boolean }) {
@@ -58,7 +58,7 @@ function QuestionView() {
 
   useEffect(() => {
     start();
-    document.title = "Dagens quiz · Opplyst";
+    document.title = "Dagens quiz · Oppdatert";
   }, [start]);
 
   useEffect(() => {
@@ -279,7 +279,7 @@ function QuizHeader({ position }: { position: number }) {
         <Link
           to="/"
           className="brand-link"
-          aria-label="Opplyst fra Adressa – til dagens quiz"
+          aria-label="Oppdatert – til dagens quiz"
         >
           <Brand />
         </Link>
@@ -404,8 +404,6 @@ function Guesses({ guesses }: { guesses: Guess[] }) {
 
 function Outcome({ q }: { q: QuestionState }) {
   const points = pointsFor(q);
-  const extra = Math.max(0, q.guesses.length - 1);
-  const costs = extra ? `${extra} ekstra forsøk` : "";
   return (
     <div className={`outcome ${q.gaveUp ? "skipped" : ""}`} aria-live="polite">
       <span className="outcome-icon">
@@ -430,7 +428,7 @@ function AnswersView() {
   const skipped = progress.questions.filter((q) => q.gaveUp).length;
 
   useEffect(() => {
-    document.title = "Resultatet ditt · Opplyst";
+    document.title = "Resultatet ditt · Oppdatert";
   }, []);
 
   async function share() {
@@ -462,15 +460,11 @@ function AnswersView() {
           <Link
             to="/"
             className="brand-link"
-            aria-label="Opplyst fra Adressa – til dagens quiz"
+            aria-label="Oppdatert – til dagens quiz"
           >
             <Brand />
           </Link>
         </header>
-        <p className="kicker">
-          Dagens quiz · {formatDay(quiz.date)} ·{" "}
-          {complete ? "Ferdig" : "Ikke ferdig"}
-        </p>
         <h1 id="answers-title">
           {complete ? verdict(points, max) : "Resultatet så langt"}
         </h1>
@@ -482,9 +476,10 @@ function AnswersView() {
           {skipped > 0 && ` · ${skipped} hoppet over`}
           {!complete && ` · ${quiz.headlines.length - right - skipped} igjen`}
         </p>
+        <StreakBox />
         {complete && (
           <button
-            className="btn btn-outline btn-wide answers-share"
+            className="btn btn-primary btn-wide answers-share"
             onClick={share}
           >
             <Icon name="share" size={22} /> Del resultatet
@@ -551,8 +546,7 @@ function AnswersView() {
         )}
         <p className="answers-note">
           10 poeng for riktig svar på første forsøk, minus 1 for hvert ekstra
-          forsøk. Hopper du over, får du se svaret og 0 poeng. Lesing er gratis,
-          og nærheten underveis er ikke poeng.
+          forsøk. Hopper du over, får du se svaret og 0 poeng.
         </p>
         {complete && (
           <button
