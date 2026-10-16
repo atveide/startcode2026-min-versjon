@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Icon } from "../icons";
-import { formatDay } from "../logic";
 import {
   hasStarted,
   isComplete,
@@ -11,7 +10,7 @@ import {
 import { Link, navigate } from "../router";
 import { useApp } from "../state";
 import BottomNav from "./BottomNav";
-import { Brand } from "./bits";
+import { Brand, StreakBox } from "./bits";
 
 /**
  * The daily way in: a short invitation to today's quiz on a real photo. The photo is a general
@@ -68,18 +67,9 @@ export default function StartPage() {
           </button>
         </header>
         <div className="start-copy">
-          <p className="kicker">
-            Dagens quiz <span aria-hidden="true">·</span>{" "}
-            <time dateTime={quiz.date}>{formatDay(quiz.date)}</time>
-            {complete && (
-              <>
-                {" "}
-                <span aria-hidden="true">·</span> Ferdig
-              </>
-            )}
-          </p>
           <h1 id="start-title">{title}</h1>
           <p className="start-text">{text}</p>
+          <StreakBox className="on-photo" />
           <button
             className="btn btn-primary btn-wide"
             onClick={() => {

@@ -2,7 +2,9 @@ import { CSSProperties, useState } from "react";
 import type { Story, StoryImage } from "../api";
 import { Icon } from "../icons";
 import { categoryColor } from "../logic";
+import { isComplete } from "../quiz";
 import { useApp } from "../state";
+import { activeStreak } from "../streak";
 
 export function accent(story: Story): CSSProperties {
   return { "--accent": categoryColor(story.category) } as CSSProperties;
@@ -130,5 +132,31 @@ export function SearchBox({
         </button>
       )}
     </form>
+  );
+}
+
+/** The current and the best streak of finished daily quizzes, side by side. */
+export function StreakBox({ className = "" }: { className?: string }) {
+  const { quiz, progress, streak } = useApp();
+  const current = activeStreak(streak, quiz.date);
+  const keepGoing = current > 0 && !isComplete(progress);
+  const stats = [
+    { label: "Nåværende streak", days: current, current: true },
+    { label: "Beste streak", days: streak.best, current: false },
+  ];
+  return (
+    <section className={`streak-box ${className}`} aria-label="Streak med fullførte quizer">
+      <dl className="streak-stats">
+        {stats.map((s) => (
+          <div key={s.label} className={`streak-stat ${s.current ? "current" : ""}`}>
+            <dt>{s.label}</dt>
+            <dd>
+              <b>{s.days}</b>
+            </dd>
+          </div>
+        ))}
+      </dl>
+      {keepGoing && <p className="streak-note">Fullfør dagens quiz for å holde streaken.</p>}
+    </section>
   );
 }

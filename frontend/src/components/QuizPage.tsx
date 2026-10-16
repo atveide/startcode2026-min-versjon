@@ -26,7 +26,7 @@ import {
 import { Link, navigate } from "../router";
 import { useApp } from "../state";
 import BottomNav from "./BottomNav";
-import { Brand, PanelImage, Thumb } from "./bits";
+import { Brand, PanelImage, Thumb, StreakBox } from "./bits";
 
 /** `/quiz` plays today's quiz; `/quiz/svar` and a finished quiz show the overview. */
 export default function QuizPage({ answers = false }: { answers?: boolean }) {
@@ -404,8 +404,6 @@ function Guesses({ guesses }: { guesses: Guess[] }) {
 
 function Outcome({ q }: { q: QuestionState }) {
   const points = pointsFor(q);
-  const extra = Math.max(0, q.guesses.length - 1);
-  const costs = extra ? `${extra} ekstra forsøk` : "";
   return (
     <div className={`outcome ${q.gaveUp ? "skipped" : ""}`} aria-live="polite">
       <span className="outcome-icon">
@@ -467,10 +465,6 @@ function AnswersView() {
             <Brand />
           </Link>
         </header>
-        <p className="kicker">
-          Dagens quiz · {formatDay(quiz.date)} ·{" "}
-          {complete ? "Ferdig" : "Ikke ferdig"}
-        </p>
         <h1 id="answers-title">
           {complete ? verdict(points, max) : "Resultatet så langt"}
         </h1>
@@ -482,9 +476,10 @@ function AnswersView() {
           {skipped > 0 && ` · ${skipped} hoppet over`}
           {!complete && ` · ${quiz.headlines.length - right - skipped} igjen`}
         </p>
+        <StreakBox />
         {complete && (
           <button
-            className="btn btn-outline btn-wide answers-share"
+            className="btn btn-primary btn-wide answers-share"
             onClick={share}
           >
             <Icon name="share" size={22} /> Del resultatet

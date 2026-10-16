@@ -11,9 +11,10 @@ import {
 } from "react";
 import { FeedEntry, Quiz, revealAnswer, Stories, Story, submitGuess, Video } from "./api";
 import { Icon } from "./icons";
-import { isDone, loadProgress, newProgress, QuestionState, QuizProgress, saveProgress } from "./quiz";
+import { isComplete, isDone, loadProgress, newProgress, QuestionState, QuizProgress, saveProgress } from "./quiz";
 import { askForKey } from "./readerKey";
 import { loadIds, save } from "./storage";
+import { loadStreak, recordCompletion, Streak } from "./streak";
 
 type FeedFilter = { query: string; category: string };
 
@@ -28,6 +29,7 @@ type AppState = {
   importedAt: string | null;
   quiz: Quiz;
   progress: QuizProgress;
+  streak: Streak;
   start: () => void;
   guess: (word: string) => Promise<void>;
   giveUp: () => Promise<void>;
@@ -69,6 +71,12 @@ export function AppProvider({ data, quiz, children }: Props) {
   const progressRef = useRef(progress);
   progressRef.current = progress;
   useEffect(() => saveProgress(progress), [progress]);
+
+  const [streak, setStreak] = useState(loadStreak);
+  const complete = isComplete(progress);
+  useEffect(() => {
+    if (complete) setStreak((s) => recordCompletion(s, quiz.date));
+  }, [complete, quiz.date]);
 
   const [saved, setSaved] = useState(() => loadIds(SAVED_KEY, ids));
   const [opened, setOpened] = useState(() => loadIds(OPENED_KEY, ids));
@@ -183,6 +191,7 @@ export function AppProvider({ data, quiz, children }: Props) {
     importedAt,
     quiz,
     progress,
+    streak,
     start,
     guess,
     giveUp,
