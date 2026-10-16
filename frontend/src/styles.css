@@ -159,15 +159,18 @@ summary::-webkit-details-marker{display:none}
 .quiz-sentence{font:700 clamp(30px,8.6vw,38px)/1.16 var(--head);letter-spacing:-.01em;margin:2px 0 20px;text-wrap:pretty;overflow-wrap:break-word}
 .quiz-sentence.long{font-size:clamp(24px,6.8vw,30px)}
 .quiz.compact .quiz-sentence{font-size:clamp(22px,6.2vw,28px);margin-bottom:14px}
-.blank{display:inline-block;width:4.2em;height:.8em;margin:0 .1em;border-bottom:4px solid var(--action);vertical-align:baseline}
 mark.answer{color:#fff;background:var(--soft);border-bottom:4px solid var(--action);padding:0 .14em;border-radius:2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 .hint-line{font-size:16px;color:#ddd;margin:-6px 0 14px}
 .hint-letters{font:700 20px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.18em;color:#fff;margin-left:4px}
-.guess-form{display:flex;gap:12px}
-.guess-form input{flex:1;min-width:0;min-height:56px;padding:0 16px;border-radius:8px;border:1.5px solid #555;background:var(--field);color:#fff;font-size:20px}
-.guess-form input::placeholder{color:#8a8a8a}
-.guess-form input:focus{outline:3px solid var(--action);outline-offset:2px;border-color:var(--action)}
-.guess-form .btn{min-height:56px;min-width:96px;font-size:19px}
+/* The answer field is the gap itself: a hidden copy of the word sizes it, the input sits on top.
+   The typed part is underlined in blue, the rest of the gap in grey. */
+.gap{position:relative;display:inline-block;min-width:4.2em;max-width:100%;margin:0 .06em;vertical-align:baseline;border-bottom:4px solid var(--gap-rest,var(--action));cursor:text}
+.gap.filled{--gap-rest:#444}
+.gap-text{display:inline-block;max-width:100%;min-width:.05em;padding-right:.12em;overflow:hidden;white-space:pre;color:transparent;box-shadow:0 4px 0 var(--action);vertical-align:top}
+.gap input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;border-radius:0;background:none;appearance:none;font:inherit;letter-spacing:inherit;color:var(--action);caret-color:#fff;outline:0}
+.gap input::selection{background:#83c9ed55}
+.gap-help{font-size:16px;color:var(--muted);margin:-8px 0 18px}
+.guess-form .btn{min-height:56px;font-size:19px}
 .quiz-error{color:var(--color-live);font-size:15px;margin-top:10px}
 .closeness{margin-top:22px}
 .closeness-label{font-size:16px;font-weight:650;margin:0 0 8px}
@@ -351,7 +354,7 @@ dialog.sheet{margin:calc(12px + var(--safe-t)) auto auto}
   .quiz-sentence{font-size:clamp(26px,7.6vw,34px);margin-bottom:16px}
   .quiz-sentence.long{font-size:clamp(22px,6.2vw,28px)}
 }
-@media(max-width:360px){.brand-name{font-size:26px}.card-copy,.start-copy,.quiz-body{padding-inline:16px}.guess-form .btn{min-width:84px}}
+@media(max-width:360px){.brand-name{font-size:26px}.card-copy,.start-copy,.quiz-body{padding-inline:16px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
 /* App feel. Page changes slide (router.tsx starts a view transition); the bottom nav stays put. */

@@ -102,7 +102,8 @@ export function AppProvider({ data, quiz, children }: Props) {
           ? q
           : {
               ...q,
-              draft: "",
+              // A wrong word stays in the headline's gap, so the player sees how it reads.
+              draft: res.solved ? "" : q.draft,
               guesses: [...q.guesses, { word, score: res.score }],
               // Only the backend's verdict solves a question; a high score alone does not.
               ...(res.solved ? { answer: res.answer, fullText: res.full_text } : {}),

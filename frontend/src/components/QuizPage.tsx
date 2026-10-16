@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useRef, useState } from "react";
 import type { Headline } from "../api";
 import { Icon } from "../icons";
 import { formatDay, normalize } from "../logic";
@@ -84,7 +84,12 @@ function QuestionView() {
       setError(`Du har allerede prøvd «${word}».`);
       return;
     }
-    run("guess", () => guess(word));
+    run("guess", async () => {
+      await guess(word);
+      // A wrong word stays in the headline, selected, so typing replaces it.
+      const field = inputRef.current;
+      if (field && document.activeElement === field) requestAnimationFrame(() => field.select());
+    });
   }
 
   function onNext() {
@@ -125,48 +130,68 @@ function QuestionView() {
           </>
         ) : (
           <>
-            <label className="kicker" htmlFor="guess-input">
-              Hvilket ord mangler?
-            </label>
-            <Sentence id="quiz-sentence" headline={headline} answer={null} />
-            {q.hint && (
-              <p className="hint-line">
-                Bokstavhint:{" "}
-                <span className="hint-letters" aria-label={`${q.hint.replace(/ /g, "")}, ${q.hint.split(" ").length} bokstaver`}>
-                  {q.hint}
-                </span>
-              </p>
-            )}
             <form className="guess-form" onSubmit={onSubmit}>
-              <input
-                id="guess-input"
-                ref={inputRef}
-                autoFocus={matchMedia("(pointer: fine)").matches}
-                value={q.draft}
-                readOnly={pending !== null}
-                onChange={(e) => setDraft(e.target.value)}
-                onFocus={() => {
-                  window.clearTimeout(blurTimer.current);
-                  setTyping(true);
-                }}
-                // Wait a moment, so a tap on a button below lands before the layout moves back.
-                onBlur={() => (blurTimer.current = window.setTimeout(() => setTyping(false), 300))}
-                placeholder="Skriv ordet"
-                autoComplete="off"
-                autoCapitalize="off"
-                autoCorrect="off"
-                spellCheck={false}
-                enterKeyHint="send"
-                aria-describedby={latest ? "closeness" : undefined}
-              />
+              <label className="kicker" htmlFor="guess-input">
+                Hvilket ord mangler?
+              </label>
+              {/* The word is typed straight into the gap in the headline. */}
+              <Sentence id="quiz-sentence" headline={headline} answer={null}>
+                <span className={`gap ${q.draft ? "filled" : ""}`}>
+                  <span className="gap-text" aria-hidden="true">
+                    {q.draft}
+                  </span>
+                  <input
+                    id="guess-input"
+                    ref={inputRef}
+                    autoFocus={matchMedia("(pointer: fine)").matches}
+                    value={q.draft}
+                    readOnly={pending !== null}
+                    onChange={(e) => setDraft(e.target.value)}
+                    onFocus={(e) => {
+                      window.clearTimeout(blurTimer.current);
+                      setTyping(true);
+                      // A word already tried is there to be replaced, so the next letter starts a new one.
+                      if (latest && normalize(q.draft) === normalize(latest.word)) {
+                        const field = e.currentTarget;
+                        requestAnimationFrame(() => field.select());
+                      }
+                    }}
+                    // Wait a moment, so a tap on a button below lands before the layout moves back.
+                    onBlur={() => (blurTimer.current = window.setTimeout(() => setTyping(false), 300))}
+                    autoComplete="off"
+                    autoCapitalize="off"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    enterKeyHint="send"
+                    aria-describedby={latest ? "gap-help closeness" : "gap-help"}
+                  />
+                </span>
+              </Sentence>
+              <p className="gap-help" id="gap-help">
+                {q.draft ? "Trykk på ordet for å endre" : "Skriv ordet rett i setningen"}
+              </p>
+              {q.hint && (
+                <p className="hint-line">
+                  Bokstavhint:{" "}
+                  <span className="hint-letters" aria-label={`${q.hint.replace(/ /g, "")}, ${q.hint.split(" ").length} bokstaver`}>
+                    {q.hint}
+                  </span>
+                </p>
+              )}
               <button
-                className={`btn ${stuck ? "btn-outline" : "btn-primary"}`}
+                className={`btn btn-wide ${stuck ? "btn-outline" : "btn-primary"}`}
                 type="submit"
                 disabled={pending !== null}
                 // Keeps the keyboard up, ready for the next guess.
                 onMouseDown={(e) => e.preventDefault()}
               >
-                {pending === "guess" ? "Sjekker …" : "Svar"}
+                {pending === "guess" ? (
+                  "Sjekker …"
+                ) : (
+                  <>
+                    Svar <Icon name="next" size={22} />
+                  </>
+                )}
               </button>
             </form>
             {error && (
@@ -256,16 +281,23 @@ function QuizHeader({ position }: { position: number }) {
   );
 }
 
-function Sentence({ id, headline, answer }: { id?: string; headline: Headline; answer: string | null }) {
+/** The headline with the answer marked in it, or with `children` (the answer field) in the gap. */
+function Sentence({
+  id,
+  headline,
+  answer,
+  children,
+}: {
+  id?: string;
+  headline: Headline;
+  answer: string | null;
+  children?: ReactNode;
+}) {
   const [before, after] = headline.text.split(BLANK);
   return (
     <h1 id={id} className={`quiz-sentence ${headline.text.length > 110 ? "long" : ""}`}>
       {before}
-      {answer ? (
-        <mark className="answer">{answer}</mark>
-      ) : (
-        <span className="blank" role="img" aria-label="ordet som mangler" />
-      )}
+      {answer ? <mark className="answer">{answer}</mark> : children}
       {after}
     </h1>
   );
