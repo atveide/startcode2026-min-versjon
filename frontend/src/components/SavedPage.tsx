@@ -23,7 +23,7 @@ export default function SavedPage() {
     const video = videosById.get(id);
     if (video)
       return videoMatches(video, query)
-        ? [{ id, to: `/nyheter#video-${id}`, title: video.title, label: `Video · ${video.source}`, thumb: video.poster }]
+        ? [{ id, to: `/nyheter#video-${id}`, title: video.title, label: "Video", thumb: video.poster }]
         : [];
     return [];
   });
@@ -32,7 +32,7 @@ export default function SavedPage() {
     <>
       <main id="main" className="saved" tabIndex={-1}>
         <header className="page-top">
-          <Link to="/" className="brand-link" aria-label="Opplyst fra Adressa – til dagens quiz">
+          <Link to="/" className="brand-link" aria-label="Opplyst – til dagens quiz">
             <Brand />
           </Link>
         </header>

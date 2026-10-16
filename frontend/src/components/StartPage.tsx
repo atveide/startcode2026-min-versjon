@@ -25,7 +25,7 @@ export default function StartPage() {
   const started = hasStarted(progress);
 
   useEffect(() => {
-    document.title = "Opplyst – dagens quiz fra Adressa";
+    document.title = "Opplyst – dagens quiz";
   }, []);
 
   let title = "Hvor opplyst er du i dag?";

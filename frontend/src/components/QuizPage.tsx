@@ -279,7 +279,7 @@ function QuizHeader({ position }: { position: number }) {
         <Link
           to="/"
           className="brand-link"
-          aria-label="Opplyst fra Adressa – til dagens quiz"
+          aria-label="Opplyst – til dagens quiz"
         >
           <Brand />
         </Link>
@@ -460,7 +460,7 @@ function AnswersView() {
           <Link
             to="/"
             className="brand-link"
-            aria-label="Opplyst fra Adressa – til dagens quiz"
+            aria-label="Opplyst – til dagens quiz"
           >
             <Brand />
           </Link>

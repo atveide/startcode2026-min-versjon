@@ -256,17 +256,14 @@ function About({ dialogRef, locked }: { dialogRef: RefObject<HTMLDialogElement |
       </div>
       <div className="modal-body">
         <p>
-          Opplyst gjør én nyhet forståelig om gangen. Hver dag får du en quiz med spørsmål fra ukens nyheter i
-          Adresseavisen. Står du fast, leser du saken og går tilbake til spørsmålet. Det koster ingen poeng. Hopper du over, får
+          Opplyst gjør én nyhet forståelig om gangen. Hver dag får du en quiz med spørsmål fra ukens
+          nyheter. Står du fast, leser du saken og går tilbake til spørsmålet. Det koster ingen poeng. Hopper du over, får
           du se svaret, men ingen poeng for spørsmålet.
         </p>
         <p>
           Nærheten (0–100) viser hvor nær betydningen gjetningen din er ordet som mangler. Claude vurderer
-          gjetningene. Kortversjonene merket «Oppsummert av Opplyst med KI» er skrevet av Claude ut fra Adressas
-          sak; journalistikken er Adresseavisens. Adressas egen «Kort oppsummert» vises uendret i saken.
-        </p>
-        <p>
-          Videoene er Adresseavisens egne klipp fra TikTok, vist med Adressas logo, kreditering og teksting.
+          gjetningene. Kortversjonene merket «Oppsummert av Opplyst med KI» er skrevet av Claude ut fra
+          saken. Avisens egen «Kort oppsummert» vises uendret i saken.
         </p>
         <p className="small">
           Startbildet: Nedre Bakklandet. Foto:{" "}
@@ -280,9 +277,7 @@ function About({ dialogRef, locked }: { dialogRef: RefObject<HTMLDialogElement |
           . Nedskalert og komprimert; utsnitt i visningen.
         </p>
         <p className="small">
-          Uoffisiell hackathon-prototype fra Make No Mistakes med design fra et uoffisielt Adressa-kit. Ingen
-          tilknytning til eller godkjenning fra Adresseavisen eller Polaris Media. Quizfremdrift og lagrede saker
-          lagres bare i denne nettleseren.
+          Quizfremdrift og lagrede saker lagres bare i denne nettleseren.
         </p>
         <div className="modal-actions">
           {locked && (

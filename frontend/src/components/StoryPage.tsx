@@ -10,7 +10,7 @@ import BottomNav from "./BottomNav";
 import { accent, Brand, NewsGraphic, SaveButton } from "./bits";
 
 export default function StoryPage({ id, fromQuiz }: { id: string; fromQuiz: boolean }) {
-  const { storiesById, markOpened, markQuizRead, importedAt, toast } = useApp();
+  const { storiesById, markOpened, markQuizRead, toast } = useApp();
   const story = storiesById.get(id);
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function StoryPage({ id, fromQuiz }: { id: string; fromQuiz: bool
       if (navigator.share) await navigator.share({ title: story!.title, url: story!.url });
       else {
         await navigator.clipboard.writeText(story!.url);
-        toast("Lenken til saken hos Adresseavisen er kopiert");
+        toast("Lenken til saken er kopiert");
       }
     } catch (err) {
       if ((err as Error).name !== "AbortError") toast("Vi fikk ikke delt lenken. Kopier adressen fra nettleseren.");
@@ -49,7 +49,7 @@ export default function StoryPage({ id, fromQuiz }: { id: string; fromQuiz: bool
       </button>
       <SaveButton id={story.id} className="article-floater article-save" />
       <header className="article-masthead">
-        <Link to="/" className="brand-link" aria-label="Opplyst fra Adressa – til dagens quiz">
+        <Link to="/" className="brand-link" aria-label="Opplyst – til dagens quiz">
           <Brand />
         </Link>
       </header>
@@ -69,8 +69,6 @@ export default function StoryPage({ id, fromQuiz }: { id: string; fromQuiz: bool
                   <span>Oppdatert {formatDate(story.modifiedAt)}</span>
                 </>
               )}
-              <span>·</span>
-              <span>{story.source}</span>
               {story.authors.length > 0 && (
                 <>
                   <span>·</span>
@@ -84,26 +82,6 @@ export default function StoryPage({ id, fromQuiz }: { id: string; fromQuiz: bool
           <div className="article-body">
             {story.lead && story.opplystSummary?.points.length ? <p className="summary-text">{story.lead}</p> : null}
             {story.imported ? <FullStory story={story} /> : <NotImported story={story} />}
-            <section id="sources" aria-labelledby="sources-title">
-              <div className="section-label">
-                <h2 id="sources-title">Kilde</h2>
-              </div>
-              <div className="source-list">
-                <a className="source" href={story.url} target="_blank" rel="noopener noreferrer">
-                  <img className="source-logo" src="/assets/brand/adressa-monogram.svg" alt="" />
-                  <span>
-                    <strong>Les originalartikkelen hos {story.source}</strong>
-                    <small>adressa.no · Publisert {formatDate(story.publishedAt)} · Kan kreve abonnement</small>
-                  </span>
-                  <Icon name="external" size={18} />
-                </a>
-              </div>
-            </section>
-            <p className="snapshot-foot">
-              {story.imported && importedAt
-                ? `Hentet fra ${story.source} ${formatDate(importedAt)}. Saken kan være endret hos Adressa siden.`
-                : `Journalistikk fra ${story.source}. Hele saken leser du hos Adressa.`}
-            </p>
           </div>
         </article>
       </main>
@@ -161,17 +139,11 @@ function FullStory({ story }: { story: Story }) {
                 )}
               </p>
             )}
-            <p className="summary-source">
-              Kilde:{" "}
-              <a href={summary.sourceUrl} target="_blank" rel="noopener noreferrer">
-                {summary.source} ↗
-              </a>
-            </p>
           </>
         ) : (
           <p className="no-summary">
             <Icon name="info" size={18} />
-            <span>Adresseavisen har ikke laget en kort oppsummering av denne saken. Les ingressen og saken under.</span>
+            <span>Saken har ingen kort oppsummering. Les ingressen og saken under.</span>
           </p>
         )}
       </section>
@@ -205,14 +177,14 @@ function NotImported({ story }: { story: Story }) {
       <p>
         {hasKey
           ? "Lenken på denne enheten gir ikke tilgang til hele saken lenger. Spør den som sendte den om en ny."
-          : `Hele saken er låst. Har du fått en opplåsingslenke, åpner du den her. Ellers leser du saken hos ${story.source}.`}
+          : `Hele saken er låst. Har du fått en opplåsingslenke, åpner du den her. Ellers leser du hele saken i nettutgaven.`}
       </p>
       <div className="not-imported-actions">
         <button className="btn btn-primary" onClick={askForKey}>
           <Icon name="lock" size={18} /> Lås opp med lenken
         </button>
         <a className="btn btn-outline" href={story.url} target="_blank" rel="noopener noreferrer">
-          Les hos {story.source} <Icon name="external" size={18} />
+          Les hele saken <Icon name="external" size={18} />
         </a>
       </div>
     </section>
@@ -259,12 +231,7 @@ function ShortVersion({ story }: { story: Story }) {
           <li key={point}>{point}</li>
         ))}
       </ul>
-      <p className="short-origin">
-        {own.label} · Kilde:{" "}
-        <a href={own.sourceUrl} target="_blank" rel="noopener noreferrer">
-          {own.source} ↗
-        </a>
-      </p>
+      <p className="short-origin">{own.label}</p>
     </section>
   );
 }
