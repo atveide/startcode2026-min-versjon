@@ -3,7 +3,6 @@ import type { Block, Story } from "../api";
 import { Icon } from "../icons";
 import { formatDate, formatDay } from "../logic";
 import { BLANK } from "../quiz";
-import { askForKey, getReaderKey } from "../readerKey";
 import { goBack, Link, navigate, previousPath } from "../router";
 import { useApp } from "../state";
 import BottomNav from "./BottomNav";
@@ -169,21 +168,13 @@ function BodyBlock({ block }: { block: Block }) {
   return <p>{block.text}</p>;
 }
 
-/** Locked: the full story opens with a personal unlock link, or is read on adressa.no. */
+/** Not in the Adressa import: the full story is read on adressa.no. */
 function NotImported({ story }: { story: Story }) {
-  const hasKey = Boolean(getReaderKey());
   return (
     <section className="deep-panel not-imported" aria-label="Hele saken">
-      <p>
-        {hasKey
-          ? "Lenken på denne enheten gir ikke tilgang til hele saken lenger. Spør den som sendte den om en ny."
-          : `Hele saken er låst. Har du fått en opplåsingslenke, åpner du den her. Ellers leser du hele saken i nettutgaven.`}
-      </p>
+      <p>Hele saken er ikke med her. Les den i nettutgaven.</p>
       <div className="not-imported-actions">
-        <button className="btn btn-primary" onClick={askForKey}>
-          <Icon name="lock" size={18} /> Lås opp med lenken
-        </button>
-        <a className="btn btn-outline" href={story.url} target="_blank" rel="noopener noreferrer">
+        <a className="btn btn-primary" href={story.url} target="_blank" rel="noopener noreferrer">
           Les hele saken <Icon name="external" size={18} />
         </a>
       </div>

@@ -64,8 +64,21 @@ Settings in `backend/.env`: `ADRESSA_CACHE_DIR` (`cache/adressa`), `ADRESSA_PROF
 
 The backend owns the media and serves it under `/api/media/`. None of the files are in git.
 
-- **Story photos:** the scraper saves them in `backend/cache/adressa/images/`, served at `/api/media/adressa/<file>`. The hosted app shows Adressa's own share image from Adressa's image service instead.
+- **Story photos:** the scraper saves them in `backend/cache/adressa/images/`, served at `/api/media/adressa/<file>`. The hosted backend has no copy, so `npm run build` puts them in `frontend/dist/private/images/` with the full stories (see below).
 - **Videos:** `make videos ZIP=/path/to/archive.zip` puts the clips in `backend/media/videos/`, served at `/api/media/video/<file>`. The manifest, `backend/app/data/videos.json`, is in git. The hosted backend has no copy, so `npm run build` copies the clips into `frontend/dist/media/video/` and the backend points there (`VIDEO_PUBLIC_URL`). The hosted frontend is therefore deployed from a local build.
+
+## Hosting
+
+- **Backend (Render, `startcode-august-api`)** builds the `demo` branch of `atveide/startcode2026-min-versjon` on every push. It has no Adressa cache and no videos, so `/api/stories` gives only the public facts. The free plan sleeps after 15 quiet minutes and takes about a minute to wake; the app waits for it.
+- **Frontend (Netlify, `startcode-august-demo`)** is deployed from a local build, since the build carries what isn't in git: Acta and Stag, the videos, and the full stories. `npm run build` writes Adressa's summary, the article text, the photos and Oppdatert's bullet points from the local import to `dist/private/`, and the app adds them to the public stories.
+- **Password:** the whole hosted site, `/private/` and `/api` included, is behind one password (`frontend/netlify/edge-functions/password.ts`). It lives in Netlify's `SITE_PASSWORD`; a reader who gives it gets a cookie for 30 days, and a new password logs everyone out. Without `SITE_PASSWORD` the site doesn't open.
+
+```sh
+make summaries                                          # Oppdatert's bullet points for the current import
+npm --prefix frontend run build
+netlify deploy --prod --no-build --site a2aca2f5-f955-4c0f-acc4-baa54e0a03ec --dir frontend/dist
+NETLIFY_SITE_ID=a2aca2f5-f955-4c0f-acc4-baa54e0a03ec netlify env:set SITE_PASSWORD '<nytt passord>'   # change it, then deploy again
+```
 
 ## Tests
 

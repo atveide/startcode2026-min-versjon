@@ -1,10 +1,12 @@
 # Frontend on Netlify; /api is proxied to the backend on Render, so the browser
-# sees one origin and no CORS setup is needed.
+# sees one origin and no CORS setup is needed. The whole site is behind a password
+# (netlify/edge-functions/password.ts, SITE_PASSWORD), which runs before the redirects.
 
 [build]
   base = "frontend"
   command = "npm run build"
   publish = "dist"
+  edge_functions = "netlify/edge-functions"
 
 [[redirects]]
   from = "/api/*"

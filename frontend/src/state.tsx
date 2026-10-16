@@ -12,7 +12,6 @@ import {
 import { FeedEntry, Quiz, revealAnswer, Stories, Story, submitGuess, Video } from "./api";
 import { Icon } from "./icons";
 import { isComplete, isDone, loadProgress, newProgress, QuestionState, QuizProgress, saveProgress } from "./quiz";
-import { askForKey } from "./readerKey";
 import { loadIds, save } from "./storage";
 import { loadStreak, recordCompletion, Streak } from "./streak";
 
@@ -215,7 +214,7 @@ export function AppProvider({ data, quiz, children }: Props) {
       <div className={`toast ${toastState.visible ? "visible" : ""}`} role="status" aria-live="polite">
         {toastState.message}
       </div>
-      <About dialogRef={aboutRef} locked={stories.some((s) => !s.imported)} />
+      <About dialogRef={aboutRef} />
     </AppContext.Provider>
   );
 }
@@ -238,7 +237,7 @@ async function enterFullscreen() {
   }
 }
 
-function About({ dialogRef, locked }: { dialogRef: RefObject<HTMLDialogElement | null>; locked: boolean }) {
+function About({ dialogRef }: { dialogRef: RefObject<HTMLDialogElement | null> }) {
   const close = () => dialogRef.current?.close();
   return (
     <dialog
@@ -280,17 +279,6 @@ function About({ dialogRef, locked }: { dialogRef: RefObject<HTMLDialogElement |
           Quizfremdrift og lagrede saker lagres bare i denne nettleseren.
         </p>
         <div className="modal-actions">
-          {locked && (
-            <button
-              className="btn btn-outline"
-              onClick={() => {
-                close();
-                askForKey();
-              }}
-            >
-              <Icon name="lock" size={18} /> Lås opp hele sakene
-            </button>
-          )}
           {canGoFullscreen() && (
             <button
               className="btn btn-outline"

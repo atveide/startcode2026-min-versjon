@@ -1,59 +1,38 @@
 import type { Stories, Story } from "./api";
-import { getReaderKey } from "./readerKey";
 
-type PrivateStory = Pick<Story, "lead" | "authors" | "modifiedAt" | "summary" | "body" | "opplystSummary">;
-// See scripts/encrypt-stories.mjs: the stories under a content key, wrapped once per reader.
-type Package = { v: number; iv: string; data: string; readers: Record<string, { iv: string; key: string }> };
-
-const bytes = (base64: string) =>
-  Uint8Array.from(atob(base64.replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0));
-const base64url = (buffer: ArrayBuffer) =>
-  btoa(String.fromCharCode(...new Uint8Array(buffer))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-
-async function open(raw: BufferSource, iv: string, data: string) {
-  const key = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["decrypt"]);
-  return crypto.subtle.decrypt({ name: "AES-GCM", iv: bytes(iv) }, key, bytes(data));
-}
+type PrivateStory = Pick<Story, "lead" | "authors" | "modifiedAt" | "summary" | "body" | "opplystSummary"> &
+  Partial<Pick<Story, "image">>;
 
 /**
- * With the reader's key, add the full stories (Adressa's summary, the article text and Opplyst's
- * bullet points) from the encrypted package. Without a key, or with one that no longer has access, the stories stay as
- * the public facts.
+ * On the hosted app, add the full stories (Adressa's summary, the article text, the photos and
+ * Oppdatert's bullet points) from /private/stories.json, which the build writes from the local
+ * Adressa import and the site's password protects (see scripts/copy-stories.mjs). Locally the
+ * backend has them already; without the file the stories stay as the public facts.
  */
 export async function withFullStories(data: Stories): Promise<Stories> {
-  const key = getReaderKey();
-  if (!key || !crypto.subtle || data.stories.every((s) => s.imported)) return data;
+  if (data.stories.every((s) => s.imported)) return data;
   try {
-    const res = await fetch("/private/stories.enc.json", { cache: "no-cache" });
+    const res = await fetch("/private/stories.json", { cache: "no-cache" });
     if (!res.ok) return data;
-    const pkg = (await res.json()) as Package;
-    const mine = bytes(key);
-    const id = base64url((await crypto.subtle.digest("SHA-256", mine)).slice(0, 9));
-    const wrapped = pkg.readers?.[id];
-    if (!wrapped) return data;
-    const contentKey = await open(mine, wrapped.iv, wrapped.key);
-    const unlocked = JSON.parse(new TextDecoder().decode(await open(contentKey, pkg.iv, pkg.data))) as {
-      importedAt: string | null;
-      stories: Record<string, PrivateStory>;
-    };
+    const full = (await res.json()) as { importedAt: string | null; stories: Record<string, PrivateStory> };
     return {
       ...data,
-      importedAt: data.importedAt ?? unlocked.importedAt,
+      importedAt: data.importedAt ?? full.importedAt,
       stories: data.stories.map((s) => {
-        const full = unlocked.stories[s.id];
-        if (!full || s.imported) return s;
+        const extra = full.stories[s.id];
+        if (!extra || s.imported) return s;
         return {
           ...s,
-          ...full,
-          lead: full.lead ?? s.lead,
-          // Packages made before the bullet points have none.
-          opplystSummary: full.opplystSummary ?? s.opplystSummary ?? null,
+          ...extra,
+          lead: extra.lead ?? s.lead,
+          image: extra.image ?? s.image,
+          opplystSummary: extra.opplystSummary ?? s.opplystSummary ?? null,
           imported: true,
         };
       }),
     };
   } catch {
-    // A damaged package or key: show the public stories.
+    // No file (the dev server answers with the app itself) or a damaged one: the public stories.
     return data;
   }
 }
