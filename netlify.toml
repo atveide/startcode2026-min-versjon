@@ -12,7 +12,7 @@
   status = 200
   force = true
 
-# Adressa's videos and posters, copied into the build by `npm run videos`.
+# Adressa's videos and posters, copied into the build from backend/media/videos.
 [[headers]]
   for = "/media/video/*"
   [headers.values]

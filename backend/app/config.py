@@ -19,8 +19,8 @@ class Settings(BaseSettings):
     summary_model: str = "claude-sonnet-5-5"
     # Folder with the imported videos (app.import_videos); relative to backend/. Never committed.
     video_media_dir: str = "media/videos"
-    # The public copies of the same files on the hosted frontend (deployed from a local build, see
-    # README). Used where this machine has no copy, like the backend on Render. Empty: none.
+    # The public copies of the same files on the hosted frontend, which its build copies from
+    # video_media_dir. Used where this machine has no copy, like the backend on Render. Empty: none.
     video_public_url: str = "https://startcode-august-demo.netlify.app/media/video"
 
 

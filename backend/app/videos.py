@@ -6,9 +6,10 @@ where every file came from. The clips themselves stay out of git, in VIDEO_MEDIA
 originals as they came, and our H.264 copy for the web with a poster frame, both named by the
 clip's stable id. `python -m app.import_videos <zip>` fills the folder and writes the manifest.
 
-Where this machine has no copy of a clip (the backend on Render, a teammate's laptop), it points to
-the public copy on the hosted frontend, VIDEO_PUBLIC_URL. Without either, the clip is left out of the
-feed, which then shows only the stories.
+The backend serves the clips from that folder (GET /api/media/video/<file>). Where this machine has
+no copy (the backend on Render, a teammate's laptop), it points to the public copy that the
+frontend's build takes from the same folder and Netlify serves, VIDEO_PUBLIC_URL. Without either,
+the clip is left out of the feed, which then shows only the stories.
 """
 
 import json

@@ -60,6 +60,13 @@ The cache (`backend/cache/adressa/`: `articles.json`, the photos and `import-sta
 
 Settings in `backend/.env`: `ADRESSA_CACHE_DIR` (`cache/adressa`), `ADRESSA_PROFILE_DIR` (the browser profile with the login, which must be outside the repo) and `ADRESSA_BROWSER` (`chrome` or `chromium`).
 
+## Photos and videos
+
+The backend owns the media and serves it under `/api/media/`. None of the files are in git.
+
+- **Story photos:** the scraper saves them in `backend/cache/adressa/images/`, served at `/api/media/adressa/<file>`. The hosted app shows Adressa's own share image from Adressa's image service instead.
+- **Videos:** `make videos ZIP=/path/to/archive.zip` puts the clips in `backend/media/videos/`, served at `/api/media/video/<file>`. The manifest, `backend/app/data/videos.json`, is in git. The hosted backend has no copy, so `npm run build` copies the clips into `frontend/dist/media/video/` and the backend points there (`VIDEO_PUBLIC_URL`). The hosted frontend is therefore deployed from a local build.
+
 ## Tests
 
 ```sh

@@ -5,11 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/copy-videos.mjs",
     "preview": "vite preview",
     "typecheck": "tsc -b",
-    "encrypt": "node scripts/encrypt-stories.mjs",
-    "videos": "node scripts/copy-videos.mjs"
+    "encrypt": "node scripts/encrypt-stories.mjs"
   },
   "dependencies": {
     "react": "^19.1.0",
