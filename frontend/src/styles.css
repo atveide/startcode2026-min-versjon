@@ -160,39 +160,37 @@ summary::-webkit-details-marker{display:none}
 .quiz-sentence.long{font-size:clamp(24px,6.8vw,30px)}
 .quiz.compact .quiz-sentence{font-size:clamp(22px,6.2vw,28px);margin-bottom:14px}
 mark.answer{color:#fff;background:var(--soft);border-bottom:4px solid var(--action);padding:0 .14em;border-radius:2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
-.hint-line{font-size:16px;color:#ddd;margin:-6px 0 14px}
-.hint-letters{font:700 20px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.18em;color:#fff;margin-left:4px}
 /* The answer field is the gap itself: a hidden copy of the word sizes it, the input sits on top.
    The typed part is underlined in blue, the rest of the gap in grey. */
-.gap{position:relative;display:inline-block;min-width:4.2em;max-width:100%;margin:0 .06em;vertical-align:baseline;border-bottom:4px solid var(--gap-rest,var(--action));cursor:text}
-.gap.filled{--gap-rest:#444}
-.gap-text{display:inline-block;max-width:100%;min-width:.05em;padding-right:.12em;overflow:hidden;white-space:pre;color:transparent;box-shadow:0 4px 0 var(--action);vertical-align:top}
-.gap input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;border-radius:0;background:none;appearance:none;font:inherit;letter-spacing:inherit;color:var(--action);caret-color:#fff;outline:0}
+/* The gap is a field: tinted and outlined so it reads as something to tap, brighter on hover and focus. */
+.gap{--pad:.2em;position:relative;display:inline-block;min-width:4.2em;max-width:100%;margin:0 .06em;padding:0 var(--pad);vertical-align:baseline;border:2px solid #83c9ed99;border-radius:8px;background:#83c9ed1f;cursor:text;transition:background var(--motion-normal),border-color var(--motion-normal),box-shadow var(--motion-normal)}
+.gap:hover{background:#83c9ed2e;border-color:var(--action)}
+.gap:focus-within{background:#83c9ed24;border-color:var(--action);box-shadow:0 0 0 3px #83c9ed40}
+.gap.filled:not(:focus-within){border-color:#83c9ed66}
+.gap-text{display:inline-block;max-width:100%;min-width:.05em;padding-right:.12em;overflow:hidden;white-space:pre;color:transparent;vertical-align:top}
+.gap input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0 var(--pad);border:0;border-radius:inherit;background:none;appearance:none;font:inherit;letter-spacing:inherit;color:var(--action);caret-color:#fff;outline:0;cursor:text}
 .gap input::selection{background:#83c9ed55}
+.gap input::placeholder{color:#83c9ed99;opacity:1}
 .gap-help{font-size:16px;color:var(--muted);margin:-8px 0 18px}
 .guess-form .btn{min-height:56px;font-size:19px}
 .quiz-error{color:var(--color-live);font-size:15px;margin-top:10px}
 .closeness{margin-top:22px}
 .closeness-label{font-size:16px;font-weight:650;margin:0 0 8px}
-.closeness-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:0 0 8px;font-size:17px}
-.closeness-word{font-weight:650;overflow-wrap:anywhere}
-.closeness-score{white-space:nowrap;font-variant-numeric:tabular-nums}
-.closeness-score b{font-size:20px}
 .heat-word{font-weight:750;color:var(--heat)}
-.closeness-bar{height:10px;border-radius:5px;background:#2a2a2a;overflow:hidden}
-.closeness-bar span,.try-bar span{display:block;height:100%;border-radius:5px;background:var(--heat);transition:width .45s cubic-bezier(.22,.8,.24,1)}
-.closeness-scale{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:6px 0 0}
+.guesses{display:grid;gap:6px;margin:0 0 4px}
+.guess{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:10px;align-items:center;min-height:44px;padding:8px 12px;border-radius:6px;font-size:16px;background:linear-gradient(to right,color-mix(in srgb,var(--heat) 38%,#1e1e1e) var(--fill),#1e1e1e var(--fill));animation:feedback-in .3s cubic-bezier(.22,.8,.24,1)}
+.guess-dot{width:8px;height:8px;border-radius:50%}
+.guess.latest .guess-dot{background:#fff}
+.guess.latest .guess-word{font-weight:700}
+.guess-word{overflow-wrap:anywhere}
+.guess-score{font-size:14px;color:#eee;font-variant-numeric:tabular-nums;white-space:nowrap}
+.guess-score b{font-size:16px}
+.guess .heat-word{color:inherit}
 .heat-cold{--heat:#8FB8DE}.heat-warm{--heat:#F2B84B}.heat-hot{--heat:#FF8A5B}.heat-right{--heat:#7ED6AA}
-.explain summary,.tries summary{display:flex;align-items:center;gap:8px;min-height:44px;color:var(--action);font-size:15px;font-weight:600}
-.explain summary:after,.tries summary:after{content:'';width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);margin:-4px 0 0 4px;transition:transform var(--motion-normal)}
-.explain[open] summary:after,.tries[open] summary:after{transform:rotate(-135deg);margin-top:4px}
+.explain summary{display:flex;align-items:center;gap:8px;min-height:44px;color:var(--action);font-size:15px;font-weight:600}
+.explain summary:after{content:'';width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);margin:-4px 0 0 4px;transition:transform var(--motion-normal)}
+.explain[open] summary:after{transform:rotate(-135deg);margin-top:4px}
 .explain p{font-size:15px;line-height:1.5;color:#ccc;margin:0 0 4px}
-.tries{border-top:1px solid var(--line);margin-top:6px}
-.tries ol{padding-bottom:6px}
-.tries li{display:grid;grid-template-columns:minmax(0,1fr) 28% auto;gap:10px;align-items:center;padding:6px 0;font-size:15px}
-.try-word{overflow-wrap:anywhere}
-.try-bar{height:6px;border-radius:3px;background:#2a2a2a;overflow:hidden}
-.try-score{font-size:14px;color:#ddd;font-variant-numeric:tabular-nums;white-space:nowrap}
 .help{margin-top:22px}
 .help .btn{min-height:56px;font-size:19px}
 .help-note{text-align:center;color:#ccc;font-size:15px;margin:10px 0 0}
@@ -217,6 +215,7 @@ mark.answer{color:#fff;background:var(--soft);border-bottom:4px solid var(--acti
 .answers-score{font-size:19px}
 .answers-score strong{font:700 44px/1 var(--head);margin-right:4px}
 .answers-sum{color:#ccc;font-size:16px;margin:6px 0 20px}
+.answers-share{margin:-6px 0 22px}
 .result-list{display:grid;gap:14px;margin:0 0 20px}
 .result-item{padding:14px 14px 12px;border:1px solid var(--line);border-radius:8px;background:var(--raised)}
 .result-head{display:flex;justify-content:space-between;gap:12px;margin:0 0 6px;font-size:14px;color:var(--muted)}

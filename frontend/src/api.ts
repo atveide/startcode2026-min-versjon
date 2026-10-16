@@ -81,7 +81,6 @@ export type GuessResult = {
   full_text: string | null;
 };
 
-export type Hint = { hint: string; level: number; max_level: number };
 
 async function request<T>(url: string, init: RequestInit | undefined, failure: string): Promise<T> {
   const res = await fetch(url, init);
@@ -113,10 +112,6 @@ export function submitGuess(headlineId: number, guess: string): Promise<GuessRes
     },
     "Vi fikk ikke sjekket svaret. Prøv igjen",
   );
-}
-
-export function fetchHint(headlineId: number, level: number): Promise<Hint> {
-  return request(`/api/headlines/${headlineId}/hint/${level}`, undefined, "Vi fikk ikke hentet hintet");
 }
 
 export function revealAnswer(headlineId: number): Promise<{ answer: string; full_text: string }> {

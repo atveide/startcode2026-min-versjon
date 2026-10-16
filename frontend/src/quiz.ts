@@ -9,8 +9,6 @@ export type Guess = { word: string; score: number };
 
 export type QuestionState = {
   guesses: Guess[];
-  hints: number;
-  hint: string | null;
   answer: string | null; // set once solved or given up
   fullText: string | null;
   gaveUp: boolean;
@@ -31,8 +29,6 @@ const KEY = "opplyst-quiz-v1";
 function emptyQuestion(): QuestionState {
   return {
     guesses: [],
-    hints: 0,
-    hint: null,
     answer: null,
     fullText: null,
     gaveUp: false,
@@ -76,11 +72,11 @@ export function isDone(q: QuestionState): boolean {
   return q.answer !== null;
 }
 
-// 10 points for a first-try solve; every extra guess and every letter hint costs a point.
+// 10 points for a first-try solve; every extra guess costs a point.
 // Reading the story is free: it's what the game wants you to do.
 export function pointsFor(q: QuestionState): number {
   if (!isDone(q) || q.gaveUp) return 0;
-  return Math.max(0, MAX_POINTS - (q.guesses.length - 1) - q.hints);
+  return Math.max(0, MAX_POINTS - (q.guesses.length - 1));
 }
 
 export function totalPoints(progress: QuizProgress): number {
@@ -92,7 +88,7 @@ export function hasStarted(progress: QuizProgress): boolean {
     progress.started ||
     progress.finished ||
     progress.index > 0 ||
-    progress.questions.some((q) => q.guesses.length || q.hints || isDone(q))
+    progress.questions.some((q) => q.guesses.length || isDone(q))
   );
 }
 
@@ -106,6 +102,26 @@ export function verdict(points: number, max: number): string {
   if (ratio >= 0.8) return "Godt opplyst!";
   if (ratio >= 0.5) return "Godt på vei";
   return "Tid for å lese seg opp";
+}
+
+/** The colour of a question's points when shared: green for full points, down to white for none. */
+function pointsDot(points: number): string {
+  if (points >= MAX_POINTS) return "🟢";
+  if (points >= 5) return "🟡";
+  if (points > 0) return "🔵";
+  return "⚪";
+}
+
+/**
+ * The result as text to share, without giving away any answers: the points per question,
+ * a 💡 where the player read the story, and the sum.
+ */
+export function shareText(progress: QuizProgress, day: string): string {
+  const lines = progress.questions.map((q, i) => {
+    const points = pointsFor(q);
+    return `${i + 1}:   ${pointsDot(points)} ${points} poeng${q.readStory ? " 💡" : ""}`;
+  });
+  return [`Opplyst ${day}`, ...lines, `Sum: ${totalPoints(progress)} poeng`].join("\n");
 }
 
 export type Heat = "cold" | "warm" | "hot" | "right";

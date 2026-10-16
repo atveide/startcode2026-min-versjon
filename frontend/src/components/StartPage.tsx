@@ -1,7 +1,13 @@
 import { useEffect } from "react";
 import { Icon } from "../icons";
 import { formatDay } from "../logic";
-import { hasStarted, isComplete, MAX_POINTS, totalPoints, verdict } from "../quiz";
+import {
+  hasStarted,
+  isComplete,
+  MAX_POINTS,
+  totalPoints,
+  verdict,
+} from "../quiz";
 import { Link, navigate } from "../router";
 import { useApp } from "../state";
 import BottomNav from "./BottomNav";
@@ -26,7 +32,7 @@ export default function StartPage() {
   let title = "Hvor opplyst er du i dag?";
   let text = `${count} spørsmål fra nyhetene. Står du fast, finner du svaret i saken.`;
   let primary = { label: "Start dagens quiz", to: "/quiz" };
-  let secondary = { label: "Gå rett til nyhetene", to: "/nyheter" };
+  let secondary = null;
   if (complete) {
     title = verdict(points, max);
     text = `Du fikk ${points} av ${max} poeng i dagens quiz. Nye spørsmål i morgen.`;
@@ -39,18 +45,32 @@ export default function StartPage() {
 
   return (
     <>
-      <main id="main" className="start" tabIndex={-1} aria-labelledby="start-title">
-        <img className="start-photo" src="/assets/images/bakklandet.jpg" alt="" />
+      <main
+        id="main"
+        className="start"
+        tabIndex={-1}
+        aria-labelledby="start-title"
+      >
+        <img
+          className="start-photo"
+          src="/assets/images/bakklandet.jpg"
+          alt=""
+        />
         <div className="start-shade" />
         <header className="start-top">
           <Brand />
-          <button className="icon-button on-photo" onClick={showAbout} aria-label="Om Opplyst">
+          <button
+            className="icon-button on-photo"
+            onClick={showAbout}
+            aria-label="Om Opplyst"
+          >
             <Icon name="info" size={26} />
           </button>
         </header>
         <div className="start-copy">
           <p className="kicker">
-            Dagens quiz <span aria-hidden="true">·</span> <time dateTime={quiz.date}>{formatDay(quiz.date)}</time>
+            Dagens quiz <span aria-hidden="true">·</span>{" "}
+            <time dateTime={quiz.date}>{formatDay(quiz.date)}</time>
             {complete && (
               <>
                 {" "}
@@ -69,10 +89,14 @@ export default function StartPage() {
           >
             {primary.label} <Icon name="next" size={22} />
           </button>
-          <Link className="btn btn-text btn-wide" to={secondary.to}>
-            {secondary.label} <Icon name="next" size={22} />
-          </Link>
-          <p className="photo-note">Illustrasjonsfoto: Guy Delsaut / CC BY-SA 4.0</p>
+          {secondary && (
+            <Link className="btn btn-text btn-wide" to={secondary.to}>
+              {secondary.label} <Icon name="next" size={22} />
+            </Link>
+          )}
+          <p className="photo-note">
+            Illustrasjonsfoto: Guy Delsaut / CC BY-SA 4.0
+          </p>
         </div>
       </main>
       <BottomNav current="quiz" />

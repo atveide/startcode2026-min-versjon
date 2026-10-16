@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { FeedEntry, fetchHint, Quiz, revealAnswer, Stories, Story, submitGuess, Video } from "./api";
+import { FeedEntry, Quiz, revealAnswer, Stories, Story, submitGuess, Video } from "./api";
 import { Icon } from "./icons";
 import { isDone, loadProgress, newProgress, QuestionState, QuizProgress, saveProgress } from "./quiz";
 import { askForKey } from "./readerKey";
@@ -30,7 +30,6 @@ type AppState = {
   progress: QuizProgress;
   start: () => void;
   guess: (word: string) => Promise<void>;
-  hint: () => Promise<void>;
   giveUp: () => Promise<void>;
   setDraft: (text: string) => void;
   next: () => void;
@@ -113,16 +112,6 @@ export function AppProvider({ data, quiz, children }: Props) {
     [quiz, updateQuestion],
   );
 
-  const hint = useCallback(async () => {
-    const index = progressRef.current.index;
-    const q = progressRef.current.questions[index];
-    if (isDone(q) || q.hints >= quiz.max_hints) return;
-    const res = await fetchHint(quiz.headlines[index].id, q.hints + 1);
-    updateQuestion(index, (current) =>
-      isDone(current) ? current : { ...current, hints: res.level, hint: res.hint },
-    );
-  }, [quiz, updateQuestion]);
-
   const giveUp = useCallback(async () => {
     const index = progressRef.current.index;
     if (isDone(progressRef.current.questions[index])) return;
@@ -196,7 +185,6 @@ export function AppProvider({ data, quiz, children }: Props) {
     progress,
     start,
     guess,
-    hint,
     giveUp,
     setDraft,
     next,
