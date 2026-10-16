@@ -395,8 +395,7 @@ function Guesses({ guesses }: { guesses: Guess[] }) {
         <summary>Hva betyr tallet?</summary>
         <p>
           Nærheten viser hvor nær betydningen av gjetningen din er ordet som
-          mangler, fra 0 til 100. Det er ikke poeng og ikke sjansen for at du
-          har rett: bare riktig ord gir poeng.
+          mangler, fra 0 til 100.
         </p>
       </details>
     </section>
@@ -416,13 +415,6 @@ function Outcome({ q }: { q: QuestionState }) {
         <strong>
           {q.gaveUp ? "Hoppet over · 0 poeng" : `Riktig! +${points} poeng`}
         </strong>
-        <span>
-          {q.gaveUp
-            ? "Hopp over gir ingen poeng, men nå vet du det."
-            : `${q.readStory ? "Du fant svaret i saken." : "Du husket nyheten."}${
-                costs ? ` ${MAX_POINTS} poeng minus ${costs}.` : ""
-              }`}
-        </span>
       </span>
     </div>
   );
