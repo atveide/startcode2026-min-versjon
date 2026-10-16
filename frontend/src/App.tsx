@@ -12,12 +12,29 @@ import { load, save } from "./storage";
 import { withFullStories } from "./unlock";
 
 type Content = { stories: Stories; quiz: Quiz };
-type Data = { status: "loading" } | { status: "error"; message: string } | ({ status: "ready" } & Content);
+type Data = { status: "loading"; slow?: boolean } | { status: "error"; message: string } | ({ status: "ready" } & Content);
 
 const REFRESH_EVERY = 10 * 60 * 1000;
+// The backend on Render's free plan sleeps when nobody has used it for a while and needs up to a
+// minute to wake. Netlify's proxy gives up sooner, so the first load keeps asking before it fails.
+const WAKE_UP_FOR = 90 * 1000;
+const RETRY_AFTER = 3000;
+const SLOW_AFTER = 5000;
 
 function fetchContent(): Promise<Content> {
   return Promise.all([fetchStories().then(withFullStories), fetchQuiz()]).then(([stories, quiz]) => ({ stories, quiz }));
+}
+
+async function fetchWhileWaking(): Promise<Content> {
+  const started = Date.now();
+  for (;;) {
+    try {
+      return await fetchContent();
+    } catch (err) {
+      if (Date.now() - started > WAKE_UP_FOR) throw err;
+      await new Promise((resolve) => setTimeout(resolve, RETRY_AFTER));
+    }
+  }
 }
 
 export default function App() {
@@ -28,9 +45,14 @@ export default function App() {
 
   const reload = useCallback(() => {
     setData({ status: "loading" });
-    fetchContent()
+    const slow = window.setTimeout(
+      () => setData((d) => (d.status === "loading" ? { status: "loading", slow: true } : d)),
+      SLOW_AFTER,
+    );
+    fetchWhileWaking()
       .then((content) => setData({ status: "ready", ...content }))
-      .catch((err: Error) => setData({ status: "error", message: err.message }));
+      .catch((err: Error) => setData({ status: "error", message: err.message }))
+      .finally(() => window.clearTimeout(slow));
   }, []);
 
   useEffect(reload, [reload]);
@@ -67,7 +89,7 @@ export default function App() {
   if (data.status === "loading") {
     return (
       <Splash>
-        <p>Henter dagens nyheter …</p>
+        <p>{data.slow ? "Serveren våkner. Det kan ta opptil ett minutt …" : "Henter dagens nyheter …"}</p>
       </Splash>
     );
   }

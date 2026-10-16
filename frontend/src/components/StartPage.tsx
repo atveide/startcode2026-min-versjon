@@ -7,7 +7,7 @@ import {
   totalPoints,
   verdict,
 } from "../quiz";
-import { Link, navigate } from "../router";
+import { navigate } from "../router";
 import { useApp } from "../state";
 import BottomNav from "./BottomNav";
 import { Brand, StreakBox } from "./bits";
@@ -31,7 +31,6 @@ export default function StartPage() {
   let title = "Hvor oppdatert er du i dag?";
   let text = `${count} spørsmål fra nyhetene. Står du fast, finner du svaret i saken.`;
   let primary = { label: "Start dagens quiz", to: "/quiz" };
-  let secondary = null;
   if (complete) {
     title = verdict(points, max);
     text = `Du fikk ${points} av ${max} poeng i dagens quiz. Nye spørsmål i morgen.`;
@@ -78,11 +77,6 @@ export default function StartPage() {
           >
             {primary.label} <Icon name="next" size={22} />
           </button>
-          {secondary && (
-            <Link className="btn btn-text btn-wide" to={secondary.to}>
-              {secondary.label} <Icon name="next" size={22} />
-            </Link>
-          )}
           <p className="photo-note">
             Illustrasjonsfoto: Guy Delsaut / CC BY-SA 4.0
           </p>
