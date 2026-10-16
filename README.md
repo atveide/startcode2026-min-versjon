@@ -73,10 +73,11 @@ The backend owns the media and serves it under `/api/media/`. None of the files 
 - **Frontend (Netlify, `startcode-august-demo`)** is deployed from a local build, since the build carries what isn't in git: Acta and Stag, the videos, and the full stories. `npm run build` writes Adressa's summary, the article text, the photos and Oppdatert's bullet points from the local import to `dist/private/`, and the app adds them to the public stories.
 - **Password:** the whole hosted site, `/private/` and `/api` included, is behind one password (`frontend/netlify/edge-functions/password.ts`). It lives in Netlify's `SITE_PASSWORD`; a reader who gives it gets a cookie for 30 days, and a new password logs everyone out. Without `SITE_PASSWORD` the site doesn't open.
 
+Deploy from `frontend/` and let Netlify run the build: that is what bundles the password function. With `--no-build`, or from the repo root, the deploy goes out without it and `/private/` is open to anyone.
+
 ```sh
 make summaries                                          # Oppdatert's bullet points for the current import
-npm --prefix frontend run build
-netlify deploy --prod --no-build --site a2aca2f5-f955-4c0f-acc4-baa54e0a03ec --dir frontend/dist
+cd frontend && netlify deploy --prod --site a2aca2f5-f955-4c0f-acc4-baa54e0a03ec
 NETLIFY_SITE_ID=a2aca2f5-f955-4c0f-acc4-baa54e0a03ec netlify env:set SITE_PASSWORD '<nytt passord>'   # change it, then deploy again
 ```
 
