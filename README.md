@@ -1,4 +1,4 @@
-# startcode2026ny
+# startcode2026
 
 Monorepo with a FastAPI backend and a React (Vite + TypeScript) frontend.
 
@@ -26,6 +26,12 @@ Requires [uv](https://docs.astral.sh/uv/) and Node 20.19+.
 make install
 ```
 
+The quiz needs an Anthropic API key to judge guesses. Put it in `backend/.env` (copy `backend/.env.example`):
+
+```sh
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
 ## Development
 
 ```sh
@@ -33,6 +39,8 @@ make dev        # runs both servers
 make backend    # http://localhost:8000  (docs at /docs)
 make frontend   # http://localhost:5173  (proxies /api -> backend)
 ```
+
+A second setup can run next to it: start the backend with `--port 8010` and the frontend with `API_TARGET=http://localhost:8010` (see `.claude/launch.json`).
 
 ## Tests
 

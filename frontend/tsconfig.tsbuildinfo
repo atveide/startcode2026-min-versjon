@@ -1,1 +1,1 @@
-{"root":["./src/App.tsx","./src/main.tsx","./vite.config.ts"],"version":"5.9.3"}
+{"root":["./src/app.tsx","./src/api.ts","./src/icons.tsx","./src/logic.ts","./src/main.tsx","./src/quiz.ts","./src/readerkey.ts","./src/router.tsx","./src/state.tsx","./src/storage.ts","./src/unlock.ts","./src/components/bottomnav.tsx","./src/components/feedpage.tsx","./src/components/quizpage.tsx","./src/components/savedpage.tsx","./src/components/startpage.tsx","./src/components/storypage.tsx","./src/components/bits.tsx","./vite.config.ts"],"version":"5.9.3"}

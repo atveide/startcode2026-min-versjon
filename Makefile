@@ -1,4 +1,4 @@
-.PHONY: install dev backend frontend test
+.PHONY: install dev backend frontend test summaries videos
 
 install:
 	cd backend && uv sync
@@ -16,3 +16,11 @@ dev:
 test:
 	cd backend && uv run pytest
 	cd frontend && npm run typecheck
+
+# Opplyst's short versions of the imported stories (Claude Sonnet, cached).
+summaries:
+	cd backend && uv run python -m app.summaries
+
+# Import a zip of Adressa videos: make videos ZIP=/path/to/archive.zip
+videos:
+	cd backend && uv run python -m app.import_videos "$(ZIP)"

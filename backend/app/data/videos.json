@@ -1,0 +1,121 @@
+{
+  "importedAt": "2026-10-15T21:24:58+00:00",
+  "videos": [
+    {
+      "id": "tiktok-7696940656559803681",
+      "title": "Politiet rykket ut til Diskoteket",
+      "titleSource": "Filnavnet i arkivet",
+      "description": "Rykket ut til melding om mann som «kledde av seg alt av klær, og svingte seg litt fra strippestanga».",
+      "publishedAt": "2026-10-15T19:00:26+02:00",
+      "source": "Adresseavisen",
+      "platform": "TikTok",
+      "account": "@adresseavisen",
+      "sourceUrl": "https://www.tiktok.com/@adresseavisen/video/7696940656559803681",
+      "articleId": null,
+      "duration": 28.78,
+      "width": 1080,
+      "height": 1920,
+      "original": {
+        "archive": "Adresseavisen_uke_42_2026_uten_TikTok_vannmerke.zip",
+        "file": "2026-10-15_Politiet_rykket_ut_til_Diskoteket.mp4",
+        "sha256": "c5defcd8513f478286ae015e069d696a90fe109aa02298823074fb9c3a75463d",
+        "bytes": 1793341,
+        "video": "hevc/hvc1 1080×1920 25 fps yuv420p",
+        "audio": "aac/mp4a"
+      },
+      "web": {
+        "video": "h264/avc1 1080×1920 25 fps yuv420p",
+        "audio": "aac/mp4a",
+        "bytes": 8459073,
+        "faststart": true
+      }
+    },
+    {
+      "id": "tiktok-7696483302638636291",
+      "title": "Student med reklameidé",
+      "titleSource": "Filnavnet i arkivet, med ø/å/é satt inn for hånd",
+      "description": "En idé rett foran nesa på folk.",
+      "publishedAt": "2026-10-14T13:26:06+02:00",
+      "source": "Adresseavisen",
+      "platform": "TikTok",
+      "account": "@adresseavisen",
+      "sourceUrl": "https://www.tiktok.com/@adresseavisen/video/7696483302638636291",
+      "articleId": null,
+      "duration": 55.77,
+      "width": 1080,
+      "height": 1920,
+      "original": {
+        "archive": "Adresseavisen_uke_42_2026_uten_TikTok_vannmerke.zip",
+        "file": "2026-10-14_Student_med_reklameide.mp4",
+        "sha256": "951130e75d1117f632e8b4852d8bedf55b60a93707b508e8410876ac354730ec",
+        "bytes": 3481427,
+        "video": "hevc/hvc1 1080×1920 25 fps yuv420p",
+        "audio": "aac/mp4a"
+      },
+      "web": {
+        "video": "h264/avc1 1080×1920 25 fps yuv420p",
+        "audio": "aac/mp4a",
+        "bytes": 16883817,
+        "faststart": true
+      }
+    },
+    {
+      "id": "tiktok-7696148472084401430",
+      "title": "Astrid påkjørt i fotgjengerfelt",
+      "titleSource": "Filnavnet i arkivet, med ø/å/é satt inn for hånd",
+      "description": "– Jeg var midt ute i fotgjengerovergangen da jeg hørte en lyd. Jeg så deretter to svarte hjul og så fløy jeg, beskriver Astrid Denstad (41) fra Trondheim.",
+      "publishedAt": "2026-10-13T19:00:00+02:00",
+      "source": "Adresseavisen",
+      "platform": "TikTok",
+      "account": "@adresseavisen",
+      "sourceUrl": "https://www.tiktok.com/@adresseavisen/video/7696148472084401430",
+      "articleId": null,
+      "duration": 63.08,
+      "width": 1080,
+      "height": 1920,
+      "original": {
+        "archive": "Adresseavisen_uke_42_2026_uten_TikTok_vannmerke.zip",
+        "file": "2026-10-13_Astrid_pakjort_i_fotgjengerfelt.mp4",
+        "sha256": "54eb11ec834060ddc0aec8dcc1bdcd710a46f8bc0aba399f1d135772c9dd4fd1",
+        "bytes": 4457940,
+        "video": "hevc/hvc1 1080×1920 25 fps yuv420p",
+        "audio": "aac/mp4a"
+      },
+      "web": {
+        "video": "h264/avc1 1080×1920 25 fps yuv420p",
+        "audio": "aac/mp4a",
+        "bytes": 18114205,
+        "faststart": true
+      }
+    },
+    {
+      "id": "tiktok-7695749568738118934",
+      "title": "Skudd gjennom verandadøra",
+      "titleSource": "Filnavnet i arkivet, med ø/å/é satt inn for hånd",
+      "description": "Barna satt i stua da det gikk et skudd gjennom verandadøra.",
+      "publishedAt": "2026-10-12T15:00:00+02:00",
+      "source": "Adresseavisen",
+      "platform": "TikTok",
+      "account": "@adresseavisen",
+      "sourceUrl": "https://www.tiktok.com/@adresseavisen/video/7695749568738118934",
+      "articleId": null,
+      "duration": 41.9,
+      "width": 1080,
+      "height": 1920,
+      "original": {
+        "archive": "Adresseavisen_uke_42_2026_uten_TikTok_vannmerke.zip",
+        "file": "2026-10-12_Skudd_gjennom_verandadora.mp4",
+        "sha256": "2074c09da353f6760c031f7ead72614b7d68172ba1137f957464d9dc109e5bc9",
+        "bytes": 2307519,
+        "video": "hevc/hvc1 1080×1920 25 fps yuv420p",
+        "audio": "aac/mp4a"
+      },
+      "web": {
+        "video": "h264/avc1 1080×1920 25 fps yuv420p",
+        "audio": "aac/mp4a",
+        "bytes": 8705373,
+        "faststart": true
+      }
+    }
+  ]
+}
