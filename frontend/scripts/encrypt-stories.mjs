@@ -33,13 +33,15 @@ const after = flag => {
   return end < 0 ? rest : rest.slice(0, end);
 };
 
+// A relative ADRESSA_CACHE_DIR is relative to backend/, as for the backend itself.
 function cacheDir() {
-  if (process.env.ADRESSA_CACHE_DIR) return process.env.ADRESSA_CACHE_DIR;
-  const env = resolve(frontend, '../backend/.env');
+  const backend = resolve(frontend, '../backend');
+  if (process.env.ADRESSA_CACHE_DIR) return resolve(backend, process.env.ADRESSA_CACHE_DIR);
+  const env = resolve(backend, '.env');
   const line = existsSync(env) && readFileSync(env, 'utf8').split('\n').find(l => l.startsWith('ADRESSA_CACHE_DIR='));
   const value = line && line.slice('ADRESSA_CACHE_DIR='.length).trim();
   if (!value) throw new Error('Sett ADRESSA_CACHE_DIR (i backend/.env eller miljøet) til mappen med articles.json.');
-  return value;
+  return resolve(backend, value);
 }
 
 // {name: base64url key}

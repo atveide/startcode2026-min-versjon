@@ -4,9 +4,9 @@ Two sources, on purpose:
 
 - `data/week.json` is in git and holds only public facts about each article: title, link,
   section, publication time and the lead that adressa.no shows to everyone.
-- The local Adressa import (the feed project's `npm run import:adressa`) caches Adressa's
-  «Kort oppsummert», the article text and the photos, read with the user's own subscription.
-  That content is never committed; set ADRESSA_CACHE_DIR to the cache folder to use it.
+- The scraper (`python -m app.scraper`, see app/scraper/) caches Adressa's «Kort oppsummert»,
+  the article text and the photos in ADRESSA_CACHE_DIR, read with the user's own subscription.
+  That content is never committed, and the hosted backend has none of it.
 
 Without the cache the app still works: every story links to the article on adressa.no.
 """

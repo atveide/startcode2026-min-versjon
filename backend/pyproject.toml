@@ -15,6 +15,10 @@ dev = [
     "httpx>=0.28",
     "ruff>=0.8",
 ]
+scraper = [
+    "httpx>=0.28.1",
+    "playwright>=1.64.0",
+]
 
 [tool.ruff]
 line-length = 100

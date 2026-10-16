@@ -8,8 +8,13 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:5173"]
     anthropic_api_key: str | None = None
     database_path: str = "game.db"
-    # Folder with the local Adressa import (articles.json and images/). Optional.
+    # Folder with the local Adressa import (articles.json and images/), which the scraper
+    # (app.scraper) writes; relative to backend/. Never committed. Optional.
     adressa_cache_dir: str | None = None
+    # The scraper's browser profile with the saved Adressa login. Must stay outside the repo.
+    adressa_profile_dir: str = "~/Library/Application Support/opplyst/adressa-profile"
+    # The scraper's browser: "chrome" (the installed Google Chrome) or "chromium" (Playwright's).
+    adressa_browser: str = "chrome"
     # The model that writes Opplyst's own story summaries (app.summaries). Never swapped silently.
     summary_model: str = "claude-sonnet-5-5"
     # Folder with the imported videos (app.import_videos); relative to backend/. Never committed.

@@ -42,6 +42,24 @@ make frontend   # http://localhost:5173  (proxies /api -> backend)
 
 A second setup can run next to it: start the backend with `--port 8010` and the frontend with `API_TARGET=http://localhost:8010` (see `.claude/launch.json`).
 
+## News from Adressa (the scraper)
+
+The feed and the quiz are built on the week's student-relevant stories from Adresseavisen. The scraper in `backend/app/scraper/` reads them with your own Adressa subscription:
+
+```sh
+make adressa-login   # once, and again when the scraper says LOGIN_REQUIRED
+make scrape          # the week's stories into backend/cache/adressa
+make news            # scrape, then new questions and week.json, then the summaries
+```
+
+It reads `adressa.no/rss` and picks the up to 8 news stories from the last week that matter most to students: topics in the title or lead count fully, Adressa's own tags count half, and opinion, ads and video are left out. Each story is opened in a hidden Chrome with the saved login, and only text the logged-in page shows is kept. A story behind a paywall is skipped, and a failed run keeps the last import.
+
+The cache (`backend/cache/adressa/`: `articles.json`, the photos and `import-status.json`) is subscription content. It is git-ignored and stays on this machine. The hosted backend only gets the public facts in `backend/app/data/week.json` and the questions, so commit `backend/app/data/` after `make news`.
+
+**Pause:** while `backend/cache/adressa/PAUSED` exists, the scraper fetches nothing and the app keeps the last import. Delete the file to fetch new stories again.
+
+Settings in `backend/.env`: `ADRESSA_CACHE_DIR` (`cache/adressa`), `ADRESSA_PROFILE_DIR` (the browser profile with the login, which must be outside the repo) and `ADRESSA_BROWSER` (`chrome` or `chromium`).
+
 ## Tests
 
 ```sh

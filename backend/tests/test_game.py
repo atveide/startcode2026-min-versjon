@@ -21,7 +21,7 @@ from app.headlines import (
 )
 from app.judge import Judgement
 from app.main import app
-from app.stories import WEEK, load_stories
+from app.stories import WEEK, cache_dir, load_stories
 
 client = TestClient(app)
 WEEK_BY_ID = {s.id: s for s in WEEK.stories}
@@ -111,7 +111,8 @@ def test_pool_file_holds_only_questions(tmp_path) -> None:
 
 
 @pytest.mark.skipif(
-    not settings.adressa_cache_dir, reason="needs the local Adressa import (ADRESSA_CACHE_DIR)"
+    not (cache_dir() and (cache_dir() / "articles.json").is_file()),
+    reason="needs the local Adressa import (ADRESSA_CACHE_DIR)",
 )
 def test_every_answer_is_in_its_story() -> None:
     # Players who get stuck are sent to the story, so it must hold the answer.

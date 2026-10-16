@@ -1,6 +1,6 @@
 """Write data/week.json from the local Adressa cache, keeping only public facts.
 
-    uv run python -m app.export_week /path/to/vgx-local/data/adressa/articles.json
+    uv run python -m app.export_week cache/adressa/articles.json
 
 Only the title, link, section, publication time, the lead (which adressa.no shows to everyone)
 and Adressa's share image are copied. The share image is the og:image Adressa publishes for link

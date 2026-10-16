@@ -41,3 +41,5 @@ xcuserdata/
 
 # Imported videos (originals, web copies, posters); public metadata is in backend/app/data/videos.json
 backend/media/
+# The scraper's Adressa cache: article text and photos from the subscription (python -m app.scraper)
+backend/cache/
