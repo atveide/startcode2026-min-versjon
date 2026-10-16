@@ -1,22 +1,29 @@
-/* Adressa design tokens (hackathon kit 1.1.0), copied from the feed prototype. */
-:root {
+/* Adressa dark theme (adressa-dark-theme-fonts 1.0.0). Profile colors and font roles come from
+   Adresseavisen's Frontify manual; the dark surface and status colors are a hackathon adaptation,
+   not an official dark-mode profile. Font rights: public/assets/licenses/. */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
   --color-brand: #005379;
-  --color-brand-hover: #003E5B;
-  --color-brand-soft: #E9F4F8;
+  --color-action: #28AAE2;
+  --color-action-hover: #62C1EB;
+  --color-brand-hover: #005379;
+  --color-brand-soft: #14384B;
   --color-accent: #28AAE2;
-  --color-ink: #17212B;
-  --color-muted: #53616E;
-  --color-paper: #FFFFFF;
-  --color-canvas: #F4F5F2;
-  --color-border: #D6DCE0;
-  --color-live: #B42318;
-  --color-success: #17734E;
+  --color-ink: #F6F6F6;
+  --color-muted: #B9B9B9;
+  --color-paper: #1A1A1A;
+  --color-canvas: #101010;
+  --color-border: #3A3A3A;
+  --color-live: #FFABA4;
+  --color-success: #7ED6AA;
+  --color-focus: #28AAE2;
+  --color-on-brand: #101010;
   --color-sport: #4E9D2D;
-  --color-culture: #C3002F;
-  --color-focus: #005379;
-  --color-on-brand: #FFFFFF;
-  --font-editorial: 'Bitter', Georgia, serif;
-  --font-ui: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --color-culture: #C31632;
+  --font-editorial: 'Acta', Georgia, serif;
+  --font-ui: 'Roboto', system-ui, sans-serif;
+  --font-vignette: 'Stag', Georgia, serif;
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -51,23 +58,6 @@
   --type-display: clamp(2.5rem, 5vw, 4.5rem);
   --motion-fast: 120ms;
   --motion-normal: 180ms;
-}
-
-/* Semantic dark values for consumers that opt into data-theme. */
-[data-theme="dark"] {
-  --color-brand: #83C9ED;
-  --color-brand-hover: #AFDEF5;
-  --color-brand-soft: #14384B;
-  --color-accent: #5DC1F0;
-  --color-ink: #FFFFFF;
-  --color-muted: #AAAAAA;
-  --color-paper: #010101;
-  --color-canvas: #1A1A1A;
-  --color-border: #333333;
-  --color-live: #FFABA4;
-  --color-success: #7ED6AA;
-  --color-focus: #83C9ED;
-  --color-on-brand: #010101;
 }
 
 @media (prefers-reduced-motion: reduce) {

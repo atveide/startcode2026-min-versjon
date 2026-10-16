@@ -1,16 +1,54 @@
-/* Opplyst fra Adressa. Dark mode from the (unofficial) Adressa hackathon kit v2: black and grey
-   surfaces, white text, light blue actions, Bitter for headlines and Inter for everything else.
+/* Opplyst fra Adressa. Adressa's dark theme: near-black canvas, dark grey surfaces, light text and
+   cyan actions. Acta for headlines and article text, Stag for vignettes, Roboto for everything else.
    Real photos and video carry the screens; text sits on a neutral dark shade, never on glass. */
+/* Adressa's original font files, unchanged; only the weights below exist, so nothing is synthesised. */
 @font-face {
-    font-family: Inter;
-    src: url("/assets/fonts/inter-latin-wght-normal.woff2") format("woff2");
-    font-weight: 100 900;
+    font-family: Acta;
+    src: url("/assets/fonts/acta_400.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
     font-display: swap;
 }
 @font-face {
-    font-family: Bitter;
-    src: url("/assets/fonts/bitter-latin-wght-normal.woff2") format("woff2");
-    font-weight: 100 900;
+    font-family: Acta;
+    src: url("/assets/fonts/acta_800.woff2") format("woff2");
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: Acta;
+    src: url("/assets/fonts/acta_400_italic.woff2") format("woff2");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: Acta;
+    src: url("/assets/fonts/acta_700_italic.woff2") format("woff2");
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: Stag;
+    src: url("/assets/fonts/Stag-Semibold.otf") format("opentype");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: Roboto;
+    src: url("/assets/fonts/Roboto-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: Roboto;
+    src: url("/assets/fonts/Roboto-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
     font-display: swap;
 }
 :root {
@@ -20,14 +58,15 @@
     --text: var(--color-ink);
     --muted: var(--color-muted);
     --line: var(--color-border);
-    --action: var(--color-brand);
-    --action-hover: var(--color-brand-hover);
+    --action: var(--color-action);
+    --action-hover: var(--color-action-hover);
     --soft: var(--color-brand-soft);
     --on-action: var(--color-on-brand);
-    --raised: #0e0e0e;
-    --field: #141414;
-    --on-photo-muted: #c8c8c8;
+    --raised: var(--color-paper);
+    --field: var(--color-paper);
+    --on-photo-muted: var(--color-muted);
     --head: var(--font-editorial);
+    --vignette: var(--font-vignette);
     --ui: var(--font-ui);
     --col: 520px;
     --read: 720px;
@@ -46,6 +85,7 @@ body {
     background: var(--canvas);
     color: var(--text);
     font: 400 16px/1.5 var(--ui);
+    font-synthesis: none;
     -webkit-font-smoothing: antialiased;
     overflow-x: clip;
     overscroll-behavior-y: none;
@@ -145,15 +185,15 @@ summary::-webkit-details-marker {
 .brand {
     display: inline-flex;
     flex-direction: column;
-    color: #fff;
+    color: var(--text);
     line-height: 1;
 }
 .brand-name {
-    font: 800 30px/0.95 var(--ui);
-    letter-spacing: -0.035em;
+    font: 600 30px/0.95 var(--vignette);
+    letter-spacing: -0.01em;
 }
 .brand-from {
-    font: 650 14px/1.2 var(--ui);
+    font: 700 14px/1.2 var(--ui);
     margin-top: 4px;
     letter-spacing: -0.005em;
 }
@@ -163,11 +203,10 @@ summary::-webkit-details-marker {
     align-items: flex-start;
     padding: 2px 0;
 }
+/* Vignette: Adressa sets section and channel names in Stag. */
 .kicker {
     display: block;
-    font: 650 13px/1.35 var(--ui);
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
+    font: 600 15px/1.3 var(--vignette);
     color: var(--action);
     margin: 0 0 8px;
 }
@@ -180,7 +219,7 @@ summary::-webkit-details-marker {
     padding: 10px 20px;
     border-radius: 8px;
     border: 1.5px solid transparent;
-    font: 650 17px/1.2 var(--ui);
+    font: 700 17px/1.2 var(--ui);
     text-align: center;
     transition:
         background var(--motion-fast),
@@ -196,13 +235,13 @@ summary::-webkit-details-marker {
 .btn-outline {
     border-color: var(--action);
     color: var(--action);
-    background: #0109;
+    background: color-mix(in srgb, var(--canvas) 60%, transparent);
 }
 .btn-outline:hover {
-    background: #83c9ed24;
+    background: var(--soft);
 }
 .btn-text {
-    color: #fff;
+    color: var(--text);
     padding-inline: 8px;
 }
 .btn-text:hover {
@@ -221,11 +260,11 @@ summary::-webkit-details-marker {
     width: 48px;
     height: 48px;
     border-radius: 8px;
-    color: #fff;
+    color: var(--text);
     flex: none;
 }
 .icon-button:hover {
-    background: #ffffff1a;
+    background: color-mix(in srgb, var(--text) 10%, transparent);
 }
 .icon-button.is-on {
     color: var(--action);
@@ -255,7 +294,7 @@ summary::-webkit-details-marker {
     padding-bottom: var(--safe-b);
     display: flex;
     background: var(--paper);
-    border-top: 1px solid #222;
+    border-top: 1px solid var(--line);
 }
 .nav-tab {
     position: relative;
@@ -268,10 +307,10 @@ summary::-webkit-details-marker {
     min-height: var(--nav-h);
     color: var(--muted);
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
 }
 .nav-tab:hover {
-    color: #fff;
+    color: var(--text);
 }
 .nav-tab.active {
     color: var(--action);
@@ -290,7 +329,7 @@ summary::-webkit-details-marker {
     background: var(--action);
     color: var(--on-action);
     font-size: 11px;
-    font-weight: 750;
+    font-weight: 700;
     line-height: 18px;
     text-align: center;
 }
@@ -308,7 +347,7 @@ summary::-webkit-details-marker {
     flex-direction: column;
     justify-content: flex-end;
     padding-bottom: calc(var(--nav-h) + var(--safe-b));
-    background: var(--paper);
+    background: var(--canvas);
 }
 .start-photo {
     position: absolute;
@@ -348,7 +387,7 @@ summary::-webkit-details-marker {
     padding: 120px 20px 16px;
 }
 .start h1 {
-    font: 700 clamp(36px, 10.6vw, 48px)/1.04 var(--head);
+    font: 800 clamp(36px, 10.6vw, 48px)/1.04 var(--head);
     letter-spacing: -0.015em;
     margin: 0 0 14px;
     text-wrap: balance;
@@ -490,7 +529,7 @@ summary::-webkit-details-marker {
     margin-bottom: 10px;
 }
 .card-title {
-    font: 700 clamp(30px, 8.8vw, 38px)/1.08 var(--head);
+    font: 800 clamp(30px, 8.8vw, 38px)/1.08 var(--head);
     letter-spacing: -0.01em;
     margin: 0 0 12px;
     text-wrap: balance;
@@ -561,7 +600,7 @@ summary::-webkit-details-marker {
     width: 48px;
     height: 48px;
     border-radius: 8px;
-    color: #fff;
+    color: var(--text);
     flex: none;
 }
 .save-button.is-saved svg {
@@ -578,7 +617,7 @@ summary::-webkit-details-marker {
     min-height: 56px;
     padding: 4px;
     font-size: 14px;
-    font-weight: 650;
+    font-weight: 700;
     filter: drop-shadow(0 1px 6px #000c);
 }
 .save-button.labelled.is-saved {
@@ -646,12 +685,12 @@ summary::-webkit-details-marker {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: #010101b3;
-    border: 1.5px solid #fff6;
-    color: #fff;
+    background: color-mix(in srgb, var(--canvas) 70%, transparent);
+    border: 1.5px solid color-mix(in srgb, var(--text) 40%, transparent);
+    color: var(--text);
 }
 .round-button:hover {
-    border-color: #fff;
+    border-color: var(--text);
 }
 .round-button.is-on {
     border-color: var(--action);
@@ -679,13 +718,13 @@ summary::-webkit-details-marker {
     background: linear-gradient(
         90deg,
         var(--action) var(--done, 0%),
-        #ffffff4d var(--done, 0%)
+        color-mix(in srgb, var(--text) 30%, transparent) var(--done, 0%)
     );
 }
 .video-progress input::-moz-range-track {
     height: 4px;
     border-radius: 2px;
-    background: #ffffff4d;
+    background: color-mix(in srgb, var(--text) 30%, transparent);
 }
 .video-progress input::-moz-range-progress {
     height: 4px;
@@ -709,7 +748,7 @@ summary::-webkit-details-marker {
 }
 .video-time {
     font-size: 13px;
-    color: #ddd;
+    color: var(--muted);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
 }
@@ -723,19 +762,19 @@ summary::-webkit-details-marker {
     flex-direction: column;
     align-items: center;
     gap: 10px;
-    color: #fff;
+    color: var(--text);
     font-size: 16px;
-    font-weight: 650;
+    font-weight: 700;
 }
 .video-big-play svg {
     width: 80px;
     height: 80px;
     padding: 20px 18px 20px 22px;
     border-radius: 50%;
-    background: #010101b3;
+    background: color-mix(in srgb, var(--canvas) 70%, transparent);
 }
 .video-big-play span {
-    background: #010101b3;
+    background: color-mix(in srgb, var(--canvas) 70%, transparent);
     padding: 6px 12px;
     border-radius: 8px;
 }
@@ -750,15 +789,15 @@ summary::-webkit-details-marker {
     gap: 10px;
     padding: 10px 16px;
     border-radius: 8px;
-    background: #010101cc;
+    background: color-mix(in srgb, var(--canvas) 80%, transparent);
     font-size: 15px;
     white-space: nowrap;
 }
 .spinner {
     width: 18px;
     height: 18px;
-    border: 2px solid #fff5;
-    border-top-color: #fff;
+    border: 2px solid color-mix(in srgb, var(--text) 33%, transparent);
+    border-top-color: var(--text);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -779,7 +818,7 @@ summary::-webkit-details-marker {
     gap: 14px;
     padding: 20px;
     border-radius: 8px;
-    background: #010101e6;
+    background: color-mix(in srgb, var(--canvas) 90%, transparent);
     border: 1px solid var(--line);
     text-align: center;
     font-size: 17px;
@@ -790,10 +829,10 @@ summary::-webkit-details-marker {
     gap: 14px;
     text-align: center;
     padding: 40px 24px;
-    background: var(--paper);
+    background: var(--canvas);
 }
 .card-end h2 {
-    font: 700 30px/1.15 var(--head);
+    font: 800 30px/1.15 var(--head);
 }
 .card-end p {
     color: var(--on-photo-muted);
@@ -811,7 +850,7 @@ summary::-webkit-details-marker {
     margin: 0 auto;
     min-height: 100vh;
     min-height: 100dvh;
-    background: var(--paper);
+    background: var(--canvas);
     padding-bottom: calc(32px + var(--safe-b));
 }
 .quiz-head {
@@ -846,13 +885,13 @@ summary::-webkit-details-marker {
     flex: 1;
     height: 6px;
     border-radius: 3px;
-    background: #333;
+    background: var(--line);
 }
 .quiz-steps .done {
     background: var(--action);
 }
 .quiz-steps .current {
-    background: #fff;
+    background: var(--text);
 }
 .quiz-photo {
     position: relative;
@@ -874,7 +913,7 @@ summary::-webkit-details-marker {
     left: 16px;
     bottom: 10px;
     font-size: 13px;
-    color: #fff;
+    color: var(--text);
     text-shadow: 0 1px 6px #000;
 }
 .quiz.compact .quiz-photo {
@@ -884,7 +923,7 @@ summary::-webkit-details-marker {
     padding: 22px 20px 0;
 }
 .quiz-sentence {
-    font: 700 clamp(30px, 8.6vw, 38px)/1.16 var(--head);
+    font: 800 clamp(30px, 8.6vw, 38px)/1.16 var(--head);
     letter-spacing: -0.01em;
     margin: 2px 0 20px;
     text-wrap: pretty;
@@ -898,7 +937,7 @@ summary::-webkit-details-marker {
     margin-bottom: 14px;
 }
 mark.answer {
-    color: #fff;
+    color: var(--text);
     background: var(--soft);
     border-bottom: 4px solid var(--action);
     padding: 0 0.14em;
@@ -918,9 +957,9 @@ mark.answer {
     margin: 0 0.06em;
     padding: 0 var(--pad);
     vertical-align: baseline;
-    border: 2px solid #83c9ed99;
+    border: 2px solid color-mix(in srgb, var(--action) 60%, transparent);
     border-radius: 8px;
-    background: #83c9ed1f;
+    background: color-mix(in srgb, var(--action) 12%, transparent);
     cursor: text;
     transition:
         background var(--motion-normal),
@@ -928,16 +967,16 @@ mark.answer {
         box-shadow var(--motion-normal);
 }
 .gap:hover {
-    background: #83c9ed2e;
+    background: color-mix(in srgb, var(--action) 18%, transparent);
     border-color: var(--action);
 }
 .gap:focus-within {
-    background: #83c9ed24;
+    background: color-mix(in srgb, var(--action) 14%, transparent);
     border-color: var(--action);
-    box-shadow: 0 0 0 3px #83c9ed40;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--action) 25%, transparent);
 }
 .gap.filled:not(:focus-within) {
-    border-color: #83c9ed66;
+    border-color: color-mix(in srgb, var(--action) 40%, transparent);
 }
 .gap-text {
     display: inline-block;
@@ -963,15 +1002,15 @@ mark.answer {
     font: inherit;
     letter-spacing: inherit;
     color: var(--action);
-    caret-color: #fff;
+    caret-color: var(--text);
     outline: 0;
     cursor: text;
 }
 .gap input::selection {
-    background: #83c9ed55;
+    background: color-mix(in srgb, var(--action) 33%, transparent);
 }
 .gap input::placeholder {
-    color: #83c9ed99;
+    color: color-mix(in srgb, var(--action) 60%, transparent);
     opacity: 1;
 }
 .gap-help {
@@ -993,11 +1032,11 @@ mark.answer {
 }
 .closeness-label {
     font-size: 16px;
-    font-weight: 650;
+    font-weight: 700;
     margin: 0 0 8px;
 }
 .heat-word {
-    font-weight: 750;
+    font-weight: 700;
     color: var(--heat);
 }
 .guesses {
@@ -1016,8 +1055,8 @@ mark.answer {
     font-size: 16px;
     background: linear-gradient(
         to right,
-        color-mix(in srgb, var(--heat) 38%, #1e1e1e) var(--fill),
-        #1e1e1e var(--fill)
+        color-mix(in srgb, var(--heat) 38%, var(--paper)) var(--fill),
+        var(--paper) var(--fill)
     );
     animation: feedback-in 0.3s cubic-bezier(0.22, 0.8, 0.24, 1);
 }
@@ -1027,7 +1066,7 @@ mark.answer {
     border-radius: 50%;
 }
 .guess.latest .guess-dot {
-    background: #fff;
+    background: var(--text);
 }
 .guess.latest .guess-word {
     font-weight: 700;
@@ -1037,7 +1076,7 @@ mark.answer {
 }
 .guess-score {
     font-size: 14px;
-    color: #eee;
+    color: var(--text);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
 }
@@ -1057,7 +1096,7 @@ mark.answer {
     --heat: #ff8a5b;
 }
 .heat-right {
-    --heat: #7ed6aa;
+    --heat: var(--color-success);
 }
 .explain summary {
     display: flex;
@@ -1066,7 +1105,7 @@ mark.answer {
     min-height: 44px;
     color: var(--action);
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
 }
 .explain summary:after {
     content: "";
@@ -1085,7 +1124,7 @@ mark.answer {
 .explain p {
     font-size: 15px;
     line-height: 1.5;
-    color: #ccc;
+    color: var(--muted);
     margin: 0 0 4px;
 }
 .help {
@@ -1097,7 +1136,7 @@ mark.answer {
 }
 .help-note {
     text-align: center;
-    color: #ccc;
+    color: var(--muted);
     font-size: 15px;
     margin: 10px 0 0;
 }
@@ -1119,7 +1158,7 @@ mark.answer {
     font-size: 18px;
 }
 .quiz-options b {
-    font-weight: 650;
+    font-weight: 700;
 }
 .quiz-options small {
     display: block;
@@ -1128,7 +1167,8 @@ mark.answer {
     margin-top: 2px;
 }
 .quiz-options button:disabled {
-    color: #777;
+    color: var(--muted);
+    opacity: 0.5;
 }
 .quiz-options button:hover:not(:disabled) b {
     text-decoration: underline;
@@ -1164,8 +1204,8 @@ mark.answer {
     color: var(--paper);
 }
 .outcome.skipped .outcome-icon {
-    background: #333;
-    color: #fff;
+    background: var(--line);
+    color: var(--text);
 }
 .outcome strong {
     display: block;
@@ -1175,7 +1215,7 @@ mark.answer {
 }
 .outcome span span {
     display: block;
-    color: #ccc;
+    color: var(--muted);
     font-size: 16px;
     line-height: 1.45;
 }
@@ -1192,11 +1232,11 @@ mark.answer {
     min-height: 100dvh;
     padding: calc(10px + var(--safe-t)) 20px
         calc(var(--nav-h) + var(--safe-b) + 32px);
-    background: var(--paper);
+    background: var(--canvas);
 }
 .answers h1,
 .saved h1 {
-    font: 700 clamp(32px, 9vw, 40px)/1.1 var(--head);
+    font: 800 clamp(32px, 9vw, 40px)/1.1 var(--head);
     margin: 0 0 8px;
     text-wrap: balance;
 }
@@ -1204,11 +1244,11 @@ mark.answer {
     font-size: 19px;
 }
 .answers-score strong {
-    font: 700 44px/1 var(--head);
+    font: 800 44px/1 var(--head);
     margin-right: 4px;
 }
 .answers-sum {
-    color: #ccc;
+    color: var(--muted);
     font-size: 16px;
     margin: 6px 0 20px;
 }
@@ -1219,13 +1259,13 @@ mark.answer {
 .streak-box {
     margin: 0 0 22px;
     padding: 14px 16px;
-    border: 1px solid #83c9ed4d;
+    border: 1px solid color-mix(in srgb, var(--action) 30%, transparent);
     border-radius: 12px;
     background: var(--raised);
-    box-shadow: inset 0 1px 0 #ffffff0f;
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 6%, transparent);
 }
 .streak-box.on-photo {
-    background: #0b0b0bb3;
+    background: color-mix(in srgb, var(--canvas) 70%, transparent);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
 }
@@ -1239,11 +1279,11 @@ mark.answer {
 }
 .streak-stat + .streak-stat {
     padding-left: 16px;
-    border-left: 1px solid #ffffff1f;
+    border-left: 1px solid var(--line);
 }
 .streak-stat dt {
     font-size: 12px;
-    font-weight: 650;
+    font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--muted);
@@ -1252,13 +1292,13 @@ mark.answer {
 .streak-stat dd {
     margin: 0;
     font-size: 15px;
-    color: #ccc;
+    color: var(--muted);
 }
 .streak-stat b {
     display: inline-block;
     padding: 4px 0; /* as tall as the current streak's blue box, so the numbers line up */
-    font: 700 34px/1 var(--head);
-    color: #fff;
+    font: 800 34px/1 var(--head);
+    color: var(--text);
     font-variant-numeric: tabular-nums;
     margin-right: 2px;
 }
@@ -1274,9 +1314,9 @@ mark.answer {
 .streak-note {
     margin: 12px 0 0;
     padding-top: 10px;
-    border-top: 1px solid #ffffff1f;
+    border-top: 1px solid var(--line);
     font-size: 14px;
-    color: #ccc;
+    color: var(--muted);
 }
 .result-list {
     display: grid;
@@ -1299,14 +1339,14 @@ mark.answer {
 }
 .result-points {
     color: var(--color-success);
-    font-weight: 650;
+    font-weight: 700;
     text-align: right;
 }
 .result-points.zero {
-    color: #ccc;
+    color: var(--muted);
 }
 .result-sentence {
-    font: 600 18px/1.4 var(--head);
+    font: 800 18px/1.4 var(--head);
     margin: 0 0 6px;
 }
 .result-sentence b {
@@ -1326,10 +1366,10 @@ mark.answer {
     padding: 8px 8px 8px 8px;
     border: 1.5px solid var(--action);
     border-radius: 8px;
-    color: #fff;
+    color: var(--text);
 }
 .result-story:hover {
-    background: #83c9ed14;
+    background: color-mix(in srgb, var(--action) 8%, transparent);
 }
 .result-story img,
 .result-story .thumb-placeholder {
@@ -1342,12 +1382,12 @@ mark.answer {
     display: block;
     color: var(--action);
     font-size: 14px;
-    font-weight: 650;
+    font-weight: 700;
 }
 .result-story strong {
     display: block;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.3;
 }
 .result-story > svg {
@@ -1368,7 +1408,7 @@ mark.answer {
 
 /* Saved */
 .saved-intro {
-    color: #ccc;
+    color: var(--muted);
     margin: 0 0 16px;
 }
 .search {
@@ -1377,7 +1417,7 @@ mark.answer {
     gap: 10px;
     min-height: 52px;
     padding: 0 6px 0 14px;
-    border: 1px solid #444;
+    border: 1px solid var(--line);
     border-radius: 8px;
     background: var(--field);
 }
@@ -1392,11 +1432,11 @@ mark.answer {
     border: 0;
     background: none;
     outline: 0;
-    color: #fff;
+    color: var(--text);
     font-size: 17px;
 }
 .search input::placeholder {
-    color: #8a8a8a;
+    color: var(--muted);
 }
 .search:focus-within {
     outline: 3px solid var(--action);
@@ -1440,7 +1480,7 @@ mark.answer {
 }
 .saved-link strong {
     display: block;
-    font: 600 17px/1.3 var(--head);
+    font: 800 17px/1.3 var(--head);
 }
 .saved-link:hover strong {
     text-decoration: underline;
@@ -1463,10 +1503,10 @@ mark.answer {
     color: var(--action);
 }
 .empty h2 {
-    font: 700 24px/1.2 var(--head);
+    font: 800 24px/1.2 var(--head);
 }
 .empty p {
-    color: #ccc;
+    color: var(--muted);
 }
 
 /* Article: title and short version first, then photo and the full story. */
@@ -1480,7 +1520,7 @@ mark.answer {
     min-height: 64px;
     padding: calc(6px + var(--safe-t)) 120px 6px 64px;
     background: var(--paper);
-    border-bottom: 1px solid #222;
+    border-bottom: 1px solid var(--line);
 }
 .article-masthead .brand-name {
     font-size: 24px;
@@ -1501,10 +1541,10 @@ mark.answer {
     width: 48px;
     height: 48px;
     border-radius: 8px;
-    color: #fff;
+    color: var(--text);
 }
 .article-floater:hover {
-    background: #ffffff1a;
+    background: color-mix(in srgb, var(--text) 10%, transparent);
 }
 .back-button {
     left: max(8px, calc(50% - var(--read) / 2));
@@ -1520,7 +1560,7 @@ mark.answer {
     max-width: var(--read);
     margin: 0 auto;
     padding-bottom: calc(var(--nav-h) + var(--safe-b) + 48px);
-    background: var(--paper);
+    background: var(--canvas);
     min-height: calc(100dvh - 64px);
 }
 .quiz-context {
@@ -1544,7 +1584,7 @@ mark.answer {
 .quiz-context-toggle {
     margin-left: auto;
     color: var(--action);
-    font-weight: 650;
+    font-weight: 700;
     white-space: nowrap;
     font-size: 0;
 }
@@ -1557,10 +1597,10 @@ mark.answer {
 }
 .quiz-context p {
     padding: 0 14px 14px;
-    font: 600 18px/1.4 var(--head);
+    font: 800 18px/1.4 var(--head);
 }
 .quiz-context mark {
-    color: #fff;
+    color: var(--text);
     background: var(--soft);
     border-bottom: 3px solid var(--action);
     padding: 0 0.2em;
@@ -1569,7 +1609,7 @@ mark.answer {
     padding: 24px 20px 4px;
 }
 .article-intro h1 {
-    font: 700 clamp(32px, 8.6vw, 44px)/1.1 var(--head);
+    font: 800 clamp(32px, 8.6vw, 44px)/1.1 var(--head);
     letter-spacing: -0.01em;
     margin: 0 0 14px;
     text-wrap: balance;
@@ -1593,6 +1633,7 @@ mark.answer {
     margin-bottom: 6px;
 }
 .short-points {
+    font-family: var(--head);
     font-size: 18px;
     gap: 8px;
 }
@@ -1607,10 +1648,9 @@ mark.answer {
     text-decoration: underline;
     text-underline-offset: 3px;
 }
+/* Article text is Acta Regular, as in the paper. */
 .article-lead {
-    font-size: 19px;
-    line-height: 1.5;
-    font-weight: 500;
+    font: 400 20px/1.5 var(--head);
     margin: 16px 20px 22px;
 }
 figure.article-hero {
@@ -1635,8 +1675,8 @@ figure.article-hero {
     z-index: 1;
     max-width: 80%;
     font-size: 12px;
-    color: #fff;
-    background: #010101b3;
+    color: var(--text);
+    background: color-mix(in srgb, var(--canvas) 70%, transparent);
     padding: 3px 8px;
     border-radius: 4px;
 }
@@ -1656,12 +1696,13 @@ figure.article-hero {
     margin: 24px 0 32px;
 }
 .article-body h2 {
-    font: 700 22px/1.3 var(--head);
+    font: 800 22px/1.3 var(--head);
 }
 .summary-text {
+    font-family: var(--head);
     font-size: 18px;
     line-height: 1.6;
-    color: #ddd;
+    color: var(--text);
     margin: 24px 0 0;
 }
 .deep-panel {
@@ -1694,7 +1735,8 @@ figure.article-hero {
 }
 .adressa-summary .summary-list {
     margin: 0 0 16px;
-    font-size: 16px;
+    font-family: var(--head);
+    font-size: 17px;
 }
 .summary-disclosure,
 .summary-source {
@@ -1719,16 +1761,18 @@ figure.article-hero {
     margin-top: 32px !important;
 }
 .article-text p {
+    font-family: var(--head);
     font-size: 18px;
     line-height: 1.7;
     margin: 0 0 18px;
 }
 .article-text h3 {
-    font: 700 22px/1.3 var(--head);
+    font: 800 22px/1.3 var(--head);
     margin: 32px 0 12px;
 }
 .article-text .bullet-list {
-    font-size: 17px;
+    font-family: var(--head);
+    font-size: 18px;
     margin: 0 0 18px;
 }
 .not-imported p {
@@ -1782,7 +1826,7 @@ figure.article-hero {
     flex: none;
     padding: 7px;
     border-radius: 50%;
-    background: #005379;
+    background: var(--color-brand);
     object-fit: contain;
 }
 .snapshot-foot {
@@ -1812,7 +1856,7 @@ figure.article-hero {
     width: min(100%, var(--col));
     padding: 10px 16px calc(10px + var(--safe-b));
     background: var(--paper);
-    border-top: 1px solid #222;
+    border-top: 1px solid var(--line);
 }
 .quiz-return button {
     display: flex;
@@ -1825,7 +1869,7 @@ figure.article-hero {
     background: var(--action);
     color: var(--on-action);
     font-size: 18px;
-    font-weight: 650;
+    font-weight: 700;
 }
 .quiz-return button:hover {
     background: var(--action-hover);
@@ -1855,10 +1899,10 @@ dialog.sheet {
     margin-bottom: 14px;
 }
 .modal-head h2 {
-    font: 700 24px/1.2 var(--head);
+    font: 800 24px/1.2 var(--head);
 }
 .modal-body p {
-    color: #ccc;
+    color: var(--muted);
     line-height: 1.6;
     margin: 10px 0;
     font-size: 15px;
@@ -1887,7 +1931,7 @@ dialog.sheet {
 .chip {
     min-height: 44px;
     padding: 8px 16px;
-    border: 1px solid #444;
+    border: 1px solid var(--line);
     border-radius: 8px;
     font-size: 15px;
 }
@@ -1898,7 +1942,7 @@ dialog.sheet {
     background: var(--action);
     border-color: var(--action);
     color: var(--on-action);
-    font-weight: 650;
+    font-weight: 700;
 }
 .toast {
     position: fixed;
@@ -1932,7 +1976,7 @@ dialog.sheet {
     gap: 18px;
     padding: 24px;
     text-align: center;
-    background: var(--paper);
+    background: var(--canvas);
 }
 .splash p {
     color: var(--muted);
