@@ -8,7 +8,7 @@ from the article, so a reader can tell at a glance whether to read it.
                                               # encrypted package (frontend/scripts/encrypt-stories.mjs)
 
 This is separate from Adressa's own «Kort oppsummert» (Story.summary), which stays unchanged with
-its disclosure. Ours is labelled «Oppsummert av Opplyst med KI» and names Adresseavisen as the
+its disclosure. Ours is labelled «Oppsummert av Oppdatert med KI» and names Adresseavisen as the
 source of the journalism.
 
 Summaries are made by this command, from the local Adressa import, never while someone uses the
@@ -42,7 +42,7 @@ from app.config import settings
 from app.stories import OpplystSummary, Story, cache_dir, load_stories
 
 PROMPT_VERSION = "5"
-LABEL = "Oppsummert av Opplyst med KI"
+LABEL = "Oppsummert av Oppdatert med KI"
 POINTS = (2, 3)  # bullet points per summary
 POINT_WORDS = 12  # at most, per point; the prompt asks for 10
 WORDS = (6, 28)  # accepted length of the whole summary; the prompt asks for at most 24
@@ -329,7 +329,7 @@ def _check_model(model: str) -> str:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Lag Opplysts kortversjoner av sakene")
+    parser = argparse.ArgumentParser(description="Lag Oppdaterts kortversjoner av sakene")
     parser.add_argument("--check", action="store_true", help="bare rapport, ingen modellkall")
     parser.add_argument("--force", action="store_true", help="lag nye også for lagrede")
     parser.add_argument("--export", action="store_true", help="skriv gjeldende som JSON, uten kall")

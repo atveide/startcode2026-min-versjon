@@ -58,7 +58,7 @@ function QuestionView() {
 
   useEffect(() => {
     start();
-    document.title = "Dagens quiz · Opplyst";
+    document.title = "Dagens quiz · Oppdatert";
   }, [start]);
 
   useEffect(() => {
@@ -279,7 +279,7 @@ function QuizHeader({ position }: { position: number }) {
         <Link
           to="/"
           className="brand-link"
-          aria-label="Opplyst – til dagens quiz"
+          aria-label="Oppdatert – til dagens quiz"
         >
           <Brand />
         </Link>
@@ -428,7 +428,7 @@ function AnswersView() {
   const skipped = progress.questions.filter((q) => q.gaveUp).length;
 
   useEffect(() => {
-    document.title = "Resultatet ditt · Opplyst";
+    document.title = "Resultatet ditt · Oppdatert";
   }, []);
 
   async function share() {
@@ -460,7 +460,7 @@ function AnswersView() {
           <Link
             to="/"
             className="brand-link"
-            aria-label="Opplyst – til dagens quiz"
+            aria-label="Oppdatert – til dagens quiz"
           >
             <Brand />
           </Link>

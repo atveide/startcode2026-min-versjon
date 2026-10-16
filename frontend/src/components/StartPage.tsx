@@ -25,10 +25,10 @@ export default function StartPage() {
   const started = hasStarted(progress);
 
   useEffect(() => {
-    document.title = "Opplyst – dagens quiz";
+    document.title = "Oppdatert – dagens quiz";
   }, []);
 
-  let title = "Hvor opplyst er du i dag?";
+  let title = "Hvor oppdatert er du i dag?";
   let text = `${count} spørsmål fra nyhetene. Står du fast, finner du svaret i saken.`;
   let primary = { label: "Start dagens quiz", to: "/quiz" };
   let secondary = null;
@@ -60,7 +60,7 @@ export default function StartPage() {
           <button
             className="icon-button on-photo"
             onClick={showAbout}
-            aria-label="Om Opplyst"
+            aria-label="Om Oppdatert"
           >
             <Icon name="info" size={26} />
           </button>

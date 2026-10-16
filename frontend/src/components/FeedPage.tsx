@@ -74,7 +74,7 @@ export default function FeedPage() {
   );
 
   useEffect(() => {
-    document.title = "Nyheter · Opplyst";
+    document.title = "Nyheter · Oppdatert";
   }, []);
 
   // Back where the reader left off: a #link first, then the remembered item, else the top.
@@ -131,7 +131,7 @@ export default function FeedPage() {
       <main id="main" className="feed" tabIndex={-1}>
         <h1 className="sr-only">Nyheter</h1>
         <header className="feed-top">
-          <Link to="/" className="brand-link" aria-label="Opplyst – til dagens quiz">
+          <Link to="/" className="brand-link" aria-label="Oppdatert – til dagens quiz">
             <Brand />
           </Link>
           <button

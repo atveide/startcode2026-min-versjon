@@ -10,14 +10,14 @@ frontend/               React app (Vite + TypeScript)
 adressa-hackathon-kit/  Adressa design system + reference news app
 ```
 
-## Opplyst
+## Oppdatert
 
-Opplyst fra Adressa makes one news story at a time easy to understand, for students. A daily quiz is the way in: it rewards people who follow the news and sends everyone else to the stories.
+Oppdatert fra Adressa makes one news story at a time easy to understand, for students. A daily quiz is the way in: it rewards people who follow the news and sends everyone else to the stories.
 
 1. **Start** (`/`, the Quiz tab): a short invitation to today's quiz on a photo of Bakklandet. Not started, in progress or finished, it says so; the first visit with a new quiz opens here, later visits the same day go back to where you were.
 2. **Dagens quiz** (`/quiz`): three sentences from this week's news, each with one word missing (Oslo time decides the day). Every guess gets a **closeness score 0–100** from Claude, shown as Kaldt / Lunkent / Varmt with your earlier guesses; only the backend's verdict solves a question. Points are separate: 10 for a first-try answer, minus 1 per extra guess and per letter hint, 0 for skipping (which shows the answer). Reading the story is free and comes back to the same question, with your draft, guesses and hints kept.
 3. **Result** (`/quiz/svar`): how it went, question by question, with a button into each story.
-4. **Nyheter** (`/nyheter`): one full-screen item per swipe, mixing photo stories and Adressa's own vertical videos in a stable order. Photo stories show Opplyst's bullet-point short version; videos play only while on screen (muted until you turn sound on), with their subtitles left uncovered. The end of the feed links to adressa.no for more stories.
+4. **Nyheter** (`/nyheter`): one full-screen item per swipe, mixing photo stories and Adressa's own vertical videos in a stable order. Photo stories show Oppdatert's bullet-point short version; videos play only while on screen (muted until you turn sound on), with their subtitles left uncovered. The end of the feed links to adressa.no for more stories.
 5. **Lagret** (`/lagret`): saved stories and videos, on this device.
 
 The look is the dark mode of the (unofficial) Adressa hackathon kit v2: black surfaces, white text, `#83C9ED` actions, Bitter headlines and Inter text. Progress, saved items and the reading position live in the browser's localStorage.
@@ -28,15 +28,15 @@ The look is the dark mode of the (unofficial) Adressa hackathon kit v2: black su
 | `backend/app/headlines.py` | Loads the week's question pool and picks today's three |
 | `backend/app/generate_questions.py` | Makes the question pool from the local Adressa import with Claude |
 | `backend/app/stories.py` | Merges `week.json` with the local Adressa import, if there is one |
-| `backend/app/summaries.py` | Opplyst's short versions, written by Claude Sonnet and cached |
+| `backend/app/summaries.py` | Oppdatert's short versions, written by Claude Sonnet and cached |
 | `backend/app/videos.py`, `data/videos.json` | The video manifest, media delivery and the mixed feed order |
 | `backend/app/import_videos.py` | Imports a zip of Adressa videos: checks, web copies, posters, manifest |
 | `frontend/src/components/` | Pages: `StartPage`, `QuizPage`, `FeedPage`, `StoryPage`, `SavedPage` |
 | `frontend/src/styles.css` | All styling, on top of the Adressa tokens in `tokens.css` |
 
-### Opplyst's short versions
+### Oppdatert's short versions
 
-Each imported story gets two or three short bullet points written by Claude Sonnet (`SUMMARY_MODEL`, default `claude-sonnet-5-5`) from the article text, labelled «Oppsummert av Opplyst med KI» with Adresseavisen as the source. Adressa's own «Kort oppsummert» stays as it is, in the story. They are made by a command, never while the app is used, and cached in the local database by story id, a hash of the text, prompt version and model:
+Each imported story gets two or three short bullet points written by Claude Sonnet (`SUMMARY_MODEL`, default `claude-sonnet-5-5`) from the article text, labelled «Oppsummert av Oppdatert med KI» with Adresseavisen as the source. Adressa's own «Kort oppsummert» stays as it is, in the story. They are made by a command, never while the app is used, and cached in the local database by story id, a hash of the text, prompt version and model:
 
 ```sh
 make summaries                                   # or: cd backend && uv run python -m app.summaries
@@ -55,7 +55,7 @@ The stories are real articles from Adresseavisen (Polaris Media), picked for stu
 
 - **Locally**, set `ADRESSA_CACHE_DIR` in `backend/.env` to the import's `data/adressa` folder. Stories then show Adressa's summary (with its AI and editorial disclosure), the article text and the photos, served from `/api/media/adressa/…`.
 - **Without the cache** (Render, or a teammate's machine) the game works the same, and every story shows its title, lead and a button to read it on adressa.no.
-- **With an unlock link** the hosted app shows the full stories too, with Opplyst's bullet points. `frontend/scripts/encrypt-stories.mjs` encrypts them from the local cache into `frontend/public/private/stories.enc.json`, with one personal key per reader. The key travels in the link's `#nokkel=…`, which never reaches a server; the app keeps it on the device and decrypts there. Keys, links and the package are git-ignored, so only the deployed app carries the ciphertext.
+- **With an unlock link** the hosted app shows the full stories too, with Oppdatert's bullet points. `frontend/scripts/encrypt-stories.mjs` encrypts them from the local cache into `frontend/public/private/stories.enc.json`, with one personal key per reader. The key travels in the link's `#nokkel=…`, which never reaches a server; the app keeps it on the device and decrypts there. Keys, links and the package are git-ignored, so only the deployed app carries the ciphertext.
 
   ```sh
   npm --prefix frontend run encrypt -- --testers 10   # or --add Kari Ola; links land in frontend/.reader-links.txt
@@ -82,14 +82,14 @@ Neither host builds from GitHub on its own.
 - **Frontend (Netlify, `startcode-august-demo`)** is deployed from a local build, since it carries git-ignored files:
 
   ```sh
-  make summaries                          # Opplyst's bullet points for the current import
+  make summaries                          # Oppdatert's bullet points for the current import
   npm --prefix frontend run videos        # web copies and posters into public/media/video/
   npm --prefix frontend run encrypt       # full stories and bullet points, for readers with a key
   npm --prefix frontend run build
   netlify deploy --prod --site a2aca2f5-f955-4c0f-acc4-baa54e0a03ec --dir frontend/dist
   ```
 
-  The videos are served publicly from `/media/video/`; the stories and Opplyst's bullet points stay encrypted for readers with an unlock link.
+  The videos are served publicly from `/media/video/`; the stories and Oppdatert's bullet points stay encrypted for readers with an unlock link.
 
 ## Design system
 

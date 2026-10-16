@@ -10,7 +10,7 @@ export default function SavedPage() {
   const { saved, storiesById, videosById } = useApp();
   const [query, setQuery] = useState("");
   useEffect(() => {
-    document.title = "Lagret · Opplyst";
+    document.title = "Lagret · Oppdatert";
   }, []);
 
   // Stories open as articles; videos open in the feed, where they play.
@@ -32,7 +32,7 @@ export default function SavedPage() {
     <>
       <main id="main" className="saved" tabIndex={-1}>
         <header className="page-top">
-          <Link to="/" className="brand-link" aria-label="Opplyst – til dagens quiz">
+          <Link to="/" className="brand-link" aria-label="Oppdatert – til dagens quiz">
             <Brand />
           </Link>
         </header>

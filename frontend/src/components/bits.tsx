@@ -91,7 +91,7 @@ export function SaveButton({
 export function Brand() {
   return (
     <span className="brand">
-      <span className="brand-name">Opplyst</span>
+      <span className="brand-name">Oppdatert</span>
       <span className="brand-from">fra Adressa</span>
     </span>
   );

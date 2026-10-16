@@ -20,7 +20,7 @@ export default function StoryPage({ id, fromQuiz }: { id: string; fromQuiz: bool
   }, [story, fromQuiz, markOpened, markQuizRead]);
 
   useEffect(() => {
-    if (story) document.title = `${story.title} · Opplyst`;
+    if (story) document.title = `${story.title} · Oppdatert`;
   }, [story]);
 
   if (!story) return <StoryNotFound />;
@@ -49,7 +49,7 @@ export default function StoryPage({ id, fromQuiz }: { id: string; fromQuiz: bool
       </button>
       <SaveButton id={story.id} className="article-floater article-save" />
       <header className="article-masthead">
-        <Link to="/" className="brand-link" aria-label="Opplyst – til dagens quiz">
+        <Link to="/" className="brand-link" aria-label="Oppdatert – til dagens quiz">
           <Brand />
         </Link>
       </header>

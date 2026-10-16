@@ -249,20 +249,20 @@ function About({ dialogRef, locked }: { dialogRef: RefObject<HTMLDialogElement |
       }}
     >
       <div className="modal-head">
-        <h2 id="about-title">Om Opplyst</h2>
+        <h2 id="about-title">Om Oppdatert</h2>
         <button className="icon-button" onClick={close} aria-label="Lukk">
           <Icon name="close" />
         </button>
       </div>
       <div className="modal-body">
         <p>
-          Opplyst gjør én nyhet forståelig om gangen. Hver dag får du en quiz med spørsmål fra ukens
+          Oppdatert gjør én nyhet forståelig om gangen. Hver dag får du en quiz med spørsmål fra ukens
           nyheter. Står du fast, leser du saken og går tilbake til spørsmålet. Det koster ingen poeng. Hopper du over, får
           du se svaret, men ingen poeng for spørsmålet.
         </p>
         <p>
           Nærheten (0–100) viser hvor nær betydningen gjetningen din er ordet som mangler. Claude vurderer
-          gjetningene. Kortversjonene merket «Oppsummert av Opplyst med KI» er skrevet av Claude ut fra
+          gjetningene. Kortversjonene merket «Oppsummert av Oppdatert med KI» er skrevet av Claude ut fra
           saken. Avisens egen «Kort oppsummert» vises uendret i saken.
         </p>
         <p className="small">

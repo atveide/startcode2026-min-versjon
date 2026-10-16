@@ -88,7 +88,7 @@ def test_stored_summary_is_served_apart_from_adressas_own() -> None:
     [story] = attach([STORY], MODEL)
     summary = story.opplystSummary
     assert summary.points == GOOD.points
-    assert summary.label == LABEL == "Oppsummert av Opplyst med KI"
+    assert summary.label == LABEL == "Oppsummert av Oppdatert med KI"
     assert summary.model == MODEL and summary.promptVersion == summaries.PROMPT_VERSION
     assert summary.source == "Adresseavisen" and summary.sourceUrl == STORY.url
     # Adressa's «Kort oppsummert» and the lead are untouched.

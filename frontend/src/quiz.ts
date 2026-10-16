@@ -99,7 +99,7 @@ export function isComplete(progress: QuizProgress): boolean {
 
 export function verdict(points: number, max: number): string {
   const ratio = max ? points / max : 0;
-  if (ratio >= 0.8) return "Godt opplyst!";
+  if (ratio >= 0.8) return "Godt oppdatert!";
   if (ratio >= 0.5) return "Godt på vei";
   return "Tid for å lese seg opp";
 }
@@ -121,7 +121,7 @@ export function shareText(progress: QuizProgress, day: string): string {
     const points = pointsFor(q);
     return `${i + 1}:   ${pointsDot(points)} ${points} poeng${q.readStory ? " 💡" : ""}`;
   });
-  return [`Opplyst ${day}`, ...lines, `Sum: ${totalPoints(progress)} poeng`].join("\n");
+  return [`Oppdatert ${day}`, ...lines, `Sum: ${totalPoints(progress)} poeng`].join("\n");
 }
 
 export type Heat = "cold" | "warm" | "hot" | "right";
