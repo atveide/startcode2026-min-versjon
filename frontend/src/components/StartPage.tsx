@@ -35,8 +35,7 @@ export default function StartPage() {
   if (complete) {
     title = verdict(points, max);
     text = `Du fikk ${points} av ${max} poeng i dagens quiz. Nye spørsmål i morgen.`;
-    primary = { label: "Se nyhetene", to: "/nyheter" };
-    secondary = { label: "Se svarene", to: "/quiz/svar" };
+    primary = { label: "Se resultatet", to: "/quiz" };
   } else if (started) {
     text = `Du er på spørsmål ${progress.index + 1} av ${count} og har ${points} poeng så langt.`;
     primary = { label: "Fortsett quizen", to: "/quiz" };

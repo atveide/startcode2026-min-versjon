@@ -546,20 +546,8 @@ function AnswersView() {
         )}
         <p className="answers-note">
           10 poeng for riktig svar på første forsøk, minus 1 for hvert ekstra
-          forsøk. Hopper du over, får du se svaret og 0 poeng. Lesing er gratis,
-          og nærheten underveis er ikke poeng.
+          forsøk. Hopper du over, får du se svaret og 0 poeng.
         </p>
-        {complete && (
-          <button
-            className="btn btn-text"
-            onClick={() => {
-              restart();
-              navigate("/quiz");
-            }}
-          >
-            Ta dagens quiz på nytt
-          </button>
-        )}
       </main>
       <BottomNav current="quiz" />
     </>
